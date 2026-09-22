@@ -4,9 +4,9 @@
   "description": "Food Never Comes (FNC) — Full-Stack Satirical Food Delivery & 80G Charitable Giving Platform",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "seed": "node db/seed.js",
-    "build": "node db/seed.js"
+    "start": "node --experimental-sqlite server.js",
+    "seed": "node --experimental-sqlite db/seed.js",
+    "build": "node --experimental-sqlite db/seed.js"
   },
   "engines": {
     "node": ">=22.5.0"

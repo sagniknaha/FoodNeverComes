@@ -1,7 +1,7 @@
 // Food Never Comes (FNC) — Database Seeder
-// Seeds 10 Google Maps Restaurants, 500+ Dishes, and 1,000 Patrons into SQLite
+// Dual-Engine: Seeds SQLite if active, or JSON Store if node:sqlite is unavailable.
 
-const { db } = require('./database');
+const { db, useSqlite, jsonStore, saveJsonStore } = require('./database');
 
 const RESTAURANTS_DATA = [
   {
@@ -199,93 +199,144 @@ const DISH_TEMPLATES = [
 const DESCRIPTORS = ['Grand', 'Signature', 'Royal', 'Authentic', 'Crispy', 'Smoky', 'Velvet', 'Midnight', 'Supreme', 'Tandoori', 'Zero-Calorie', 'Phantom'];
 
 function seedDatabase() {
-  console.log('🌱 Starting Database Seeding...');
+  console.log('🌱 Starting Database Seeding (Engine:', useSqlite ? 'SQLite' : 'JSON Store', ')...');
 
-  // 1. Seed Restaurants
-  const restCount = db.prepare('SELECT COUNT(*) as count FROM restaurants').get().count;
-  if (restCount === 0) {
-    console.log('Seeding 10 authentic local restaurants...');
-    const insertRest = db.prepare(`
-      INSERT INTO restaurants (id, name, locality, address, rating, rating_count, delivery_time, cost_for_two, cuisines, image_url, phone, lat, lng, is_ghost)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
+  if (useSqlite) {
+    // 1. Seed Restaurants
+    const restCount = db.prepare('SELECT COUNT(*) as count FROM restaurants').get().count;
+    if (restCount === 0) {
+      console.log('Seeding 10 authentic local restaurants...');
+      const insertRest = db.prepare(`
+        INSERT INTO restaurants (id, name, locality, address, rating, rating_count, delivery_time, cost_for_two, cuisines, image_url, phone, lat, lng, is_ghost)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
 
-    for (const r of RESTAURANTS_DATA) {
-      insertRest.run(r.id, r.name, r.locality, r.address, r.rating, r.rating_count, r.delivery_time, r.cost_for_two, r.cuisines, r.image_url, r.phone, r.lat, r.lng, r.is_ghost);
+      for (const r of RESTAURANTS_DATA) {
+        insertRest.run(r.id, r.name, r.locality, r.address, r.rating, r.rating_count, r.delivery_time, r.cost_for_two, r.cuisines, r.image_url, r.phone, r.lat, r.lng, r.is_ghost);
+      }
+      console.log(`✅ Seeded ${RESTAURANTS_DATA.length} restaurants.`);
     }
-    console.log(`✅ Seeded ${RESTAURANTS_DATA.length} restaurants.`);
+
+    // 2. Seed 500+ Dishes
+    const dishCount = db.prepare('SELECT COUNT(*) as count FROM dishes').get().count;
+    if (dishCount === 0) {
+      console.log('Generating and seeding 500+ authentic local dishes...');
+      const insertDish = db.prepare(`
+        INSERT INTO dishes (restaurant_id, name, description, category, price, calories, is_veg, rating, rating_count, image_url, is_bestseller)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      let totalDishes = 0;
+      for (const rest of RESTAURANTS_DATA) {
+        for (let i = 0; i < 50; i++) {
+          const template = DISH_TEMPLATES[i % DISH_TEMPLATES.length];
+          const descWord = DESCRIPTORS[(i + totalDishes) % DESCRIPTORS.length];
+          const imgIdx = totalDishes % DISH_IMAGE_POOL.length;
+          const priceVariation = ((i * 15) % 80) - 20;
+          const calVariation = ((i * 40) % 280) - 60;
+
+          const name = `${descWord} ${template.name}`;
+          const description = `${template.desc} Prepared at ${rest.name}, safely prevented from reaching your doorstep.`;
+          const price = Math.max(140, template.basePrice + priceVariation);
+          const calories = Math.max(380, template.baseCals + calVariation);
+          const rating = Number((4.6 + ((i % 4) * 0.1)).toFixed(1));
+          const ratingCount = Math.floor(1200 + (i * 400));
+          const isBestseller = (i % 6 === 0) ? 1 : 0;
+
+          insertDish.run(rest.id, name, description, template.cat, price, calories, template.isVeg, rating, ratingCount, DISH_IMAGE_POOL[imgIdx], isBestseller);
+          totalDishes++;
+        }
+      }
+      console.log(`✅ Seeded ${totalDishes} authentic dishes across all restaurants.`);
+    }
+
+    // 3. Seed 1,000 Patrons Leaderboard
+    const lbCount = db.prepare('SELECT COUNT(*) as count FROM leaderboard').get().count;
+    if (lbCount === 0) {
+      console.log('Seeding 1,000 verified patrons into leaderboard...');
+      const insertPatron = db.prepare(`
+        INSERT INTO leaderboard (rank, name, title, orders_count, calories_saved, karma_points, donation_pledged, is_verified)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      const firstNames = ["Arjun", "Priya", "Vikram", "Sneha", "Rohan", "Ananya", "Kabir", "Tanvi", "Siddharth", "Meera", "Aarav", "Divya", "Aditya", "Ishita", "Rahul", "Pooja", "Nikhil", "Neha", "Varun", "Rhea", "Subhash", "Debolina", "Sourav", "Priyanka", "Anirban"];
+      const lastNames = ["Mehta", "Sharma", "Das", "Kapur", "Verma", "Reddy", "Nair", "Patel", "Iyer", "Rao", "Joshi", "Bhat", "Chopra", "Gupta", "Malhotra", "Kulkarni", "Sen", "Bose", "Banerjee", "Chatterjee", "Mukherjee"];
+      const titles = ["Grandmaster of Restraint", "Biryani Dodger", "Samosa Resister", "Chelo Kebab Evader", "Chaap Dodger", "Zero-Calorie Monk", "Carb Evader", "Ghost Feast Champion", "Midnight Abstainer", "Rosogolla Denier"];
+
+      insertPatron.run(1, "Arjun Mehta", "🥇 Grandmaster of Restraint", 48, 68400, 8240, 2500, 1);
+      insertPatron.run(2, "Priya Sharma", "🥈 Samosa Resister", 41, 54200, 6800, 1850, 1);
+      insertPatron.run(3, "Vikram Das", "🥉 Biryani Dodger", 36, 46800, 5420, 1200, 1);
+
+      let curCals = 45000;
+      for (let i = 4; i <= 1000; i++) {
+        const fn = firstNames[i % firstNames.length];
+        const ln = lastNames[(i * 3) % lastNames.length];
+        const t = titles[i % titles.length];
+        curCals = Math.max(1200, curCals - Math.floor(Math.random() * 45) - 25);
+        const curKarma = Math.round(curCals / 10) + ((i % 5 === 0) ? 500 : 0);
+        const curOrders = Math.max(1, Math.floor(curCals / 1100));
+        const donation = (i % 6 === 0) ? (50 * (1 + (i % 8))) : 0;
+
+        insertPatron.run(i, `${fn} ${ln}`, `Level ${Math.max(1, 10 - Math.floor(i / 100))} ${t}`, curOrders, curCals, curKarma, donation, 1);
+      }
+      console.log('✅ Seeded 1,000 verified patrons into leaderboard.');
+    }
   } else {
-    console.log(`ℹ️ Restaurants already seeded (${restCount} rows).`);
-  }
+    // JSON Store Seeding
+    if (jsonStore.restaurants.length === 0) {
+      jsonStore.restaurants = [...RESTAURANTS_DATA];
+    }
+    if (jsonStore.dishes.length === 0) {
+      let totalDishes = 0;
+      for (const rest of RESTAURANTS_DATA) {
+        for (let i = 0; i < 50; i++) {
+          const template = DISH_TEMPLATES[i % DISH_TEMPLATES.length];
+          const descWord = DESCRIPTORS[(i + totalDishes) % DESCRIPTORS.length];
+          const imgIdx = totalDishes % DISH_IMAGE_POOL.length;
+          const priceVariation = ((i * 15) % 80) - 20;
+          const calVariation = ((i * 40) % 280) - 60;
 
-  // 2. Seed 500+ Dishes
-  const dishCount = db.prepare('SELECT COUNT(*) as count FROM dishes').get().count;
-  if (dishCount === 0) {
-    console.log('Generating and seeding 500+ authentic local dishes...');
-    const insertDish = db.prepare(`
-      INSERT INTO dishes (restaurant_id, name, description, category, price, calories, is_veg, rating, rating_count, image_url, is_bestseller)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    let totalDishes = 0;
-    for (const rest of RESTAURANTS_DATA) {
-      for (let i = 0; i < 50; i++) {
-        const template = DISH_TEMPLATES[i % DISH_TEMPLATES.length];
-        const descWord = DESCRIPTORS[(i + totalDishes) % DESCRIPTORS.length];
-        const imgIdx = totalDishes % DISH_IMAGE_POOL.length;
-        const priceVariation = ((i * 15) % 80) - 20;
-        const calVariation = ((i * 40) % 280) - 60;
-
-        const name = `${descWord} ${template.name}`;
-        const description = `${template.desc} Prepared at ${rest.name}, safely prevented from reaching your doorstep.`;
-        const price = Math.max(140, template.basePrice + priceVariation);
-        const calories = Math.max(380, template.baseCals + calVariation);
-        const rating = Number((4.6 + ((i % 4) * 0.1)).toFixed(1));
-        const ratingCount = Math.floor(1200 + (i * 400));
-        const isBestseller = (i % 6 === 0) ? 1 : 0;
-
-        insertDish.run(rest.id, name, description, template.cat, price, calories, template.isVeg, rating, ratingCount, DISH_IMAGE_POOL[imgIdx], isBestseller);
-        totalDishes++;
+          jsonStore.dishes.push({
+            id: totalDishes + 1,
+            restaurant_id: rest.id,
+            name: `${descWord} ${template.name}`,
+            description: `${template.desc} Prepared at ${rest.name}, safely prevented from reaching your doorstep.`,
+            category: template.cat,
+            price: Math.max(140, template.basePrice + priceVariation),
+            calories: Math.max(380, template.baseCals + calVariation),
+            is_veg: template.isVeg,
+            rating: Number((4.6 + ((i % 4) * 0.1)).toFixed(1)),
+            rating_count: Math.floor(1200 + (i * 400)),
+            image_url: DISH_IMAGE_POOL[imgIdx],
+            is_bestseller: (i % 6 === 0) ? 1 : 0
+          });
+          totalDishes++;
+        }
       }
     }
-    console.log(`✅ Seeded ${totalDishes} authentic dishes across all restaurants.`);
-  } else {
-    console.log(`ℹ️ Dishes already seeded (${dishCount} rows).`);
-  }
+    if (jsonStore.leaderboard.length === 0) {
+      const firstNames = ["Arjun", "Priya", "Vikram", "Sneha", "Rohan", "Ananya", "Kabir", "Tanvi", "Siddharth", "Meera", "Aarav", "Divya", "Aditya", "Ishita", "Rahul", "Pooja", "Nikhil", "Neha", "Varun", "Rhea", "Subhash", "Debolina", "Sourav", "Priyanka", "Anirban"];
+      const lastNames = ["Mehta", "Sharma", "Das", "Kapur", "Verma", "Reddy", "Nair", "Patel", "Iyer", "Rao", "Joshi", "Bhat", "Chopra", "Gupta", "Malhotra", "Kulkarni", "Sen", "Bose", "Banerjee", "Chatterjee", "Mukherjee"];
+      const titles = ["Grandmaster of Restraint", "Biryani Dodger", "Samosa Resister", "Chelo Kebab Evader", "Chaap Dodger", "Zero-Calorie Monk", "Carb Evader", "Ghost Feast Champion", "Midnight Abstainer", "Rosogolla Denier"];
 
-  // 3. Seed 1,000 Patrons Leaderboard
-  const lbCount = db.prepare('SELECT COUNT(*) as count FROM leaderboard').get().count;
-  if (lbCount === 0) {
-    console.log('Seeding 1,000 verified patrons into leaderboard...');
-    const insertPatron = db.prepare(`
-      INSERT INTO leaderboard (rank, name, title, orders_count, calories_saved, karma_points, donation_pledged, is_verified)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `);
+      jsonStore.leaderboard.push({ id: 1, rank: 1, name: "Arjun Mehta", title: "🥇 Grandmaster of Restraint", orders_count: 48, calories_saved: 68400, karma_points: 8240, donation_pledged: 2500, is_verified: 1 });
+      jsonStore.leaderboard.push({ id: 2, rank: 2, name: "Priya Sharma", title: "🥈 Samosa Resister", orders_count: 41, calories_saved: 54200, karma_points: 6800, donation_pledged: 1850, is_verified: 1 });
+      jsonStore.leaderboard.push({ id: 3, rank: 3, name: "Vikram Das", title: "🥉 Biryani Dodger", orders_count: 36, calories_saved: 46800, karma_points: 5420, donation_pledged: 1200, is_verified: 1 });
 
-    const firstNames = ["Arjun", "Priya", "Vikram", "Sneha", "Rohan", "Ananya", "Kabir", "Tanvi", "Siddharth", "Meera", "Aarav", "Divya", "Aditya", "Ishita", "Rahul", "Pooja", "Nikhil", "Neha", "Varun", "Rhea", "Subhash", "Debolina", "Sourav", "Priyanka", "Anirban"];
-    const lastNames = ["Mehta", "Sharma", "Das", "Kapur", "Verma", "Reddy", "Nair", "Patel", "Iyer", "Rao", "Joshi", "Bhat", "Chopra", "Gupta", "Malhotra", "Kulkarni", "Sen", "Bose", "Banerjee", "Chatterjee", "Mukherjee"];
-    const titles = ["Grandmaster of Restraint", "Biryani Dodger", "Samosa Resister", "Chelo Kebab Evader", "Chaap Dodger", "Zero-Calorie Monk", "Carb Evader", "Ghost Feast Champion", "Midnight Abstainer", "Rosogolla Denier"];
+      let curCals = 45000;
+      for (let i = 4; i <= 1000; i++) {
+        const fn = firstNames[i % firstNames.length];
+        const ln = lastNames[(i * 3) % lastNames.length];
+        const t = titles[i % titles.length];
+        curCals = Math.max(1200, curCals - Math.floor(Math.random() * 45) - 25);
+        const curKarma = Math.round(curCals / 10) + ((i % 5 === 0) ? 500 : 0);
+        const curOrders = Math.max(1, Math.floor(curCals / 1100));
+        const donation = (i % 6 === 0) ? (50 * (1 + (i % 8))) : 0;
 
-    // Top 3
-    insertPatron.run(1, "Arjun Mehta", "🥇 Grandmaster of Restraint", 48, 68400, 8240, 2500, 1);
-    insertPatron.run(2, "Priya Sharma", "🥈 Samosa Resister", 41, 54200, 6800, 1850, 1);
-    insertPatron.run(3, "Vikram Das", "🥉 Biryani Dodger", 36, 46800, 5420, 1200, 1);
-
-    let curCals = 45000;
-    for (let i = 4; i <= 1000; i++) {
-      const fn = firstNames[i % firstNames.length];
-      const ln = lastNames[(i * 3) % lastNames.length];
-      const t = titles[i % titles.length];
-      curCals = Math.max(1200, curCals - Math.floor(Math.random() * 45) - 25);
-      const curKarma = Math.round(curCals / 10) + ((i % 5 === 0) ? 500 : 0);
-      const curOrders = Math.max(1, Math.floor(curCals / 1100));
-      const donation = (i % 6 === 0) ? (50 * (1 + (i % 8))) : 0;
-
-      insertPatron.run(i, `${fn} ${ln}`, `Level ${Math.max(1, 10 - Math.floor(i / 100))} ${t}`, curOrders, curCals, curKarma, donation, 1);
+        jsonStore.leaderboard.push({ id: i, rank: i, name: `${fn} ${ln}`, title: `Level ${Math.max(1, 10 - Math.floor(i / 100))} ${t}`, orders_count: curOrders, calories_saved: curCals, karma_points: curKarma, donation_pledged: donation, is_verified: 1 });
+      }
+      saveJsonStore();
     }
-    console.log('✅ Seeded 1,000 verified patrons into leaderboard.');
-  } else {
-    console.log(`ℹ️ Leaderboard already seeded (${lbCount} rows).`);
   }
 
   console.log('🎉 Database seeding complete!');
@@ -296,4 +347,3 @@ if (require.main === module) {
 }
 
 module.exports = { seedDatabase };
-
