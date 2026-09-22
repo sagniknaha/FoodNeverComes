@@ -92,6 +92,7 @@ async function reverseGeocode(lat, lng) {
       
       if (locDisplay) locDisplay.textContent = userLocation.name;
       updateRestaurantDistances(userLocation.name);
+      updateRadarGoogleMap();
       showToast(`📍 Location locked: ${userLocation.name}`, "mint");
       return;
     }
@@ -114,6 +115,7 @@ async function ipFallbackGeolocation() {
       userLocation.name = `${locality}, ${city}`;
       if (locDisplay) locDisplay.textContent = userLocation.name;
       updateRestaurantDistances(userLocation.name);
+      updateRadarGoogleMap();
       showToast(`📍 Detected Area: ${userLocation.name}`, "info");
       return;
     }
@@ -124,6 +126,7 @@ async function ipFallbackGeolocation() {
   // Final fallback if offline
   userLocation.name = "Kolkata (Barakpur Zone)";
   if (locDisplay) locDisplay.textContent = userLocation.name;
+  updateRadarGoogleMap();
 }
 
 function updateRestaurantDistances(area) {
@@ -148,14 +151,29 @@ function closeLocationModal() {
   if (backdrop) backdrop.classList.add('opacity-0', 'pointer-events-none');
 }
 
+const PRESET_COORDS = {
+  'Barakpur, Kolkata': { lat: 22.76, lng: 88.37 },
+  'Park Street, Kolkata': { lat: 22.55, lng: 88.35 },
+  'Indiranagar, Bangalore': { lat: 12.978, lng: 77.640 },
+  'Koramangala, Bangalore': { lat: 12.935, lng: 77.624 },
+  'Bandra West, Mumbai': { lat: 19.060, lng: 72.833 },
+  'Connaught Place, Delhi': { lat: 28.631, lng: 77.219 }
+};
+
 function selectManualLocation(areaName) {
   userLocation.name = areaName;
+  if (PRESET_COORDS[areaName]) {
+    userLocation.lat = PRESET_COORDS[areaName].lat;
+    userLocation.lng = PRESET_COORDS[areaName].lng;
+    userLocation.isGeoLocated = true;
+  }
   const locDisplay = document.getElementById('current-location-text');
   if (locDisplay) locDisplay.textContent = areaName;
   updateRestaurantDistances(areaName);
+  updateRadarGoogleMap();
   closeLocationModal();
   soundBlip();
-  showToast(`Location set to ${areaName} 📍 Detours updated!`, "mint");
+  showToast(`Location set to ${areaName} 📍 Radar centered!`, "mint");
 }
 
 function handleCustomLocationSubmit() {
@@ -1305,7 +1323,59 @@ function finalizeOrderAndOpenTracking() {
   startTelemetrySimulation();
 }
 
+let currentRadarMapMode = 'roadmap';
+
+function updateRadarGoogleMap() {
+  const iframe = document.getElementById('radar-google-map-iframe');
+  const userLocBadge = document.getElementById('map-user-loc-badge');
+  const latLngBadge = document.getElementById('map-lat-lng-badge');
+
+  if (userLocBadge) {
+    userLocBadge.textContent = `🏠 You: ${userLocation.name}`;
+  }
+  if (latLngBadge && userLocation.lat && userLocation.lng) {
+    latLngBadge.textContent = `${userLocation.lat.toFixed(4)}° N, ${userLocation.lng.toFixed(4)}° E`;
+  }
+
+  if (iframe) {
+    const modeParam = currentRadarMapMode === 'satellite' ? '&t=k' : '';
+    const query = userLocation.lat && userLocation.lng 
+      ? `${userLocation.lat},${userLocation.lng}` 
+      : encodeURIComponent(userLocation.name || 'Barakpur, Kolkata');
+    const newSrc = `https://maps.google.com/maps?q=${query}${modeParam}&z=15&ie=UTF8&output=embed`;
+    if (iframe.src !== newSrc) {
+      iframe.src = newSrc;
+    }
+  }
+}
+
+function setRadarMapView(mode) {
+  currentRadarMapMode = mode;
+  const btnRoad = document.getElementById('map-btn-roadmap');
+  const btnSat = document.getElementById('map-btn-satellite');
+
+  if (mode === 'satellite') {
+    if (btnSat) btnSat.className = "px-2.5 py-1 rounded-lg bg-stone-900/90 backdrop-blur-md text-white text-[10px] font-mono font-bold border border-blue-400 shadow-sm transition-all";
+    if (btnRoad) btnRoad.className = "px-2.5 py-1 rounded-lg bg-stone-900/80 backdrop-blur-md text-stone-400 text-[10px] font-mono font-bold border border-stone-700 shadow-sm transition-all";
+  } else {
+    if (btnRoad) btnRoad.className = "px-2.5 py-1 rounded-lg bg-stone-900/90 backdrop-blur-md text-white text-[10px] font-mono font-bold border border-blue-400 shadow-sm transition-all";
+    if (btnSat) btnSat.className = "px-2.5 py-1 rounded-lg bg-stone-900/80 backdrop-blur-md text-stone-400 text-[10px] font-mono font-bold border border-stone-700 shadow-sm transition-all";
+  }
+  soundTabClick();
+  updateRadarGoogleMap();
+}
+
+function recenterRadarOnUserGps() {
+  soundBlip();
+  showToast("Re-locking GPS satellite telemetry...", "info");
+  initGeolocation().then(() => {
+    updateRadarGoogleMap();
+  });
+}
+
 function startRadarMap() {
+  updateRadarGoogleMap();
+
   const canvas = document.getElementById('radar-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -1315,24 +1385,33 @@ function startRadarMap() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
-    const radius = Math.min(centerX, centerY) - 15;
+    const radius = Math.min(centerX, centerY) - 20;
 
-    // Dark Radar Background
-    ctx.fillStyle = '#1A1D2B';
+    // Tactical Radar HUD Overlay over live Google Map
+    ctx.save();
+
+    // Outer Target Reticle Ring
+    ctx.strokeStyle = 'rgba(252, 128, 25, 0.75)';
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.stroke();
 
-    // Concentric Radar Range Rings
-    ctx.strokeStyle = '#2A3045';
-    ctx.lineWidth = 1.5;
-    [0.3, 0.6, 0.9].forEach(factor => {
+    // Concentric Range Rings with distance labels
+    ctx.strokeStyle = 'rgba(252, 128, 25, 0.3)';
+    ctx.lineWidth = 1;
+    [0.35, 0.65, 0.95].forEach((factor) => {
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius * factor, 0, Math.PI * 2);
       ctx.stroke();
+
+      ctx.fillStyle = 'rgba(252, 128, 25, 0.75)';
+      ctx.font = '9px monospace';
+      ctx.fillText(`${(factor * 1.5).toFixed(1)} km`, centerX + 4, centerY - radius * factor + 11);
     });
 
     // Crosshairs
+    ctx.strokeStyle = 'rgba(252, 128, 25, 0.35)';
     ctx.beginPath();
     ctx.moveTo(centerX - radius, centerY);
     ctx.lineTo(centerX + radius, centerY);
@@ -1340,13 +1419,13 @@ function startRadarMap() {
     ctx.lineTo(centerX, centerY + radius);
     ctx.stroke();
 
-    // Rotating Radar Sweep Line
+    // Rotating Radar Sweep Line with conical glow
     ctx.save();
     ctx.translate(centerX, centerY);
     ctx.rotate(angle);
 
     const gradient = ctx.createLinearGradient(0, 0, radius, 0);
-    gradient.addColorStop(0, 'rgba(252, 128, 25, 0.4)');
+    gradient.addColorStop(0, 'rgba(252, 128, 25, 0.45)');
     gradient.addColorStop(1, 'rgba(252, 128, 25, 0)');
     ctx.fillStyle = gradient;
 
@@ -1364,21 +1443,55 @@ function startRadarMap() {
     ctx.stroke();
     ctx.restore();
 
-    // Blip 1: Sharma Ji (Stationary at Tea Stall)
-    const riderX = centerX + 45;
-    const riderY = centerY - 30;
+    // Blip 1: Sharma Ji (Stationary at Roadside Tea Stall)
+    const riderX = centerX + 60;
+    const riderY = centerY - 45;
+
+    const pulseRadius = 7 + Math.sin(Date.now() / 250) * 3;
+    ctx.fillStyle = 'rgba(252, 128, 25, 0.35)';
+    ctx.beginPath();
+    ctx.arc(riderX, riderY, pulseRadius + 4, 0, Math.PI * 2);
+    ctx.fill();
+
     ctx.fillStyle = '#FC8019';
     ctx.beginPath();
     ctx.arc(riderX, riderY, 6, 0, Math.PI * 2);
     ctx.fill();
 
-    // Blip 2: User Location (Home)
-    const userX = centerX - 60;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 10px monospace';
+    ctx.fillText('🛵 SHARMA JI (CHAI #4)', riderX + 10, riderY + 4);
+
+    // Blip 2: User Location (Home / GPS)
+    const userX = centerX - 45;
     const userY = centerY + 40;
+
+    const userPulseRadius = 7 + Math.cos(Date.now() / 250) * 3;
+    ctx.fillStyle = 'rgba(10, 133, 234, 0.35)';
+    ctx.beginPath();
+    ctx.arc(userX, userY, userPulseRadius + 4, 0, Math.PI * 2);
+    ctx.fill();
+
     ctx.fillStyle = '#0A85EA';
     ctx.beginPath();
     ctx.arc(userX, userY, 6, 0, Math.PI * 2);
     ctx.fill();
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 10px monospace';
+    ctx.fillText('🏠 YOUR LOCATION', userX + 10, userY + 4);
+
+    // Connecting dashed detour route
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = 'rgba(252, 128, 25, 0.6)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(userX, userY);
+    ctx.lineTo(riderX, riderY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.restore();
 
     angle += 0.035;
     radarAnimationId = requestAnimationFrame(drawRadar);
