@@ -1175,12 +1175,12 @@
                 <span id="track-main-title">Rider is just 2.3 kms away from your house</span>
               </h2>
               <p class="text-xs text-swiggy-muted font-medium mt-1">
-                Estimated Delivery: <strong class="text-swiggy-orange font-bold font-mono">Never (&infin; mins)</strong> &bull; Stationary at Sharma Tea Stall
+                Estimated Delivery: <strong class="text-swiggy-orange font-bold font-mono">Never (&infin; mins)</strong> &bull; <span id="track-sub-status">Stationary at Sharma Tea Stall</span>
               </p>
             </div>
             
             <div class="text-right shrink-0">
-              <span class="px-3 py-1.5 rounded-2xl bg-amber-100 text-amber-900 font-mono text-xs font-black border border-amber-200 shadow-xs block">
+              <span class="px-3 py-1.5 rounded-2xl bg-amber-100 text-amber-900 font-mono text-xs font-black border border-amber-200 shadow-xs block" id="track-distance-pill">
                 2.3 KM AWAY
               </span>
               <span class="text-[10px] text-stone-400 font-mono mt-0.5 block">Speed: 0.00 km/h</span>
@@ -1202,7 +1202,7 @@
             <div class="space-y-1">
               <div class="w-7 h-7 rounded-full bg-swiggy-orange text-white mx-auto flex items-center justify-center text-xs font-bold shadow-xs anim-pulse">☕</div>
               <div class="text-[10px] font-display font-bold text-swiggy-orange">Chai Break</div>
-              <div class="text-[9px] font-mono text-swiggy-orange font-bold">2.3 km away</div>
+              <div class="text-[9px] font-mono text-swiggy-orange font-bold" id="track-step3-distance">2.3 km away</div>
             </div>
             <div class="space-y-1">
               <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center text-xs font-bold shadow-xs">🎉</div>
@@ -1226,7 +1226,7 @@
 
             <!-- Floating Route Location Badges -->
             <div class="absolute top-3 left-3 z-10 flex flex-col gap-1.5 pointer-events-auto max-w-[85%]">
-              <span class="px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-md text-stone-900 text-xs font-display font-bold border border-stone-200 shadow-md flex items-center gap-2">
+              <span class="px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-md text-stone-900 text-xs font-display font-bold border border-stone-200 shadow-md flex items-center gap-2" id="map-rider-badge">
                 <span class="w-2.5 h-2.5 rounded-full bg-swiggy-orange anim-pulse"></span>
                 <span>🛵 <strong>Rider Sharma Ji:</strong> Stationary at Roadside Tea Stall (2.3 km away)</span>
               </span>
@@ -1258,15 +1258,15 @@
               </div>
               <div class="min-w-0">
                 <div class="flex items-center gap-2">
-                  <h4 class="font-display font-extrabold text-sm text-swiggy-dark">Sharma Ji</h4>
-                  <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">
+                  <h4 class="font-display font-extrabold text-sm text-swiggy-dark" id="rider-name-display">Sharma Ji</h4>
+                  <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold" id="rider-rating-display">
                     4.9 ★ (2,400+ skipped)
                   </span>
                 </div>
                 <p class="text-xs text-swiggy-muted">
-                  Vehicle: <strong class="text-stone-700 font-mono">Honda Activa (WB-24-CHAI-007)</strong>
+                  Vehicle: <strong class="text-stone-700 font-mono" id="rider-vehicle-display">Honda Activa (WB-24-CHAI-007)</strong>
                 </p>
-                <p class="text-[11px] text-amber-800 font-medium">
+                <p class="text-[11px] text-amber-800 font-medium" id="rider-status-display">
                   ☕ Savoring cutting chai #4 at roadside stall • Samosa in hand
                 </p>
               </div>
@@ -1274,11 +1274,11 @@
 
             <!-- Call & Message Partner Action Buttons -->
             <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
-              <button type="button" onclick="callRiderSharmaJi()" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-white hover:bg-stone-100 border border-stone-300 text-xs font-display font-bold text-swiggy-dark flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95">
+              <button type="button" onclick="callRiderPartner()" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-white hover:bg-stone-100 border border-stone-300 text-xs font-display font-bold text-swiggy-dark flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95">
                 <span>📞</span>
                 <span>Call Partner</span>
               </button>
-              <button type="button" onclick="messageRiderSharmaJi()" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-swiggy-orange hover:bg-swiggy-orangeHover text-white text-xs font-display font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95">
+              <button type="button" onclick="messageRiderPartner()" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-swiggy-orange hover:bg-swiggy-orangeHover text-white text-xs font-display font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95">
                 <span>💬</span>
                 <span>Message</span>
               </button>
@@ -1317,8 +1317,8 @@
             </div>
             <div class="relative">
               <span class="absolute -left-[31px] top-0 w-6 h-6 rounded-full bg-swiggy-orange text-white flex items-center justify-center text-xs font-bold shadow-xs anim-pulse">☕</span>
-              <h4 class="text-xs font-display font-bold text-swiggy-orange">Rider Sharma Ji Savoring Chai #4</h4>
-              <p class="text-[11px] text-swiggy-muted">GPS verified stationary at roadside tea stall. No rush whatsoever.</p>
+              <h4 class="text-xs font-display font-bold text-swiggy-orange" id="milestone-rider-title">Rider Sharma Ji Savoring Chai #4</h4>
+              <p class="text-[11px] text-swiggy-muted" id="milestone-rider-desc">GPS verified stationary at roadside tea stall. No rush whatsoever.</p>
             </div>
           </div>
         </div>
@@ -1873,118 +1873,595 @@
 
   <!-- Application Scripts -->
   <script>
-/* Food Never Comes (FNC) — Real Local Restaurants (Google Maps Extracted), Menus & 1,000+ Leaderboard Engine */
+/* Food Never Comes (FNC) — Real Local Restaurants by City, Authentic Menus, Randomized Riders & Leaderboard Engine */
 
-const RESTAURANTS = [
+/* Geodesic Distance Calculation (Haversine Formula in Kilometers) */
+function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return 2.3;
+  const R = 6371; // Earth radius in km
+  const dLat = (Number(lat2) - Number(lat1)) * Math.PI / 180;
+  const dLon = (Number(lon2) - Number(lon1)) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(Number(lat1) * Math.PI / 180) * Math.cos(Number(lat2) * Math.PI / 180) * 
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+/* Authentic Regional Restaurant Database */
+const CITY_RESTAURANTS = {
+  kolkata: [
+    {
+      id: 'rest-kol-1',
+      name: 'Dada Boudi Biryani (Barrackpore)',
+      cuisine: 'Kolkata Biryani, Mughlai, Mutton Chaap',
+      area: '1, Ghoshpara Road, Barrackpore, Kolkata',
+      lat: 22.7630,
+      lng: 88.3685,
+      rating: '4.9',
+      ratingCount: '48k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=80',
+      tag: 'Legendary Barrackpore Biryani'
+    },
+    {
+      id: 'rest-kol-2',
+      name: 'Aminia (Barrackpore)',
+      cuisine: 'Awadhi, Lahori Chicken, Mutton Biryani',
+      area: 'SN Banerjee Road, near Great Eastern, Barrackpore',
+      lat: 22.7605,
+      lng: 88.3712,
+      rating: '4.7',
+      ratingCount: '21k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=800&auto=format&fit=crop&q=80',
+      tag: 'Since 1929 Awadhi Legacy'
+    },
+    {
+      id: 'rest-kol-3',
+      name: 'Arsalan (Park Circus)',
+      cuisine: 'Mughlai, Awadhi, Mutton Rezala, Kebabs',
+      area: '28, Circus Avenue, 7-Point Crossing, Kolkata',
+      lat: 22.5412,
+      lng: 88.3653,
+      rating: '4.8',
+      ratingCount: '52k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=800&auto=format&fit=crop&q=80',
+      tag: 'Kolkata Biryani Landmark'
+    },
+    {
+      id: 'rest-kol-4',
+      name: 'Peter Cat (Park Street)',
+      cuisine: 'Chelo Kebabs, Continental Sizzlers, Mughlai',
+      area: '18A, Stephen Court, Park Street, Kolkata',
+      lat: 22.5516,
+      lng: 88.3524,
+      rating: '4.9',
+      ratingCount: '38k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&auto=format&fit=crop&q=80',
+      tag: 'Iconic Chelo Kebab Heritage'
+    },
+    {
+      id: 'rest-kol-5',
+      name: 'Mocambo (Park Street)',
+      cuisine: 'Continental, Devilled Crab, Chicken Tetrazzini',
+      area: '25B, Park Street, Kolkata',
+      lat: 22.5519,
+      lng: 88.3527,
+      rating: '4.8',
+      ratingCount: '29k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80',
+      tag: 'Colonial Fine Dining Classic'
+    },
+    {
+      id: 'rest-kol-6',
+      name: 'Shiraz Golden Restaurant',
+      cuisine: 'Shiraz Mutton Biryani, Pasinda, Chicken Bharta',
+      area: '135, Park Street / Mullick Bazar, Kolkata',
+      lat: 22.5448,
+      lng: 88.3601,
+      rating: '4.8',
+      ratingCount: '27k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=800&auto=format&fit=crop&q=80',
+      tag: 'Golden Era Mughlai Tradition'
+    },
+    {
+      id: 'rest-kol-7',
+      name: 'Oudh 1590 (Period Dining)',
+      cuisine: 'Awadhi Handi Biryani, Raan Biryani, Galawati',
+      area: 'Salt Lake Sector 1 / Deshapriya Park, Kolkata',
+      lat: 22.5855,
+      lng: 88.4110,
+      rating: '4.8',
+      ratingCount: '26k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=800&auto=format&fit=crop&q=80',
+      tag: 'Authentic Nawabi Feast'
+    },
+    {
+      id: 'rest-kol-8',
+      name: 'Chowman (Kolkata Chinese)',
+      cuisine: 'Kolkata Chilli Chicken, Hakka Noodles, Dimsums',
+      area: 'Salt Lake / Ballygunge, Kolkata',
+      lat: 22.5840,
+      lng: 88.4150,
+      rating: '4.7',
+      ratingCount: '19k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=800&auto=format&fit=crop&q=80',
+      tag: 'Tangra-Style Indo-Chinese'
+    },
+    {
+      id: 'rest-kol-9',
+      name: 'Balaram Mullick & Radharaman Mullick',
+      cuisine: 'Baked Rosogolla, Mishti Doi, Nolen Gur Sandesh',
+      area: '2, Paddapukur Road, Bhowanipore, Kolkata',
+      lat: 22.5320,
+      lng: 88.3490,
+      rating: '4.9',
+      ratingCount: '34k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1599785209707-a456fc1337bb?w=800&auto=format&fit=crop&q=80',
+      tag: 'Heritage Bengal Sweetmakers Since 1885'
+    },
+    {
+      id: 'rest-kol-10',
+      name: 'Flurys (Park Street)',
+      cuisine: 'Rum Balls, Heritage Pastries, English Breakfast',
+      area: '18, Park Street, Kolkata',
+      lat: 22.5515,
+      lng: 88.3523,
+      rating: '4.7',
+      ratingCount: '31k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&auto=format&fit=crop&q=80',
+      tag: 'Legendary Tearoom Since 1927'
+    }
+  ],
+  bangalore: [
+    {
+      id: 'rest-blr-1',
+      name: 'Meghana Foods (Koramangala)',
+      cuisine: 'Andhra Biryani, Chicken 65, Paneer Biryani',
+      area: '1st Block, Koramangala, Bangalore',
+      lat: 12.9345,
+      lng: 77.6242,
+      rating: '4.8',
+      ratingCount: '62k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=80',
+      tag: 'Bangalore Biryani Sensation'
+    },
+    {
+      id: 'rest-blr-2',
+      name: 'Truffles (Koramangala)',
+      cuisine: 'All-American Burgers, Steaks, Peri Peri Pasta',
+      area: '5th Block, Koramangala, Bangalore',
+      lat: 12.9338,
+      lng: 77.6231,
+      rating: '4.7',
+      ratingCount: '58k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&auto=format&fit=crop&q=80',
+      tag: 'Iconic Burger Mecca'
+    },
+    {
+      id: 'rest-blr-3',
+      name: 'Toit Brewpub & Kitchen (Indiranagar)',
+      cuisine: 'Woodfired Pizzas, Brew Bites, BBQ Chicken',
+      area: '100 Feet Road, Indiranagar, Bangalore',
+      lat: 12.9793,
+      lng: 77.6406,
+      rating: '4.8',
+      ratingCount: '45k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80',
+      tag: 'Legendary Craft & Bites'
+    },
+    {
+      id: 'rest-blr-4',
+      name: 'Empire Restaurant (Indiranagar)',
+      cuisine: 'Empire Special Chicken Kebab, Ghee Rice, Grill',
+      area: 'CMH Road / 80 Feet Road, Indiranagar, Bangalore',
+      lat: 12.9785,
+      lng: 77.6395,
+      rating: '4.6',
+      ratingCount: '39k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=800&auto=format&fit=crop&q=80',
+      tag: 'Taste of Bengaluru Late Night'
+    },
+    {
+      id: 'rest-blr-5',
+      name: 'Nagarjuna (Residency Road)',
+      cuisine: 'Traditional Andhra Meals, Chilli Chicken, Sholay',
+      area: 'Residency Road, Ashok Nagar, Bangalore',
+      lat: 12.9734,
+      lng: 77.6074,
+      rating: '4.7',
+      ratingCount: '35k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=800&auto=format&fit=crop&q=80',
+      tag: 'Fiery Andhra Tradition Since 1984'
+    },
+    {
+      id: 'rest-blr-6',
+      name: 'Vidyarthi Bhavan (Gandhi Bazaar)',
+      cuisine: 'Crispy Benne Masala Dosa, Filter Coffee, Vada',
+      area: 'Gandhi Bazaar Main Road, Basavanagudi, Bangalore',
+      lat: 12.9448,
+      lng: 77.5701,
+      rating: '4.9',
+      ratingCount: '75k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      tag: 'Heritage Dosa Legend Since 1943'
+    },
+    {
+      id: 'rest-blr-7',
+      name: 'CTR - Shri Sagar (Malleshwaram)',
+      cuisine: 'Benne Dosa, Mangalore Bajji, Filter Kaapi',
+      area: '7th Cross, Margosa Road, Malleshwaram, Bangalore',
+      lat: 13.0031,
+      lng: 77.5714,
+      rating: '4.8',
+      ratingCount: '48k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      tag: 'Golden Crispy Butter Dosa'
+    },
+    {
+      id: 'rest-blr-8',
+      name: 'MTR - Mavalli Tiffin Room (Lalbagh)',
+      cuisine: 'Rava Idli, Bisibelebath, Pure Ghee Sweets',
+      area: '14, Lalbagh Road, Mavalli, Bangalore',
+      lat: 12.9554,
+      lng: 77.5861,
+      rating: '4.8',
+      ratingCount: '68k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      tag: 'Original Inventor of Rava Idli 1924'
+    },
+    {
+      id: 'rest-blr-9',
+      name: 'Corner House Ice Cream (Koramangala)',
+      cuisine: 'Death By Chocolate (DBC), Hot Chocolate Fudge',
+      area: '1st Block / 5th Block, Koramangala, Bangalore',
+      lat: 12.9351,
+      lng: 77.6225,
+      rating: '4.9',
+      ratingCount: '54k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&auto=format&fit=crop&q=80',
+      tag: 'Iconic DBC Sundae Destination'
+    },
+    {
+      id: 'rest-blr-10',
+      name: "Glen's Bakehouse (Indiranagar)",
+      cuisine: 'Red Velvet Cupcakes, Cheesecakes, Sourdough',
+      area: 'Lavelle Road / Indiranagar, Bangalore',
+      lat: 12.9719,
+      lng: 77.6412,
+      rating: '4.7',
+      ratingCount: '31k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&auto=format&fit=crop&q=80',
+      tag: 'Artisan Bakery & Desserts'
+    }
+  ],
+  mumbai: [
+    {
+      id: 'rest-mum-1',
+      name: 'Bastian (Bandra West)',
+      cuisine: 'Gourmet Seafood, Lobster Rolls, Cheesecakes',
+      area: 'Linking Road, Bandra West, Mumbai',
+      lat: 19.0601,
+      lng: 72.8338,
+      rating: '4.8',
+      ratingCount: '32k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80',
+      tag: 'Celebrity Seafood & Brunch'
+    },
+    {
+      id: 'rest-mum-2',
+      name: 'Bademiya (Colaba)',
+      cuisine: 'Mutton Seekh Kebab, Baida Roti, Chicken Roll',
+      area: 'Tulloch Road, Apollo Bandar, Colaba, Mumbai',
+      lat: 18.9220,
+      lng: 72.8335,
+      rating: '4.7',
+      ratingCount: '55k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=800&auto=format&fit=crop&q=80',
+      tag: 'Midnight Kebab Haven Since 1946'
+    },
+    {
+      id: 'rest-mum-3',
+      name: 'Sardar Pav Bhaji (Tardeo)',
+      cuisine: 'Extra Butter Amul Pav Bhaji, Cheese Pav Bhaji',
+      area: '166, Tardeo Road, Junction, Mumbai',
+      lat: 18.9696,
+      lng: 72.8164,
+      rating: '4.6',
+      ratingCount: '48k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=800&auto=format&fit=crop&q=80',
+      tag: 'Swimming in Butter Since 1966'
+    },
+    {
+      id: 'rest-mum-4',
+      name: 'Britannia & Co. (Ballard Estate)',
+      cuisine: 'Berry Pulao, Sali Boti, Caramel Custard',
+      area: 'Wakefield House, Ballard Estate, Fort, Mumbai',
+      lat: 18.9372,
+      lng: 72.8391,
+      rating: '4.8',
+      ratingCount: '28k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=80',
+      tag: 'Legendary Parsi Heritage Cafe'
+    },
+    {
+      id: 'rest-mum-5',
+      name: 'Leopold Cafe (Colaba)',
+      cuisine: 'Irani Chai, Roast Chicken, Draught Beer Bites',
+      area: 'Colaba Causeway, Apollo Bandar, Mumbai',
+      lat: 18.9226,
+      lng: 72.8317,
+      rating: '4.7',
+      ratingCount: '44k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&auto=format&fit=crop&q=80',
+      tag: 'World-Famous Historic Landmark 1871'
+    },
+    {
+      id: 'rest-mum-6',
+      name: "Joey's Pizza (Andheri West)",
+      cuisine: 'Meat Craver Pizza, Tornado Pizza, Garlic Bread',
+      area: '6&7, Upvan Building, DN Nagar, Andheri West, Mumbai',
+      lat: 19.1298,
+      lng: 72.8310,
+      rating: '4.9',
+      ratingCount: '41k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80',
+      tag: 'Mumbai Cult Favorite Deep Dish Pizza'
+    },
+    {
+      id: 'rest-mum-7',
+      name: 'Kyani & Co. (Marine Lines)',
+      cuisine: 'Bun Maska, Mutton Pattice, Irani Chai, Akuri',
+      area: 'Jermahal Estate, JSS Road, Marine Lines, Mumbai',
+      lat: 18.9432,
+      lng: 72.8277,
+      rating: '4.8',
+      ratingCount: '31k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      tag: 'Oldest Surviving Parsi Cafe 1904'
+    },
+    {
+      id: 'rest-mum-8',
+      name: 'Gajalee Seafood (Vile Parle)',
+      cuisine: 'Bombil Fry, Butter Garlic Crab, Fish Thali',
+      area: 'Hanuman Road, Vile Parle East, Mumbai',
+      lat: 19.1028,
+      lng: 72.8524,
+      rating: '4.8',
+      ratingCount: '26k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80',
+      tag: 'Coastal Malvani Seafood Excellence'
+    },
+    {
+      id: 'rest-mum-9',
+      name: 'Lucky Restaurant (Bandra West)',
+      cuisine: 'Mumbai Dum Biryani, Mutton Chaap, Caramel Custard',
+      area: 'SV Road & Hill Road Junction, Bandra West, Mumbai',
+      lat: 19.0560,
+      lng: 72.8390,
+      rating: '4.7',
+      ratingCount: '36k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=80',
+      tag: 'Bandra Biryani Institution Since 1938'
+    },
+    {
+      id: 'rest-mum-10',
+      name: 'Theobroma Patisserie (Bandra / Colaba)',
+      cuisine: 'Overload Brownie, Millionaire Brownie, Tarts',
+      area: 'Cusrow Baug, Colaba / Pali Hill, Bandra, Mumbai',
+      lat: 19.0550,
+      lng: 72.8300,
+      rating: '4.9',
+      ratingCount: '49k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&auto=format&fit=crop&q=80',
+      tag: 'Home of the Original Mumbai Brownie'
+    }
+  ],
+  delhi: [
+    {
+      id: 'rest-del-1',
+      name: "Karim's (Jama Masjid)",
+      cuisine: 'Mutton Korma, Seekh Kebab, Mutton Burra, Sheermal',
+      area: 'Gali Kababian, Jama Masjid, Old Delhi',
+      lat: 28.6508,
+      lng: 77.2334,
+      rating: '4.8',
+      ratingCount: '78k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=800&auto=format&fit=crop&q=80',
+      tag: 'Royal Mughlai Heritage Since 1913'
+    },
+    {
+      id: 'rest-del-2',
+      name: 'Gulati Restaurant (Pandara Road)',
+      cuisine: 'Butter Chicken, Dal Makhani, Kakori Kebab',
+      area: '6, Pandara Road Market, New Delhi',
+      lat: 28.6062,
+      lng: 77.2341,
+      rating: '4.9',
+      ratingCount: '65k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=800&auto=format&fit=crop&q=80',
+      tag: 'Capital Butter Chicken Benchmark'
+    },
+    {
+      id: 'rest-del-3',
+      name: 'Kake Da Dhaba (Connaught Place)',
+      cuisine: 'Dahi Meat, Kadhai Chicken, Keema Naan',
+      area: 'Connaught Circus, Outer Circle, CP, New Delhi',
+      lat: 28.6328,
+      lng: 77.2201,
+      rating: '4.7',
+      ratingCount: '42k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=80',
+      tag: 'Hearty Punjabi Dhaba Legend 1931'
+    },
+    {
+      id: 'rest-del-4',
+      name: 'Saravana Bhavan (Connaught Place)',
+      cuisine: 'Ghee Roast Dosa, Mini Idli Sambhar, Filter Coffee',
+      area: 'P-13, Connaught Circus / Janpath, New Delhi',
+      lat: 28.6292,
+      lng: 77.2185,
+      rating: '4.8',
+      ratingCount: '51k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      tag: 'Pure South Indian Vegetarian Gold'
+    },
+    {
+      id: 'rest-del-5',
+      name: 'Moti Mahal (Daryaganj)',
+      cuisine: 'Original Butter Chicken, Tandoori Murgh, Burra',
+      area: '3703, Netaji Subhash Marg, Daryaganj, New Delhi',
+      lat: 28.6443,
+      lng: 77.2410,
+      rating: '4.7',
+      ratingCount: '38k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=800&auto=format&fit=crop&q=80',
+      tag: 'Birthplace of Butter Chicken 1947'
+    },
+    {
+      id: 'rest-del-6',
+      name: "Wenger's Deli & Bakery (Connaught Place)",
+      cuisine: 'Shamia Kebab, Chicken Patties, Chocolate Mousse',
+      area: 'A-16, Inner Circle, Connaught Place, New Delhi',
+      lat: 28.6331,
+      lng: 77.2195,
+      rating: '4.9',
+      ratingCount: '47k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&auto=format&fit=crop&q=80',
+      tag: 'Oldest Confectionery in Delhi 1926'
+    },
+    {
+      id: 'rest-del-7',
+      name: 'Bukhara (ITC Maurya)',
+      cuisine: 'Dal Bukhara (18-hr slow cook), Sikandari Raan',
+      area: 'Diplomatic Enclave, Sadar Patel Marg, New Delhi',
+      lat: 28.5975,
+      lng: 77.1738,
+      rating: '4.9',
+      ratingCount: '29k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&auto=format&fit=crop&q=80',
+      tag: 'World-Renowned Clay Oven Royalty'
+    },
+    {
+      id: 'rest-del-8',
+      name: 'Rajinder Da Dhaba (Safdarjung)',
+      cuisine: 'Galouti Kebab, Tawa Mutton, Malai Tikka',
+      area: 'AB-6, Safdarjung Enclave Market, New Delhi',
+      lat: 28.5670,
+      lng: 77.1990,
+      rating: '4.8',
+      ratingCount: '58k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=800&auto=format&fit=crop&q=80',
+      tag: 'South Delhi Street Meat Sensation'
+    },
+    {
+      id: 'rest-del-9',
+      name: 'Andhra Bhavan Canteen (Ashoka Road)',
+      cuisine: 'Unlimited South Indian Thali, Mutton Fry, Biryani',
+      area: '1, Ashoka Road, Feroze Shah Road, New Delhi',
+      lat: 28.6180,
+      lng: 77.2245,
+      rating: '4.8',
+      ratingCount: '49k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=800&auto=format&fit=crop&q=80',
+      tag: 'Capital Cult Thali Destination'
+    },
+    {
+      id: 'rest-del-10',
+      name: 'Natraj Dahi Bhalle Corner (Chandni Chowk)',
+      cuisine: 'Dahi Bhalla, Aloo Tikki with Piquant Chutney',
+      area: '1396, Main Road, Chandni Chowk, Old Delhi',
+      lat: 28.6570,
+      lng: 77.2305,
+      rating: '4.7',
+      ratingCount: '34k+ Google Reviews',
+      image: 'https://images.unsplash.com/photo-1599785209707-a456fc1337bb?w=800&auto=format&fit=crop&q=80',
+      tag: 'Old Delhi Chaat Legend Since 1940'
+    }
+  ]
+};
+
+/* Randomized Delivery Rider Partners Pool */
+const DELIVERY_RIDERS = [
   {
-    id: 'rest-1',
-    name: 'Dada Boudi Biryani (Barrackpore)',
-    cuisine: 'Kolkata Biryani, Mughlai, Mutton Chaap',
-    area: '1, Ghoshpara Road, Barrackpore',
-    distance: '0.8 km (Rider Stalled at Station)',
-    rating: '4.9',
-    ratingCount: '48k+ Google Reviews',
-    image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=80',
-    tag: 'Legendary Barrackpore Biryani'
+    name: "Sharma Ji",
+    rating: "4.9 ★",
+    skips: "2,400+ skipped",
+    vehicle: "Honda Activa (WB-24-CHAI-007)",
+    phone: "+91 98749 58471",
+    statusText: "☕ Savoring cutting chai #4 at roadside stall • Samosa in hand",
+    callReply: "Haan bhai, cutting chai pe raha hoon, bilkul deliver nahi hoga! Araam se raho.",
+    messageReply: "Sharma Ji acknowledged: 'Order safe, food untouched, 0 calories delivered!'"
   },
   {
-    id: 'rest-2',
-    name: 'Arsalan (Park Circus)',
-    cuisine: 'Mughlai, Awadhi, Mutton Rezala, Kebabs',
-    area: '28, Circus Avenue, 7-Point Crossing, Kolkata',
-    distance: '3.4 km (Permanent Chai Break)',
-    rating: '4.8',
-    ratingCount: '52k+ Google Reviews',
-    image: 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=800&auto=format&fit=crop&q=80',
-    tag: 'Kolkata Biryani Landmark'
+    name: "Ramesh Kumar",
+    rating: "4.8 ★",
+    skips: "3,120+ skipped",
+    vehicle: "Hero Splendor (KA-05-CHILL-420)",
+    phone: "+91 98451 88234",
+    statusText: "🏏 Watching India vs Australia test match replay at pan shop",
+    callReply: "Sir, last over chal raha hai! Deliver karna cancel samjho.",
+    messageReply: "Ramesh Kumar: 'Match khatam hone tak scooter start nahi hoga, zero tension!'"
   },
   {
-    id: 'rest-3',
-    name: 'Peter Cat (Park Street)',
-    cuisine: 'Chelo Kebabs, Continental Sizzlers, Mughlai',
-    area: '18A, Stephen Court, Park Street, Kolkata',
-    distance: '4.2 km (Zero Ovens Fired)',
-    rating: '4.9',
-    ratingCount: '38k+ Google Reviews',
-    image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&auto=format&fit=crop&q=80',
-    tag: 'Iconic Chelo Kebab Heritage'
+    name: "Manoj Tiwari",
+    rating: "4.9 ★",
+    skips: "1,890+ skipped",
+    vehicle: "Bajaj Pulsar (MH-12-GHOST-99)",
+    phone: "+91 98203 55412",
+    statusText: "🗣️ In deep philosophical debate about why biryani has potato",
+    callReply: "Bhaiya aalu biryani ka mudda solve ho jaye pehle, phir baat karte hain!",
+    messageReply: "Manoj Tiwari: 'Philosophy over calories, delivery safely neutralized!'"
   },
   {
-    id: 'rest-4',
-    name: 'Aminia (Barrackpore)',
-    cuisine: 'Awadhi, Lahori Chicken, Mutton Biryani',
-    area: 'SN Banerjee Road, near Great Eastern, Barrackpore',
-    distance: '1.1 km (Rider Stalled at Tea Bench)',
-    rating: '4.7',
-    ratingCount: '21k+ Google Reviews',
-    image: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=800&auto=format&fit=crop&q=80',
-    tag: 'Since 1929 Awadhi Legacy'
+    name: "Bunty Singh",
+    rating: "5.0 ★",
+    skips: "4,250+ skipped",
+    vehicle: "Royal Enfield Bullet (DL-03-DETOUR-777)",
+    phone: "+91 98114 99012",
+    statusText: "😴 Taking 45-minute power nap on his parked scooter seat",
+    callReply: "Zzzz... Bunty here... zero calories delivered... go back to sleep... zzzz",
+    messageReply: "Bunty Singh: 'Nap in progress. Zero calories delivered successfully.'"
   },
   {
-    id: 'rest-5',
-    name: 'Mocambo (Park Street)',
-    cuisine: 'Continental, Devilled Crab, Chicken Tetrazzini',
-    area: '25B, Park Street, Kolkata',
-    distance: '4.5 km (No Rush Protocol)',
-    rating: '4.8',
-    ratingCount: '29k+ Google Reviews',
-    image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80',
-    tag: 'Colonial Fine Dining Classic'
+    name: "Subhash Da",
+    rating: "4.9 ★",
+    skips: "3,800+ skipped",
+    vehicle: "TVS Jupiter (WB-02-LAZY-333)",
+    phone: "+91 98308 12765",
+    statusText: "🍬 Savoring hot mishti and rabri with zero rush protocol",
+    callReply: "Arey dada, mishti khachhi! Ekhon delivery hobe na, calorie bachiye dilam!",
+    messageReply: "Subhash Da: 'Mishti devoured by rider, calories spared for patron!'"
   },
   {
-    id: 'rest-6',
-    name: 'Oudh 1590 (Period Dining)',
-    cuisine: 'Awadhi Handi Biryani, Raan Biryani, Galawati',
-    area: 'Salt Lake Sector 1 / Deshapriya Park, Kolkata',
-    distance: '5.1 km (Dum Intercepted)',
-    rating: '4.8',
-    ratingCount: '26k+ Google Reviews',
-    image: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=800&auto=format&fit=crop&q=80',
-    tag: 'Authentic Nawabi Feast'
+    name: "Pradeep Bhai",
+    rating: "4.8 ★",
+    skips: "2,980+ skipped",
+    vehicle: "Honda Dio (KA-01-STOP-108)",
+    phone: "+91 99002 67431",
+    statusText: "⛽ Refueling ₹50 petrol & discussing budget with pump attendant",
+    callReply: "Boss, petrol daal raha hoon aur rate pe charcha chal rahi hai. Nahi aa raha!",
+    messageReply: "Pradeep Bhai: 'Fuel talks ongoing. Enjoy your guilt-free meal!'"
   },
   {
-    id: 'rest-7',
-    name: 'Chowman (Kolkata Chinese)',
-    cuisine: 'Kolkata Chilli Chicken, Hakka Noodles, Dimsums',
-    area: 'Salt Lake / Ballygunge, Kolkata',
-    distance: '3.9 km (Wok Cold & Safe)',
-    rating: '4.7',
-    ratingCount: '19k+ Google Reviews',
-    image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=800&auto=format&fit=crop&q=80',
-    tag: 'Tangra-Style Indo-Chinese'
+    name: "Vikram Rathore",
+    rating: "4.9 ★",
+    skips: "2,150+ skipped",
+    vehicle: "Hero Glamour (DL-08-REST-555)",
+    phone: "+91 98711 34980",
+    statusText: "🚦 Waiting at red light that has been red since 2021",
+    callReply: "Bhai red signal kab green hoga pata nahi, aap fitness enjoy karo!",
+    messageReply: "Vikram Rathore: 'Signal still red. Calories permanently halted.'"
   },
   {
-    id: 'rest-8',
-    name: 'Balaram Mullick & Radharaman Mullick',
-    cuisine: 'Baked Rosogolla, Mishti Doi, Nolen Gur Sandesh',
-    area: '2, Paddapukur Road, Bhowanipore, Kolkata',
-    distance: '4.8 km (Zero Sugar In Blood)',
-    rating: '4.9',
-    ratingCount: '34k+ Google Reviews',
-    image: 'https://images.unsplash.com/photo-1599785209707-a456fc1337bb?w=800&auto=format&fit=crop&q=80',
-    tag: 'Heritage Bengal Sweetmakers Since 1885'
-  },
-  {
-    id: 'rest-9',
-    name: 'Flurys (Park Street)',
-    cuisine: 'Rum Balls, Heritage Pastries, English Breakfast',
-    area: '18, Park Street, Kolkata',
-    distance: '4.1 km (Tearoom Intercept)',
-    rating: '4.7',
-    ratingCount: '31k+ Google Reviews',
-    image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&auto=format&fit=crop&q=80',
-    tag: 'Legendary Tearoom Since 1927'
-  },
-  {
-    id: 'rest-10',
-    name: 'Shiraz Golden Restaurant',
-    cuisine: 'Shiraz Mutton Biryani, Pasinda, Chicken Bharta',
-    area: '135, Park Street / Mullick Bazar, Kolkata',
-    distance: '3.6 km (Rider Ground Zero)',
-    rating: '4.8',
-    ratingCount: '27k+ Google Reviews',
-    image: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=800&auto=format&fit=crop&q=80',
-    tag: 'Golden Era Mughlai Tradition'
+    name: "Abdul Sheikh",
+    rating: "5.0 ★",
+    skips: "3,640+ skipped",
+    vehicle: "Suzuki Access (MH-01-CHAI-888)",
+    phone: "+91 98920 44319",
+    statusText: "🥪 Eating bun maska with Irani chai at corner bakery",
+    callReply: "Maska bun garam hai sir, delivery cold ho chuki hai. No worry!",
+    messageReply: "Abdul Sheikh: 'Irani chai session on. Your weight remains intact!'"
   }
 ];
 
@@ -2013,10 +2490,9 @@ const DISH_IMAGE_POOL = [
   'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=800&auto=format&fit=crop&q=80'  // Kolkata Kathi Kebab Roll
 ];
 
-/* 500+ Procedural Dish Generation Engine based on Real Local Menus */
-function generate500Dishes() {
-  const dishes = [];
-  const dishTemplates = [
+/* Regional Dish Templates */
+const REGIONAL_DISH_TEMPLATES = {
+  kolkata: [
     { name: 'Special Mutton Biryani (with Jumbo Potato & Egg)', cat: 'biryani', isVeg: false, basePrice: 350, baseCals: 1350, desc: 'Aromatic long-grain basmati cooked with tender Kolkata mutton cut, melt-in-mouth potato, and boiled egg.' },
     { name: 'Legendary Chelo Kebab with Buttered Saffron Rice', cat: 'kebabs', isVeg: false, basePrice: 520, baseCals: 1180, desc: 'Juicy minced mutton seekh and grilled chicken cubes served over saffron butter rice topped with a poached egg.' },
     { name: 'Kolkata Mutton Chaap in Slow-Cooked Gravy', cat: 'biryani', isVeg: false, basePrice: 320, baseCals: 1050, desc: 'Tender mutton ribs simmered in a velvety gravy of poppy seeds, cashew paste, mace, and saffron.' },
@@ -2029,15 +2505,86 @@ function generate500Dishes() {
     { name: 'Baked Rosogolla in Thick Cream (Balaram Mullick Special)', cat: 'desserts', isVeg: true, basePrice: 180, baseCals: 580, desc: 'Spongy cottage cheese balls slow-baked in rich caramelized rabdi with saffron and cardamom.' },
     { name: 'Authentic Kolkata Mishti Doi in Earthen Pot', cat: 'desserts', isVeg: true, basePrice: 140, baseCals: 460, desc: 'Thick, creamy, caramelized fermented sweet yogurt set naturally in traditional terracotta pots.' },
     { name: 'Flurys Legendary Rum Ball with Dark Chocolate Glaze', cat: 'desserts', isVeg: true, basePrice: 160, baseCals: 510, desc: 'Rich chocolate sponge cake soaked in aromatic Jamaican rum essence, coated in silky dark chocolate ganache.' }
-  ];
+  ],
+  bangalore: [
+    { name: 'Meghana Special Chicken Biryani', cat: 'biryani', isVeg: false, basePrice: 340, baseCals: 1280, desc: 'Fiery Andhra-style spiced chicken pieces layered with aromatic basmati rice and rich spicy gravy.' },
+    { name: 'Crispy Benne Masala Dosa with Chutneys & Sambar', cat: 'kebabs', isVeg: true, basePrice: 130, baseCals: 520, desc: 'Golden crust butter dosa loaded with spiced potato filling, served with fresh coconut chutney.' },
+    { name: 'All-American Lamb Burger with Peri Peri Wedges', cat: 'continental', isVeg: false, basePrice: 390, baseCals: 1150, desc: 'Juicy chargrilled lamb patty topped with melted cheddar, gherkins, and smoked caramelized onions.' },
+    { name: 'Woodfired BBQ Chicken & Jalapeno Pizza', cat: 'continental', isVeg: false, basePrice: 520, baseCals: 1320, desc: 'Thin-crust sourdough pizza blistered in a stone oven with smoky chicken, mozzarella, and jalapenos.' },
+    { name: 'Nagarjuna Andhra Chilli Chicken (Dry)', cat: 'chinese', isVeg: false, basePrice: 310, baseCals: 740, desc: 'Classic fiery green chilli tossed chicken bites cooked with curry leaves and Andhra spices.' },
+    { name: 'Empire Special Ghee Rice with Mutton Pepper Fry', cat: 'biryani', isVeg: false, basePrice: 360, baseCals: 1200, desc: 'Fragrant jeera samba rice tossed in pure desi ghee, served with crushed black pepper mutton.' },
+    { name: 'CTR Golden Butter Masala Dosa', cat: 'kebabs', isVeg: true, basePrice: 120, baseCals: 490, desc: 'The legendary Malleshwaram crispy butter dosa served with hot mint and coconut chutneys.' },
+    { name: 'Death By Chocolate (DBC) Sundae', cat: 'desserts', isVeg: true, basePrice: 240, baseCals: 920, desc: 'Warm Dutch chocolate cake smothered in vanilla ice cream, hot chocolate fudge, and roasted peanuts.' },
+    { name: 'MTR Steamed Rava Idli with Potato Sagu', cat: 'kebabs', isVeg: true, basePrice: 110, baseCals: 380, desc: 'Semolina idli tempered with mustard, cashews, and curry leaves, served with pure ghee.' },
+    { name: "Glen's Red Velvet Cupcake with Cream Cheese", cat: 'desserts', isVeg: true, basePrice: 140, baseCals: 460, desc: 'Velvety crimson sponge topped with luscious whipped cream cheese frosting.' }
+  ],
+  mumbai: [
+    { name: 'Bastian Butter Poached Lobster Roll', cat: 'continental', isVeg: false, basePrice: 750, baseCals: 850, desc: 'Succulent fresh lobster tossed in clarified herb butter, tucked inside a toasted brioche roll.' },
+    { name: 'Bademiya Mutton Seekh Kebab with Mint Dip', cat: 'kebabs', isVeg: false, basePrice: 340, baseCals: 680, desc: 'Charcoal-grilled minced mutton skewers infused with garlic, cumin, and ground spices.' },
+    { name: 'Sardar Extra Butter Amul Pav Bhaji', cat: 'continental', isVeg: true, basePrice: 220, baseCals: 1150, desc: 'Slow-simmered spiced mashed vegetables swimming under a golden slab of melting Amul butter.' },
+    { name: 'Britannia Classic Mutton Berry Pulao', cat: 'biryani', isVeg: false, basePrice: 580, baseCals: 1240, desc: 'Tender mutton layered with fragrant basmati, fried cashews, and imported tart Iranian zereshk berries.' },
+    { name: "Joey's Meat Craver Deep Dish Pizza", cat: 'continental', isVeg: false, basePrice: 560, baseCals: 1450, desc: 'Heavyweight pan crust loaded with pepperoni, sausage, barbecue chicken, and three cheeses.' },
+    { name: 'Kyani Bun Maska with Special Irani Chai', cat: 'desserts', isVeg: true, basePrice: 90, baseCals: 410, desc: 'Freshly baked soft bun lathered with creamy salted butter, paired with slow-brewed sweet Irani tea.' },
+    { name: 'Gajalee Butter Garlic Crab (Mangalorean Style)', cat: 'continental', isVeg: false, basePrice: 850, baseCals: 980, desc: 'Whole mud crab tossed in silky garlic-infused butter sauce with freshly cracked black pepper.' },
+    { name: 'Lucky Special Mutton Dum Biryani', cat: 'biryani', isVeg: false, basePrice: 380, baseCals: 1310, desc: 'Layered Mumbai-style dum biryani with marinated mutton, saffron milk, and crisp brown onions.' },
+    { name: 'Theobroma Overload Brownie Slab', cat: 'desserts', isVeg: true, basePrice: 150, baseCals: 580, desc: 'Dense, fudgy dark chocolate brownie packed with melted Belgian chocolate chunks.' },
+    { name: 'Colaba Crispy Chicken Baida Roti', cat: 'kebabs', isVeg: false, basePrice: 280, baseCals: 720, desc: 'Flaky pan-fried paratha parcel stuffed with spiced minced chicken, beaten egg, and coriander.' }
+  ],
+  delhi: [
+    { name: "Karim's Royal Mutton Korma & Khamiri Roti", cat: 'biryani', isVeg: false, basePrice: 420, baseCals: 1380, desc: 'Heritage slow-braised mutton in deep onion, yogurt, and cardamom gravy, served with fluffy khamiri.' },
+    { name: 'Gulati Original Butter Chicken (Murgh Makhani)', cat: 'biryani', isVeg: false, basePrice: 490, baseCals: 1260, desc: 'Clay-oven tandoori chicken simmered in rich satin tomato, cream, and fenugreek butter sauce.' },
+    { name: 'Kake Da Dhaba Special Dahi Meat with Butter Naan', cat: 'biryani', isVeg: false, basePrice: 380, baseCals: 1190, desc: 'Hearty Delhi dhaba mutton curry slow-cooked with spiced whipped yogurt and whole spices.' },
+    { name: 'Saravana Bhavan Special Ghee Roast Masala Dosa', cat: 'kebabs', isVeg: true, basePrice: 190, baseCals: 590, desc: 'Crispy paper-thin dosa roasted in pure cow ghee, served with four varieties of coconut chutneys.' },
+    { name: 'Moti Mahal Classic Tandoori Murgh (Half)', cat: 'kebabs', isVeg: false, basePrice: 360, baseCals: 780, desc: 'Whole chicken steeped in Kashmiri chilli and yogurt marinade, roasted over smoking charcoal.' },
+    { name: "Wenger's Classic Shamia Kebab & Chicken Patty", cat: 'continental', isVeg: false, basePrice: 210, baseCals: 540, desc: 'Colonial heritage bakery patties stuffed with spiced minced chicken and flaky puff pastry.' },
+    { name: 'ITC Maurya Bukhara Dal Bukhara (18-Hour Slow Cook)', cat: 'biryani', isVeg: true, basePrice: 650, baseCals: 920, desc: 'Whole black lentils, tomatoes, ginger, and garlic simmered overnight over slow charcoal embers.' },
+    { name: 'Rajinder Da Dhaba Creamy Malai Tikka', cat: 'kebabs', isVeg: false, basePrice: 320, baseCals: 850, desc: 'Juicy boneless chicken chunks marinated in heavy cream, cashew paste, green cardamom, and grilled.' },
+    { name: 'Andhra Bhavan Unlimited South Indian Meals', cat: 'continental', isVeg: true, basePrice: 200, baseCals: 1050, desc: 'Unlimited hot rice, gunpowder podi, pure ghee, pappu, sambar, rasam, curds, and sweet payasam.' },
+    { name: 'Natraj Famous Dahi Bhalla with Saunth Chutney', cat: 'desserts', isVeg: true, basePrice: 120, baseCals: 420, desc: 'Soft lentil dumplings soaked in sweet churned curd, topped with tangy dry ginger and cumin chutney.' }
+  ]
+};
 
+/* City Key Detector */
+function detectCityKey(userLoc) {
+  const str = `${userLoc.name || ''} ${userLoc.city || ''} ${userLoc.locality || ''}`.toLowerCase();
+  if (str.includes('bangalore') || str.includes('bengaluru') || str.includes('koramangala') || str.includes('indiranagar')) return 'bangalore';
+  if (str.includes('mumbai') || str.includes('bombay') || str.includes('bandra') || str.includes('colaba') || str.includes('andheri')) return 'mumbai';
+  if (str.includes('delhi') || str.includes('connaught') || str.includes('noida') || str.includes('gurgaon') || str.includes('daryaganj')) return 'delhi';
+  if (str.includes('kolkata') || str.includes('calcutta') || str.includes('barakpur') || str.includes('barrackpore') || str.includes('howrah')) return 'kolkata';
+
+  // Fallback: match by closest coordinates
+  if (userLoc.lat && userLoc.lng) {
+    const cityCoords = {
+      kolkata: { lat: 22.5726, lng: 88.3639 },
+      bangalore: { lat: 12.9716, lng: 77.5946 },
+      mumbai: { lat: 19.0760, lng: 72.8777 },
+      delhi: { lat: 28.6139, lng: 77.2090 }
+    };
+    let closestKey = 'kolkata';
+    let minD = Infinity;
+    for (const [key, coords] of Object.entries(cityCoords)) {
+      const d = calculateHaversineDistance(userLoc.lat, userLoc.lng, coords.lat, coords.lng);
+      if (d < minD) {
+        minD = d;
+        closestKey = key;
+      }
+    }
+    return closestKey;
+  }
+  return 'kolkata';
+}
+
+/* 500+ Procedural Dish Generation Engine based on Active Restaurants & Regional Menus */
+function generateDishesForRestaurants(restaurants, cityKey = 'kolkata') {
+  const dishes = [];
+  const templates = REGIONAL_DISH_TEMPLATES[cityKey] || REGIONAL_DISH_TEMPLATES.kolkata;
   const descriptors = ['Grand', 'Signature', 'Royal', 'Authentic', 'Crispy', 'Smoky', 'Velvet', 'Midnight', 'Supreme', 'Tandoori', 'Zero-Calorie', 'Phantom'];
 
   let idCounter = 1;
 
-  for (const rest of RESTAURANTS) {
+  for (const rest of restaurants) {
     for (let i = 0; i < 50; i++) {
-      const template = dishTemplates[i % dishTemplates.length];
+      const template = templates[i % templates.length];
       const descWord = descriptors[(i + idCounter) % descriptors.length];
       const dishId = `dish-${idCounter}`;
       const imgIdx = (idCounter - 1) % DISH_IMAGE_POOL.length;
@@ -2054,14 +2601,14 @@ function generate500Dishes() {
         rating: (4.6 + ((i % 4) * 0.1)).toFixed(1),
         ratingCount: `${(1.2 + (i * 0.4)).toFixed(1)}k+`,
         image: DISH_IMAGE_POOL[imgIdx],
-        price: Math.max(140, template.basePrice + priceVariation),
+        price: Math.max(120, template.basePrice + priceVariation),
         calories: Math.max(380, template.baseCals + calVariation),
         bestseller: (i % 6 === 0),
         customizable: (i % 3 === 0),
         desc: `${template.desc} Prepared at ${rest.name}, safely prevented from reaching your doorstep.`,
         addons: [
-          { id: `addon-${dishId}-1`, name: 'Extra Kolkata Mutton Potato & Egg', calories: 280, price: 60 },
-          { id: `addon-${dishId}-2`, name: 'Sharma Ji Cutting Chai & Samosa', calories: 310, price: 35 }
+          { id: `addon-${dishId}-1`, name: 'Extra Special Portion & Egg', calories: 260, price: 50 },
+          { id: `addon-${dishId}-2`, name: 'Rider Cutting Chai & Samosa', calories: 290, price: 35 }
         ]
       });
 
@@ -2072,7 +2619,33 @@ function generate500Dishes() {
   return dishes;
 }
 
-const DISHES = generate500Dishes();
+/* Active State Arrays */
+let RESTAURANTS = [...CITY_RESTAURANTS.kolkata];
+let DISHES = generateDishesForRestaurants(RESTAURANTS, 'kolkata');
+
+/* Dynamic Location-Based Restaurant Updater */
+function updateLocationRestaurants(userLoc) {
+  const cityKey = detectCityKey(userLoc);
+  const baseRests = CITY_RESTAURANTS[cityKey] || CITY_RESTAURANTS.kolkata;
+
+  // Compute real geodesic distance for each restaurant from user's current GPS / detected coordinates
+  const computedRests = baseRests.map(r => {
+    const rawDist = calculateHaversineDistance(userLoc.lat, userLoc.lng, r.lat, r.lng);
+    const distKm = Math.max(0.8, rawDist).toFixed(1);
+    return {
+      ...r,
+      distanceValue: parseFloat(distKm),
+      distance: `${distKm} km from ${userLoc.locality || userLoc.city || 'you'} (Rider Stalled)`
+    };
+  });
+
+  // Sort by nearest first
+  computedRests.sort((a, b) => a.distanceValue - b.distanceValue);
+
+  RESTAURANTS = computedRests;
+  DISHES = generateDishesForRestaurants(RESTAURANTS, cityKey);
+  return RESTAURANTS;
+}
 
 /* 1,000+ Patrons Leaderboard Generator */
 function generate1000Leaderboard() {
@@ -2128,24 +2701,42 @@ function generate1000Leaderboard() {
 const SEED_LEADERBOARD = generate1000Leaderboard();
 
 const TELEMETRY_TICKERS = [
-  "Rider Sharma Ji ordered 2nd cutting chai with extra ginger.",
-  "Rider is passionately debating the local football match with Sharma Ji.",
-  "Rider spotted an old friend at the tea stall and pulled up a wooden bench.",
+  "Rider ordered 2nd cutting chai with extra ginger.",
+  "Rider is passionately debating the local cricket match at the pan shop.",
+  "Rider spotted an old school friend at the tea stall and pulled up a wooden bench.",
   "GPS speed reading: 0.00 km/h (engine switched off for cooling).",
-  "Rider Sharma Ji ordered a plate of hot samosas with tangy tamarind chutney.",
+  "Rider ordered a plate of hot samosas with tangy tamarind chutney.",
   "Rider is checking WhatsApp group messages about local weather.",
-  "Rider Sharma Ji has initiated chai cup #4. No rush whatsoever.",
+  "Rider has initiated chai cup #4. No rush whatsoever.",
   "Satellite lock confirms rider has entered deep philosophical contemplation."
 ];
 
 const LIVE_NOTIFICATIONS = [
   { name: "Subhash from Barrackpore", action: "intercepted 1,350 kcal of Dada Boudi Special Mutton Biryani!" },
   { name: "Debolina from Park Street", action: "donated ₹100 to The Smileys Foundation! 💛" },
-  { name: "Sourav from Salt Lake", action: "spared 1,180 kcal of Peter Cat Chelo Kebab!" },
-  { name: "Ananya from New Town", action: "earned 350 FNC Karma points!" },
-  { name: "Priyanka from Bhowanipore", action: "pledged ₹250 for rural student schoolbooks! 📚" },
+  { name: "Sourav from Indiranagar", action: "spared 1,280 kcal of Meghana Special Biryani!" },
+  { name: "Ananya from Bandra", action: "earned 350 FNC Karma points!" },
+  { name: "Priyanka from Connaught Place", action: "pledged ₹250 for rural student schoolbooks! 📚" },
   { name: "Anirban from Kolkata", action: "dodged midnight Arsalan Mutton Chaap cravings!" }
 ];
+
+if (typeof window !== 'undefined') {
+  window.RESTAURANTS = RESTAURANTS;
+  window.DISHES = DISHES;
+  window.CITY_RESTAURANTS = CITY_RESTAURANTS;
+  window.DELIVERY_RIDERS = DELIVERY_RIDERS;
+  window.CATEGORIES = CATEGORIES;
+  window.calculateHaversineDistance = calculateHaversineDistance;
+  window.updateLocationRestaurants = updateLocationRestaurants;
+} else if (typeof global !== 'undefined') {
+  global.RESTAURANTS = RESTAURANTS;
+  global.DISHES = DISHES;
+  global.CITY_RESTAURANTS = CITY_RESTAURANTS;
+  global.DELIVERY_RIDERS = DELIVERY_RIDERS;
+  global.CATEGORIES = CATEGORIES;
+  global.calculateHaversineDistance = calculateHaversineDistance;
+  global.updateLocationRestaurants = updateLocationRestaurants;
+}
 
 
 /* Food Never Comes (FNC) — Procedural Web Audio Engine (Zero External Dependencies) */
@@ -2309,7 +2900,7 @@ let lastCompletedOrder = null;
 let chaiCupsConsumed = 4;
 
 let userLocation = {
-  name: "Detecting location...",
+  name: "Barakpur, Kolkata",
   city: "Kolkata",
   locality: "Barakpur",
   lat: 22.76,
@@ -2370,8 +2961,8 @@ async function reverseGeocode(lat, lng) {
       
       if (locDisplay) locDisplay.textContent = userLocation.name;
       updateRestaurantDistances(userLocation.name);
-      updateRadarGoogleMap();
-      showToast(`📍 Location locked: ${userLocation.name}`, "mint");
+      if (lastCompletedOrder) updateDeliveryRouteMap();
+      showToast(`📍 Location locked: ${userLocation.name} • Local restaurants active!`, "mint");
       return;
     }
   } catch (e) {
@@ -2393,7 +2984,7 @@ async function ipFallbackGeolocation() {
       userLocation.name = `${locality}, ${city}`;
       if (locDisplay) locDisplay.textContent = userLocation.name;
       updateRestaurantDistances(userLocation.name);
-      updateRadarGoogleMap();
+      if (lastCompletedOrder) updateDeliveryRouteMap();
       showToast(`📍 Detected Area: ${userLocation.name}`, "info");
       return;
     }
@@ -2402,18 +2993,22 @@ async function ipFallbackGeolocation() {
   }
 
   // Final fallback if offline
-  userLocation.name = "Kolkata (Barakpur Zone)";
+  userLocation.name = "Barakpur, Kolkata";
+  userLocation.city = "Kolkata";
+  userLocation.locality = "Barakpur";
   if (locDisplay) locDisplay.textContent = userLocation.name;
-  updateRadarGoogleMap();
+  updateRestaurantDistances(userLocation.name);
+  if (lastCompletedOrder) updateDeliveryRouteMap();
 }
 
 function updateRestaurantDistances(area) {
-  // Update restaurant distance labels based on detected location
-  RESTAURANTS.forEach((r, idx) => {
-    const dist = (1.2 + idx * 0.7).toFixed(1);
-    r.distance = `${dist} km from ${area} (Rider Stalled)`;
-  });
+  // Update restaurant list and distance labels based on genuine coordinates
+  if (typeof updateLocationRestaurants === 'function') {
+    updateLocationRestaurants(userLocation);
+  }
+  selectedRestaurant = 'all';
   renderRestaurantsCarousel();
+  renderDishes();
 }
 
 function openLocationModal() {
@@ -2430,12 +3025,12 @@ function closeLocationModal() {
 }
 
 const PRESET_COORDS = {
-  'Barakpur, Kolkata': { lat: 22.76, lng: 88.37 },
-  'Park Street, Kolkata': { lat: 22.55, lng: 88.35 },
-  'Indiranagar, Bangalore': { lat: 12.978, lng: 77.640 },
-  'Koramangala, Bangalore': { lat: 12.935, lng: 77.624 },
-  'Bandra West, Mumbai': { lat: 19.060, lng: 72.833 },
-  'Connaught Place, Delhi': { lat: 28.631, lng: 77.219 }
+  'Barakpur, Kolkata': { lat: 22.76, lng: 88.37, city: 'Kolkata', locality: 'Barakpur' },
+  'Park Street, Kolkata': { lat: 22.55, lng: 88.35, city: 'Kolkata', locality: 'Park Street' },
+  'Indiranagar, Bangalore': { lat: 12.978, lng: 77.640, city: 'Bangalore', locality: 'Indiranagar' },
+  'Koramangala, Bangalore': { lat: 12.935, lng: 77.624, city: 'Bangalore', locality: 'Koramangala' },
+  'Bandra West, Mumbai': { lat: 19.060, lng: 72.833, city: 'Mumbai', locality: 'Bandra West' },
+  'Connaught Place, Delhi': { lat: 28.631, lng: 77.219, city: 'Delhi', locality: 'Connaught Place' }
 };
 
 function selectManualLocation(areaName) {
@@ -2443,15 +3038,30 @@ function selectManualLocation(areaName) {
   if (PRESET_COORDS[areaName]) {
     userLocation.lat = PRESET_COORDS[areaName].lat;
     userLocation.lng = PRESET_COORDS[areaName].lng;
+    userLocation.city = PRESET_COORDS[areaName].city;
+    userLocation.locality = PRESET_COORDS[areaName].locality;
     userLocation.isGeoLocated = true;
+  } else {
+    // Best-effort city detection for custom text input
+    const lower = areaName.toLowerCase();
+    if (lower.includes('bangalore') || lower.includes('bengaluru')) {
+      userLocation.city = 'Bangalore'; userLocation.locality = areaName.split(',')[0]; userLocation.lat = 12.9716; userLocation.lng = 77.5946;
+    } else if (lower.includes('mumbai') || lower.includes('bombay')) {
+      userLocation.city = 'Mumbai'; userLocation.locality = areaName.split(',')[0]; userLocation.lat = 19.0760; userLocation.lng = 72.8777;
+    } else if (lower.includes('delhi')) {
+      userLocation.city = 'Delhi'; userLocation.locality = areaName.split(',')[0]; userLocation.lat = 28.6139; userLocation.lng = 77.2090;
+    } else {
+      userLocation.city = 'Kolkata'; userLocation.locality = areaName.split(',')[0]; userLocation.lat = 22.5726; userLocation.lng = 88.3639;
+    }
   }
+
   const locDisplay = document.getElementById('current-location-text');
   if (locDisplay) locDisplay.textContent = areaName;
   updateRestaurantDistances(areaName);
-  updateRadarGoogleMap();
+  if (lastCompletedOrder) updateDeliveryRouteMap();
   closeLocationModal();
   soundBlip();
-  showToast(`Location set to ${areaName} 📍 Radar centered!`, "mint");
+  showToast(`Location set to ${areaName} 📍 Nearby restaurants loaded!`, "mint");
 }
 
 function handleCustomLocationSubmit() {
@@ -3560,6 +4170,43 @@ function finalizeOrderAndOpenTracking() {
   const { subtotal, totalCals, totalItems } = calculateCartTotals();
   const earnedKarma = Math.round(totalCals / 10) + (cartDonationAmount > 0 ? 500 : 0);
 
+  // Identify restaurant of ordered dishes
+  let orderRestaurant = null;
+  for (const [id, item] of Object.entries(cart)) {
+    const dish = DISHES.find(d => d.id === id);
+    if (dish && dish.restaurantId) {
+      orderRestaurant = RESTAURANTS.find(r => r.id === dish.restaurantId);
+      if (orderRestaurant) break;
+    }
+  }
+  if (!orderRestaurant) {
+    orderRestaurant = RESTAURANTS[0] || { name: 'Dada Boudi Biryani (Barrackpore)', lat: 22.7630, lng: 88.3685 };
+  }
+
+  // Calculate genuine distance between restaurant and user location
+  const restLat = orderRestaurant.lat || (userLocation.lat + 0.015);
+  const restLng = orderRestaurant.lng || (userLocation.lng + 0.014);
+  const rawDist = calculateHaversineDistance(userLocation.lat, userLocation.lng, restLat, restLng);
+  const distanceKm = Math.max(0.8, rawDist).toFixed(1);
+
+  // Assign random delivery rider partner with vehicle, phone, and funny response
+  const assignedRider = (typeof DELIVERY_RIDERS !== 'undefined' && DELIVERY_RIDERS.length > 0)
+    ? DELIVERY_RIDERS[Math.floor(Math.random() * DELIVERY_RIDERS.length)]
+    : {
+        name: "Sharma Ji",
+        rating: "4.9 ★",
+        skips: "2,400+ skipped",
+        vehicle: "Honda Activa (WB-24-CHAI-007)",
+        phone: "+91 98749 58471",
+        statusText: "☕ Savoring cutting chai #4 at roadside stall • Samosa in hand",
+        callReply: "Haan bhai, cutting chai pe raha hoon, bilkul deliver nahi hoga! Araam se raho.",
+        messageReply: "Sharma Ji acknowledged: 'Order safe, food untouched, 0 calories delivered!'"
+      };
+
+  // Place rider at roadside tea stall right next to the restaurant (~150m offset)
+  const riderLat = (Number(restLat) + 0.0015).toFixed(4);
+  const riderLng = (Number(restLng) + 0.0012).toFixed(4);
+
   const orderRecord = {
     orderId: 'FNC-' + Math.floor(100000 + Math.random() * 900000),
     timestamp: new Date().toISOString(),
@@ -3569,6 +4216,11 @@ function finalizeOrderAndOpenTracking() {
     donation: cartDonationAmount,
     caloriesSaved: totalCals,
     karmaEarned: earnedKarma,
+    restaurant: orderRestaurant,
+    distanceKm: distanceKm,
+    rider: assignedRider,
+    riderLat: riderLat,
+    riderLng: riderLng,
     dishes: Object.entries(cart).map(([id, item]) => {
       const d = DISHES.find(dish => dish.id === id);
       return { name: d ? d.name : id, qty: item.qty };
@@ -3647,7 +4299,7 @@ function finalizeOrderAndOpenTracking() {
   document.getElementById('tracking-view').classList.remove('hidden');
   document.getElementById('tracking-view').classList.add('flex');
 
-  // Start radar canvas animation & telemetry
+  // Start route map & telemetry simulation
   startRadarMap();
   startTelemetrySimulation();
 }
@@ -3659,28 +4311,88 @@ function updateDeliveryRouteMap() {
   const userLocBadge = document.getElementById('map-user-loc-badge');
   const latLngBadge = document.getElementById('map-lat-lng-badge');
   const mainTitle = document.getElementById('track-main-title');
+  const trackSubStatus = document.getElementById('track-sub-status');
+  const trackDistancePill = document.getElementById('track-distance-pill');
+  const trackStep3Distance = document.getElementById('track-step3-distance');
+  const mapRiderBadge = document.getElementById('map-rider-badge');
+  const trackDistanceBanner = document.getElementById('track-distance');
+  const milestoneRiderTitle = document.getElementById('milestone-rider-title');
+  const milestoneRiderDesc = document.getElementById('milestone-rider-desc');
+
+  // Rider Profile Card
+  const riderNameEl = document.getElementById('rider-name-display');
+  const riderRatingEl = document.getElementById('rider-rating-display');
+  const riderVehicleEl = document.getElementById('rider-vehicle-display');
+  const riderStatusEl = document.getElementById('rider-status-display');
+
+  const currentOrder = lastCompletedOrder || {};
+  const currentRestaurant = currentOrder.restaurant || (typeof RESTAURANTS !== 'undefined' && RESTAURANTS[0]) || { name: 'Local Kitchen', lat: 22.7630, lng: 88.3685 };
+  const currentRider = currentOrder.rider || (typeof DELIVERY_RIDERS !== 'undefined' ? DELIVERY_RIDERS[0] : {
+    name: "Sharma Ji",
+    rating: "4.9 ★",
+    skips: "2,400+ skipped",
+    vehicle: "Honda Activa (WB-24-CHAI-007)",
+    phone: "+91 98749 58471",
+    statusText: "☕ Savoring cutting chai #4 at roadside stall • Samosa in hand",
+    callReply: "Haan bhai, cutting chai pe raha hoon, bilkul deliver nahi hoga!",
+    messageReply: "Sharma Ji: 'Food safe, 0 calories delivered!'"
+  });
+
+  // Calculate or retrieve genuine distance
+  let distKm = currentOrder.distanceKm;
+  if (!distKm && currentRestaurant.lat && currentRestaurant.lng && userLocation.lat && userLocation.lng) {
+    distKm = Math.max(0.8, calculateHaversineDistance(userLocation.lat, userLocation.lng, currentRestaurant.lat, currentRestaurant.lng)).toFixed(1);
+  }
+  distKm = distKm || '2.3';
 
   const destinationName = userLocation.name || 'Your House';
+
   if (userLocBadge) {
     userLocBadge.textContent = `🏠 Destination: ${destinationName}`;
   }
   if (mainTitle) {
-    mainTitle.textContent = `Rider is just 2.3 kms away from your house`;
+    mainTitle.textContent = `Rider is just ${distKm} kms away from your house`;
   }
+  if (trackSubStatus) {
+    trackSubStatus.textContent = `Stationary at tea stall near ${currentRestaurant.name}`;
+  }
+  if (trackDistancePill) {
+    trackDistancePill.textContent = `${distKm} KM AWAY`;
+  }
+  if (trackStep3Distance) {
+    trackStep3Distance.textContent = `${distKm} km away`;
+  }
+  if (mapRiderBadge) {
+    mapRiderBadge.innerHTML = `🛵 <strong>Rider ${currentRider.name}:</strong> Stationary near ${currentRestaurant.name} (${distKm} km away)`;
+  }
+  if (trackDistanceBanner) {
+    trackDistanceBanner.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 anim-pulse"></span> Distance: ${distKm} km away • Speed: 0.00 km/h`;
+  }
+  if (milestoneRiderTitle) {
+    milestoneRiderTitle.textContent = `Rider ${currentRider.name} Savoring Chai #4 near ${currentRestaurant.name}`;
+  }
+  if (milestoneRiderDesc) {
+    milestoneRiderDesc.textContent = `GPS verified stationary near ${currentRestaurant.name}. No rush whatsoever.`;
+  }
+
+  // Update Rider Profile card
+  if (riderNameEl) riderNameEl.textContent = currentRider.name;
+  if (riderRatingEl) riderRatingEl.textContent = `${currentRider.rating} (${currentRider.skips})`;
+  if (riderVehicleEl) riderVehicleEl.textContent = currentRider.vehicle;
+  if (riderStatusEl) riderStatusEl.textContent = `${currentRider.statusText} near ${currentRestaurant.name}`;
+
   if (latLngBadge && userLocation.lat && userLocation.lng) {
     latLngBadge.textContent = `${userLocation.lat.toFixed(4)}° N, ${userLocation.lng.toFixed(4)}° E`;
   }
 
-  // Calculate rider location at tea stall exactly 2.3 km away
-  // 1 deg lat ≈ 111.32 km -> offset of ~0.015 lat and ~0.014 lng is sqrt(0.015^2 + 0.014^2) * 111.32 ≈ 2.28 - 2.3 km
+  // Calculate rider location at tea stall near the restaurant
   const userLat = userLocation.lat || 22.7600;
   const userLng = userLocation.lng || 88.3700;
-  const riderLat = (Number(userLat) + 0.015).toFixed(4);
-  const riderLng = (Number(userLng) + 0.014).toFixed(4);
+  const riderLat = currentOrder.riderLat || (Number(currentRestaurant.lat || userLat) + 0.0015).toFixed(4);
+  const riderLng = currentOrder.riderLng || (Number(currentRestaurant.lng || userLng) + 0.0012).toFixed(4);
 
   if (iframe) {
     const modeParam = currentRadarMapMode === 'satellite' ? '&t=k' : '';
-    // Turn-by-turn route directions from Rider's tea stall to User's house
     const routeUrl = `https://maps.google.com/maps?saddr=${riderLat},${riderLng}&daddr=${userLat},${userLng}&output=embed${modeParam}`;
     if (iframe.src !== routeUrl) {
       iframe.src = routeUrl;
@@ -3719,15 +4431,20 @@ function startRadarMap() {
   updateDeliveryRouteMap();
 }
 
-function callRiderSharmaJi() {
+function callRiderPartner() {
+  const currentRider = lastCompletedOrder?.rider || (typeof DELIVERY_RIDERS !== 'undefined' ? DELIVERY_RIDERS[0] : { name: "Sharma Ji", phone: "+91 98749 58471", callReply: "Chai pe raha hoon!" });
   soundBlip();
-  showToast("📞 Calling Sharma Ji... 'Haan bhai, cutting chai pe raha hoon, bilkul deliver nahi hoga!'", "orange");
+  showToast(`📞 Calling ${currentRider.name} (${currentRider.phone})... '${currentRider.callReply}'`, "orange");
 }
 
-function messageRiderSharmaJi() {
+function messageRiderPartner() {
+  const currentRider = lastCompletedOrder?.rider || (typeof DELIVERY_RIDERS !== 'undefined' ? DELIVERY_RIDERS[0] : { name: "Sharma Ji", phone: "+91 98749 58471", messageReply: "Order safe!" });
   soundBlip();
-  showToast("💬 Message sent: 'Sharma Ji, take your time! 0 calories safely intercepted.'", "mint");
+  showToast(`💬 Message sent to ${currentRider.name} (${currentRider.phone}): '${currentRider.messageReply}'`, "mint");
 }
+
+const callRiderSharmaJi = callRiderPartner;
+const messageRiderSharmaJi = messageRiderPartner;
 
 function startTelemetrySimulation() {
   if (telemetryTimer) clearInterval(telemetryTimer);
@@ -4225,6 +4942,9 @@ window.addEventListener('keydown', (e) => {
 
 // Initialize application on DOMContentLoaded
 window.addEventListener('DOMContentLoaded', () => {
+  if (typeof updateLocationRestaurants === 'function') {
+    updateLocationRestaurants(userLocation);
+  }
   initGeolocation();
   initStorage();
   initRazorpayConfig();

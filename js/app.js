@@ -30,7 +30,7 @@ let lastCompletedOrder = null;
 let chaiCupsConsumed = 4;
 
 let userLocation = {
-  name: "Detecting location...",
+  name: "Barakpur, Kolkata",
   city: "Kolkata",
   locality: "Barakpur",
   lat: 22.76,
@@ -91,8 +91,8 @@ async function reverseGeocode(lat, lng) {
       
       if (locDisplay) locDisplay.textContent = userLocation.name;
       updateRestaurantDistances(userLocation.name);
-      updateRadarGoogleMap();
-      showToast(`📍 Location locked: ${userLocation.name}`, "mint");
+      if (lastCompletedOrder) updateDeliveryRouteMap();
+      showToast(`📍 Location locked: ${userLocation.name} • Local restaurants active!`, "mint");
       return;
     }
   } catch (e) {
@@ -114,7 +114,7 @@ async function ipFallbackGeolocation() {
       userLocation.name = `${locality}, ${city}`;
       if (locDisplay) locDisplay.textContent = userLocation.name;
       updateRestaurantDistances(userLocation.name);
-      updateRadarGoogleMap();
+      if (lastCompletedOrder) updateDeliveryRouteMap();
       showToast(`📍 Detected Area: ${userLocation.name}`, "info");
       return;
     }
@@ -123,18 +123,22 @@ async function ipFallbackGeolocation() {
   }
 
   // Final fallback if offline
-  userLocation.name = "Kolkata (Barakpur Zone)";
+  userLocation.name = "Barakpur, Kolkata";
+  userLocation.city = "Kolkata";
+  userLocation.locality = "Barakpur";
   if (locDisplay) locDisplay.textContent = userLocation.name;
-  updateRadarGoogleMap();
+  updateRestaurantDistances(userLocation.name);
+  if (lastCompletedOrder) updateDeliveryRouteMap();
 }
 
 function updateRestaurantDistances(area) {
-  // Update restaurant distance labels based on detected location
-  RESTAURANTS.forEach((r, idx) => {
-    const dist = (1.2 + idx * 0.7).toFixed(1);
-    r.distance = `${dist} km from ${area} (Rider Stalled)`;
-  });
+  // Update restaurant list and distance labels based on genuine coordinates
+  if (typeof updateLocationRestaurants === 'function') {
+    updateLocationRestaurants(userLocation);
+  }
+  selectedRestaurant = 'all';
   renderRestaurantsCarousel();
+  renderDishes();
 }
 
 function openLocationModal() {
@@ -151,12 +155,12 @@ function closeLocationModal() {
 }
 
 const PRESET_COORDS = {
-  'Barakpur, Kolkata': { lat: 22.76, lng: 88.37 },
-  'Park Street, Kolkata': { lat: 22.55, lng: 88.35 },
-  'Indiranagar, Bangalore': { lat: 12.978, lng: 77.640 },
-  'Koramangala, Bangalore': { lat: 12.935, lng: 77.624 },
-  'Bandra West, Mumbai': { lat: 19.060, lng: 72.833 },
-  'Connaught Place, Delhi': { lat: 28.631, lng: 77.219 }
+  'Barakpur, Kolkata': { lat: 22.76, lng: 88.37, city: 'Kolkata', locality: 'Barakpur' },
+  'Park Street, Kolkata': { lat: 22.55, lng: 88.35, city: 'Kolkata', locality: 'Park Street' },
+  'Indiranagar, Bangalore': { lat: 12.978, lng: 77.640, city: 'Bangalore', locality: 'Indiranagar' },
+  'Koramangala, Bangalore': { lat: 12.935, lng: 77.624, city: 'Bangalore', locality: 'Koramangala' },
+  'Bandra West, Mumbai': { lat: 19.060, lng: 72.833, city: 'Mumbai', locality: 'Bandra West' },
+  'Connaught Place, Delhi': { lat: 28.631, lng: 77.219, city: 'Delhi', locality: 'Connaught Place' }
 };
 
 function selectManualLocation(areaName) {
@@ -164,15 +168,30 @@ function selectManualLocation(areaName) {
   if (PRESET_COORDS[areaName]) {
     userLocation.lat = PRESET_COORDS[areaName].lat;
     userLocation.lng = PRESET_COORDS[areaName].lng;
+    userLocation.city = PRESET_COORDS[areaName].city;
+    userLocation.locality = PRESET_COORDS[areaName].locality;
     userLocation.isGeoLocated = true;
+  } else {
+    // Best-effort city detection for custom text input
+    const lower = areaName.toLowerCase();
+    if (lower.includes('bangalore') || lower.includes('bengaluru')) {
+      userLocation.city = 'Bangalore'; userLocation.locality = areaName.split(',')[0]; userLocation.lat = 12.9716; userLocation.lng = 77.5946;
+    } else if (lower.includes('mumbai') || lower.includes('bombay')) {
+      userLocation.city = 'Mumbai'; userLocation.locality = areaName.split(',')[0]; userLocation.lat = 19.0760; userLocation.lng = 72.8777;
+    } else if (lower.includes('delhi')) {
+      userLocation.city = 'Delhi'; userLocation.locality = areaName.split(',')[0]; userLocation.lat = 28.6139; userLocation.lng = 77.2090;
+    } else {
+      userLocation.city = 'Kolkata'; userLocation.locality = areaName.split(',')[0]; userLocation.lat = 22.5726; userLocation.lng = 88.3639;
+    }
   }
+
   const locDisplay = document.getElementById('current-location-text');
   if (locDisplay) locDisplay.textContent = areaName;
   updateRestaurantDistances(areaName);
-  updateRadarGoogleMap();
+  if (lastCompletedOrder) updateDeliveryRouteMap();
   closeLocationModal();
   soundBlip();
-  showToast(`Location set to ${areaName} 📍 Radar centered!`, "mint");
+  showToast(`Location set to ${areaName} 📍 Nearby restaurants loaded!`, "mint");
 }
 
 function handleCustomLocationSubmit() {
@@ -1281,6 +1300,43 @@ function finalizeOrderAndOpenTracking() {
   const { subtotal, totalCals, totalItems } = calculateCartTotals();
   const earnedKarma = Math.round(totalCals / 10) + (cartDonationAmount > 0 ? 500 : 0);
 
+  // Identify restaurant of ordered dishes
+  let orderRestaurant = null;
+  for (const [id, item] of Object.entries(cart)) {
+    const dish = DISHES.find(d => d.id === id);
+    if (dish && dish.restaurantId) {
+      orderRestaurant = RESTAURANTS.find(r => r.id === dish.restaurantId);
+      if (orderRestaurant) break;
+    }
+  }
+  if (!orderRestaurant) {
+    orderRestaurant = RESTAURANTS[0] || { name: 'Dada Boudi Biryani (Barrackpore)', lat: 22.7630, lng: 88.3685 };
+  }
+
+  // Calculate genuine distance between restaurant and user location
+  const restLat = orderRestaurant.lat || (userLocation.lat + 0.015);
+  const restLng = orderRestaurant.lng || (userLocation.lng + 0.014);
+  const rawDist = calculateHaversineDistance(userLocation.lat, userLocation.lng, restLat, restLng);
+  const distanceKm = Math.max(0.8, rawDist).toFixed(1);
+
+  // Assign random delivery rider partner with vehicle, phone, and funny response
+  const assignedRider = (typeof DELIVERY_RIDERS !== 'undefined' && DELIVERY_RIDERS.length > 0)
+    ? DELIVERY_RIDERS[Math.floor(Math.random() * DELIVERY_RIDERS.length)]
+    : {
+        name: "Sharma Ji",
+        rating: "4.9 ★",
+        skips: "2,400+ skipped",
+        vehicle: "Honda Activa (WB-24-CHAI-007)",
+        phone: "+91 98749 58471",
+        statusText: "☕ Savoring cutting chai #4 at roadside stall • Samosa in hand",
+        callReply: "Haan bhai, cutting chai pe raha hoon, bilkul deliver nahi hoga! Araam se raho.",
+        messageReply: "Sharma Ji acknowledged: 'Order safe, food untouched, 0 calories delivered!'"
+      };
+
+  // Place rider at roadside tea stall right next to the restaurant (~150m offset)
+  const riderLat = (Number(restLat) + 0.0015).toFixed(4);
+  const riderLng = (Number(restLng) + 0.0012).toFixed(4);
+
   const orderRecord = {
     orderId: 'FNC-' + Math.floor(100000 + Math.random() * 900000),
     timestamp: new Date().toISOString(),
@@ -1290,6 +1346,11 @@ function finalizeOrderAndOpenTracking() {
     donation: cartDonationAmount,
     caloriesSaved: totalCals,
     karmaEarned: earnedKarma,
+    restaurant: orderRestaurant,
+    distanceKm: distanceKm,
+    rider: assignedRider,
+    riderLat: riderLat,
+    riderLng: riderLng,
     dishes: Object.entries(cart).map(([id, item]) => {
       const d = DISHES.find(dish => dish.id === id);
       return { name: d ? d.name : id, qty: item.qty };
@@ -1368,7 +1429,7 @@ function finalizeOrderAndOpenTracking() {
   document.getElementById('tracking-view').classList.remove('hidden');
   document.getElementById('tracking-view').classList.add('flex');
 
-  // Start radar canvas animation & telemetry
+  // Start route map & telemetry simulation
   startRadarMap();
   startTelemetrySimulation();
 }
@@ -1380,28 +1441,88 @@ function updateDeliveryRouteMap() {
   const userLocBadge = document.getElementById('map-user-loc-badge');
   const latLngBadge = document.getElementById('map-lat-lng-badge');
   const mainTitle = document.getElementById('track-main-title');
+  const trackSubStatus = document.getElementById('track-sub-status');
+  const trackDistancePill = document.getElementById('track-distance-pill');
+  const trackStep3Distance = document.getElementById('track-step3-distance');
+  const mapRiderBadge = document.getElementById('map-rider-badge');
+  const trackDistanceBanner = document.getElementById('track-distance');
+  const milestoneRiderTitle = document.getElementById('milestone-rider-title');
+  const milestoneRiderDesc = document.getElementById('milestone-rider-desc');
+
+  // Rider Profile Card
+  const riderNameEl = document.getElementById('rider-name-display');
+  const riderRatingEl = document.getElementById('rider-rating-display');
+  const riderVehicleEl = document.getElementById('rider-vehicle-display');
+  const riderStatusEl = document.getElementById('rider-status-display');
+
+  const currentOrder = lastCompletedOrder || {};
+  const currentRestaurant = currentOrder.restaurant || (typeof RESTAURANTS !== 'undefined' && RESTAURANTS[0]) || { name: 'Local Kitchen', lat: 22.7630, lng: 88.3685 };
+  const currentRider = currentOrder.rider || (typeof DELIVERY_RIDERS !== 'undefined' ? DELIVERY_RIDERS[0] : {
+    name: "Sharma Ji",
+    rating: "4.9 ★",
+    skips: "2,400+ skipped",
+    vehicle: "Honda Activa (WB-24-CHAI-007)",
+    phone: "+91 98749 58471",
+    statusText: "☕ Savoring cutting chai #4 at roadside stall • Samosa in hand",
+    callReply: "Haan bhai, cutting chai pe raha hoon, bilkul deliver nahi hoga!",
+    messageReply: "Sharma Ji: 'Food safe, 0 calories delivered!'"
+  });
+
+  // Calculate or retrieve genuine distance
+  let distKm = currentOrder.distanceKm;
+  if (!distKm && currentRestaurant.lat && currentRestaurant.lng && userLocation.lat && userLocation.lng) {
+    distKm = Math.max(0.8, calculateHaversineDistance(userLocation.lat, userLocation.lng, currentRestaurant.lat, currentRestaurant.lng)).toFixed(1);
+  }
+  distKm = distKm || '2.3';
 
   const destinationName = userLocation.name || 'Your House';
+
   if (userLocBadge) {
     userLocBadge.textContent = `🏠 Destination: ${destinationName}`;
   }
   if (mainTitle) {
-    mainTitle.textContent = `Rider is just 2.3 kms away from your house`;
+    mainTitle.textContent = `Rider is just ${distKm} kms away from your house`;
   }
+  if (trackSubStatus) {
+    trackSubStatus.textContent = `Stationary at tea stall near ${currentRestaurant.name}`;
+  }
+  if (trackDistancePill) {
+    trackDistancePill.textContent = `${distKm} KM AWAY`;
+  }
+  if (trackStep3Distance) {
+    trackStep3Distance.textContent = `${distKm} km away`;
+  }
+  if (mapRiderBadge) {
+    mapRiderBadge.innerHTML = `🛵 <strong>Rider ${currentRider.name}:</strong> Stationary near ${currentRestaurant.name} (${distKm} km away)`;
+  }
+  if (trackDistanceBanner) {
+    trackDistanceBanner.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 anim-pulse"></span> Distance: ${distKm} km away • Speed: 0.00 km/h`;
+  }
+  if (milestoneRiderTitle) {
+    milestoneRiderTitle.textContent = `Rider ${currentRider.name} Savoring Chai #4 near ${currentRestaurant.name}`;
+  }
+  if (milestoneRiderDesc) {
+    milestoneRiderDesc.textContent = `GPS verified stationary near ${currentRestaurant.name}. No rush whatsoever.`;
+  }
+
+  // Update Rider Profile card
+  if (riderNameEl) riderNameEl.textContent = currentRider.name;
+  if (riderRatingEl) riderRatingEl.textContent = `${currentRider.rating} (${currentRider.skips})`;
+  if (riderVehicleEl) riderVehicleEl.textContent = currentRider.vehicle;
+  if (riderStatusEl) riderStatusEl.textContent = `${currentRider.statusText} near ${currentRestaurant.name}`;
+
   if (latLngBadge && userLocation.lat && userLocation.lng) {
     latLngBadge.textContent = `${userLocation.lat.toFixed(4)}° N, ${userLocation.lng.toFixed(4)}° E`;
   }
 
-  // Calculate rider location at tea stall exactly 2.3 km away
-  // 1 deg lat ≈ 111.32 km -> offset of ~0.015 lat and ~0.014 lng is sqrt(0.015^2 + 0.014^2) * 111.32 ≈ 2.28 - 2.3 km
+  // Calculate rider location at tea stall near the restaurant
   const userLat = userLocation.lat || 22.7600;
   const userLng = userLocation.lng || 88.3700;
-  const riderLat = (Number(userLat) + 0.015).toFixed(4);
-  const riderLng = (Number(userLng) + 0.014).toFixed(4);
+  const riderLat = currentOrder.riderLat || (Number(currentRestaurant.lat || userLat) + 0.0015).toFixed(4);
+  const riderLng = currentOrder.riderLng || (Number(currentRestaurant.lng || userLng) + 0.0012).toFixed(4);
 
   if (iframe) {
     const modeParam = currentRadarMapMode === 'satellite' ? '&t=k' : '';
-    // Turn-by-turn route directions from Rider's tea stall to User's house
     const routeUrl = `https://maps.google.com/maps?saddr=${riderLat},${riderLng}&daddr=${userLat},${userLng}&output=embed${modeParam}`;
     if (iframe.src !== routeUrl) {
       iframe.src = routeUrl;
@@ -1440,15 +1561,20 @@ function startRadarMap() {
   updateDeliveryRouteMap();
 }
 
-function callRiderSharmaJi() {
+function callRiderPartner() {
+  const currentRider = lastCompletedOrder?.rider || (typeof DELIVERY_RIDERS !== 'undefined' ? DELIVERY_RIDERS[0] : { name: "Sharma Ji", phone: "+91 98749 58471", callReply: "Chai pe raha hoon!" });
   soundBlip();
-  showToast("📞 Calling Sharma Ji... 'Haan bhai, cutting chai pe raha hoon, bilkul deliver nahi hoga!'", "orange");
+  showToast(`📞 Calling ${currentRider.name} (${currentRider.phone})... '${currentRider.callReply}'`, "orange");
 }
 
-function messageRiderSharmaJi() {
+function messageRiderPartner() {
+  const currentRider = lastCompletedOrder?.rider || (typeof DELIVERY_RIDERS !== 'undefined' ? DELIVERY_RIDERS[0] : { name: "Sharma Ji", phone: "+91 98749 58471", messageReply: "Order safe!" });
   soundBlip();
-  showToast("💬 Message sent: 'Sharma Ji, take your time! 0 calories safely intercepted.'", "mint");
+  showToast(`💬 Message sent to ${currentRider.name} (${currentRider.phone}): '${currentRider.messageReply}'`, "mint");
 }
+
+const callRiderSharmaJi = callRiderPartner;
+const messageRiderSharmaJi = messageRiderPartner;
 
 function startTelemetrySimulation() {
   if (telemetryTimer) clearInterval(telemetryTimer);
@@ -1946,6 +2072,9 @@ window.addEventListener('keydown', (e) => {
 
 // Initialize application on DOMContentLoaded
 window.addEventListener('DOMContentLoaded', () => {
+  if (typeof updateLocationRestaurants === 'function') {
+    updateLocationRestaurants(userLocation);
+  }
   initGeolocation();
   initStorage();
   initRazorpayConfig();

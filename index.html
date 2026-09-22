@@ -1027,12 +1027,12 @@
                 <span id="track-main-title">Rider is just 2.3 kms away from your house</span>
               </h2>
               <p class="text-xs text-swiggy-muted font-medium mt-1">
-                Estimated Delivery: <strong class="text-swiggy-orange font-bold font-mono">Never (&infin; mins)</strong> &bull; Stationary at Sharma Tea Stall
+                Estimated Delivery: <strong class="text-swiggy-orange font-bold font-mono">Never (&infin; mins)</strong> &bull; <span id="track-sub-status">Stationary at Sharma Tea Stall</span>
               </p>
             </div>
             
             <div class="text-right shrink-0">
-              <span class="px-3 py-1.5 rounded-2xl bg-amber-100 text-amber-900 font-mono text-xs font-black border border-amber-200 shadow-xs block">
+              <span class="px-3 py-1.5 rounded-2xl bg-amber-100 text-amber-900 font-mono text-xs font-black border border-amber-200 shadow-xs block" id="track-distance-pill">
                 2.3 KM AWAY
               </span>
               <span class="text-[10px] text-stone-400 font-mono mt-0.5 block">Speed: 0.00 km/h</span>
@@ -1054,7 +1054,7 @@
             <div class="space-y-1">
               <div class="w-7 h-7 rounded-full bg-swiggy-orange text-white mx-auto flex items-center justify-center text-xs font-bold shadow-xs anim-pulse">☕</div>
               <div class="text-[10px] font-display font-bold text-swiggy-orange">Chai Break</div>
-              <div class="text-[9px] font-mono text-swiggy-orange font-bold">2.3 km away</div>
+              <div class="text-[9px] font-mono text-swiggy-orange font-bold" id="track-step3-distance">2.3 km away</div>
             </div>
             <div class="space-y-1">
               <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center text-xs font-bold shadow-xs">🎉</div>
@@ -1078,7 +1078,7 @@
 
             <!-- Floating Route Location Badges -->
             <div class="absolute top-3 left-3 z-10 flex flex-col gap-1.5 pointer-events-auto max-w-[85%]">
-              <span class="px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-md text-stone-900 text-xs font-display font-bold border border-stone-200 shadow-md flex items-center gap-2">
+              <span class="px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-md text-stone-900 text-xs font-display font-bold border border-stone-200 shadow-md flex items-center gap-2" id="map-rider-badge">
                 <span class="w-2.5 h-2.5 rounded-full bg-swiggy-orange anim-pulse"></span>
                 <span>🛵 <strong>Rider Sharma Ji:</strong> Stationary at Roadside Tea Stall (2.3 km away)</span>
               </span>
@@ -1110,15 +1110,15 @@
               </div>
               <div class="min-w-0">
                 <div class="flex items-center gap-2">
-                  <h4 class="font-display font-extrabold text-sm text-swiggy-dark">Sharma Ji</h4>
-                  <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">
+                  <h4 class="font-display font-extrabold text-sm text-swiggy-dark" id="rider-name-display">Sharma Ji</h4>
+                  <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold" id="rider-rating-display">
                     4.9 ★ (2,400+ skipped)
                   </span>
                 </div>
                 <p class="text-xs text-swiggy-muted">
-                  Vehicle: <strong class="text-stone-700 font-mono">Honda Activa (WB-24-CHAI-007)</strong>
+                  Vehicle: <strong class="text-stone-700 font-mono" id="rider-vehicle-display">Honda Activa (WB-24-CHAI-007)</strong>
                 </p>
-                <p class="text-[11px] text-amber-800 font-medium">
+                <p class="text-[11px] text-amber-800 font-medium" id="rider-status-display">
                   ☕ Savoring cutting chai #4 at roadside stall • Samosa in hand
                 </p>
               </div>
@@ -1126,11 +1126,11 @@
 
             <!-- Call & Message Partner Action Buttons -->
             <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
-              <button type="button" onclick="callRiderSharmaJi()" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-white hover:bg-stone-100 border border-stone-300 text-xs font-display font-bold text-swiggy-dark flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95">
+              <button type="button" onclick="callRiderPartner()" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-white hover:bg-stone-100 border border-stone-300 text-xs font-display font-bold text-swiggy-dark flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95">
                 <span>📞</span>
                 <span>Call Partner</span>
               </button>
-              <button type="button" onclick="messageRiderSharmaJi()" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-swiggy-orange hover:bg-swiggy-orangeHover text-white text-xs font-display font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95">
+              <button type="button" onclick="messageRiderPartner()" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-swiggy-orange hover:bg-swiggy-orangeHover text-white text-xs font-display font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95">
                 <span>💬</span>
                 <span>Message</span>
               </button>
@@ -1169,8 +1169,8 @@
             </div>
             <div class="relative">
               <span class="absolute -left-[31px] top-0 w-6 h-6 rounded-full bg-swiggy-orange text-white flex items-center justify-center text-xs font-bold shadow-xs anim-pulse">☕</span>
-              <h4 class="text-xs font-display font-bold text-swiggy-orange">Rider Sharma Ji Savoring Chai #4</h4>
-              <p class="text-[11px] text-swiggy-muted">GPS verified stationary at roadside tea stall. No rush whatsoever.</p>
+              <h4 class="text-xs font-display font-bold text-swiggy-orange" id="milestone-rider-title">Rider Sharma Ji Savoring Chai #4</h4>
+              <p class="text-[11px] text-swiggy-muted" id="milestone-rider-desc">GPS verified stationary at roadside tea stall. No rush whatsoever.</p>
             </div>
           </div>
         </div>
