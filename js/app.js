@@ -199,11 +199,59 @@ function initStorage() {
     }
   } catch (e) {}
 
+  if (lifetimeStats.orderHistory && lifetimeStats.orderHistory.length > 0) {
+    lastCompletedOrder = lifetimeStats.orderHistory[0];
+  }
+  updateLiveRouteVisibility();
+
   updateUserDisplay();
   renderDashboard();
   renderCompactPodium();
   renderLeaderboardDrawer();
   updateNavKarmaBadge();
+}
+
+function updateLiveRouteVisibility() {
+  const hasOrder = !!lastCompletedOrder;
+  const navBtn = document.getElementById('nav-live-route-btn');
+  const chipBtn = document.getElementById('chip-live-route-btn');
+  const mobileBtn = document.getElementById('mobile-nav-track-btn');
+  const footerItem = document.getElementById('footer-live-route-item');
+
+  if (navBtn) {
+    if (hasOrder) {
+      navBtn.classList.remove('hidden');
+      navBtn.classList.add('flex');
+    } else {
+      navBtn.classList.add('hidden');
+      navBtn.classList.remove('flex');
+    }
+  }
+  if (chipBtn) {
+    if (hasOrder) {
+      chipBtn.classList.remove('hidden');
+      chipBtn.classList.add('inline-flex');
+    } else {
+      chipBtn.classList.add('hidden');
+      chipBtn.classList.remove('inline-flex');
+    }
+  }
+  if (mobileBtn) {
+    if (hasOrder) {
+      mobileBtn.classList.remove('hidden');
+      mobileBtn.classList.add('flex');
+    } else {
+      mobileBtn.classList.add('hidden');
+      mobileBtn.classList.remove('flex');
+    }
+  }
+  if (footerItem) {
+    if (hasOrder) {
+      footerItem.classList.remove('hidden');
+    } else {
+      footerItem.classList.add('hidden');
+    }
+  }
 }
 
 function saveStats() {
@@ -240,6 +288,8 @@ function resetLifetimeStats() {
     lifetimeStats.karmaPoints = 1420;
     lifetimeStats.donationPledged = 0;
     lifetimeStats.orderHistory = [];
+    lastCompletedOrder = null;
+    updateLiveRouteVisibility();
     saveStats();
     renderDashboard();
     renderCompactPodium();
@@ -1247,6 +1297,7 @@ function finalizeOrderAndOpenTracking() {
   };
 
   lastCompletedOrder = orderRecord;
+  updateLiveRouteVisibility();
 
   // Update Lifetime Stats
   lifetimeStats.orders += 1;
@@ -1809,6 +1860,12 @@ function scrollToSection(id) {
 }
 
 function openLiveTrackingModal() {
+  if (!lastCompletedOrder) {
+    soundBlip();
+    showToast("No active order! Place a ₹0 phantom order first to track Rider Sharma Ji 🛵", "orange");
+    scrollToSection('menu-section');
+    return;
+  }
   soundBlip();
   const trackingView = document.getElementById('tracking-view');
   if (trackingView) {

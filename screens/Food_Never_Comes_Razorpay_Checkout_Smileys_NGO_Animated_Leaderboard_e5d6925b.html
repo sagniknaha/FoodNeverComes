@@ -308,13 +308,13 @@
         <!-- Right Action Items -->
         <div class="flex items-center gap-2 sm:gap-3 font-display font-semibold text-xs sm:text-sm">
           
-          <!-- Live Route Trigger Button -->
-          <button class="hidden lg:flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-stone-900 text-white hover:bg-black transition-all active:scale-95 shadow-xs group" onclick="openLiveTrackingModal()" title="Inspect Rider Sharma Ji's live tea stall coordinates">
+          <!-- Live Route Trigger Button (Only visible after placing an order) -->
+          <button id="nav-live-route-btn" class="hidden items-center gap-2 px-3.5 py-2 rounded-2xl bg-stone-900 text-white hover:bg-black transition-all active:scale-95 shadow-xs group" onclick="openLiveTrackingModal()" title="Inspect Rider Sharma Ji's live tea stall coordinates">
             <span class="relative flex h-2 w-2">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span class="text-xs font-bold text-stone-200 group-hover:text-white">Live Route</span>
+            <span class="text-xs font-bold text-stone-200 group-hover:text-white">Track Order</span>
             <span class="text-xs text-swiggy-orange">🛵</span>
           </button>
 
@@ -374,7 +374,7 @@
           <button onclick="soundBlip(); scrollToSection('menu-section')" class="px-3 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-swiggy-orange text-stone-700 font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap">
             <span>🍽️</span> 500+ Dishes
           </button>
-          <button onclick="openLiveTrackingModal()" class="px-3 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-swiggy-orange text-stone-700 font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap">
+          <button id="chip-live-route-btn" onclick="openLiveTrackingModal()" class="hidden px-3 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-swiggy-orange text-stone-700 font-semibold transition-colors items-center gap-1.5 whitespace-nowrap">
             <span>🛵</span> Track Rider (2.3 km)
           </button>
           <button onclick="openLeaderboardDrawer()" class="px-3 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-swiggy-orange text-stone-700 font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap">
@@ -1763,7 +1763,7 @@
           <ul class="space-y-2 text-stone-400 text-xs font-medium">
             <li><a href="#" onclick="soundBlip(); scrollToSection('hero'); return false;" class="hover:text-swiggy-orange transition-colors">Negative Fulfillment Protocol</a></li>
             <li><a href="#" onclick="soundBlip(); scrollToSection('impact-dashboard'); return false;" class="hover:text-swiggy-orange transition-colors">Metabolic Calorie Aversion Theory</a></li>
-            <li><a href="#" onclick="openLiveTrackingModal(); return false;" class="hover:text-swiggy-orange transition-colors flex items-center gap-1"><span>Rider Sharma Ji Radar</span> <span class="text-[9px] bg-swiggy-orange text-white px-1.5 py-0.2 rounded font-mono">LIVE</span></a></li>
+            <li id="footer-live-route-item" class="hidden"><a href="#" onclick="openLiveTrackingModal(); return false;" class="hover:text-swiggy-orange transition-colors flex items-center gap-1"><span>Rider Live Route</span> <span class="text-[9px] bg-swiggy-orange text-white px-1.5 py-0.2 rounded font-mono">LIVE</span></a></li>
             <li><a href="#" onclick="openRewardsDrawer(); return false;" class="hover:text-swiggy-orange transition-colors">Zen Monk Karma Currency</a></li>
             <li><a href="#" onclick="openLeaderboardDrawer(); return false;" class="hover:text-swiggy-orange transition-colors">1,000+ Patrons Hall of Fame</a></li>
             <li><a href="#" onclick="soundBlip(); scrollToSection('hero'); return false;" class="hover:text-swiggy-orange transition-colors">The Chai Stall Detour Hypothesis</a></li>
@@ -1851,7 +1851,7 @@
       <span class="text-base">🏠</span>
       <span>Menu</span>
     </button>
-    <button onclick="openLiveTrackingModal()" class="flex flex-col items-center gap-0.5 hover:text-swiggy-orange active:scale-95 transition-all relative">
+    <button id="mobile-nav-track-btn" onclick="openLiveTrackingModal()" class="hidden flex-col items-center gap-0.5 hover:text-swiggy-orange active:scale-95 transition-all relative">
       <span class="text-base">🛵</span>
       <span>Track</span>
       <span class="absolute top-0 right-1 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -2478,11 +2478,59 @@ function initStorage() {
     }
   } catch (e) {}
 
+  if (lifetimeStats.orderHistory && lifetimeStats.orderHistory.length > 0) {
+    lastCompletedOrder = lifetimeStats.orderHistory[0];
+  }
+  updateLiveRouteVisibility();
+
   updateUserDisplay();
   renderDashboard();
   renderCompactPodium();
   renderLeaderboardDrawer();
   updateNavKarmaBadge();
+}
+
+function updateLiveRouteVisibility() {
+  const hasOrder = !!lastCompletedOrder;
+  const navBtn = document.getElementById('nav-live-route-btn');
+  const chipBtn = document.getElementById('chip-live-route-btn');
+  const mobileBtn = document.getElementById('mobile-nav-track-btn');
+  const footerItem = document.getElementById('footer-live-route-item');
+
+  if (navBtn) {
+    if (hasOrder) {
+      navBtn.classList.remove('hidden');
+      navBtn.classList.add('flex');
+    } else {
+      navBtn.classList.add('hidden');
+      navBtn.classList.remove('flex');
+    }
+  }
+  if (chipBtn) {
+    if (hasOrder) {
+      chipBtn.classList.remove('hidden');
+      chipBtn.classList.add('inline-flex');
+    } else {
+      chipBtn.classList.add('hidden');
+      chipBtn.classList.remove('inline-flex');
+    }
+  }
+  if (mobileBtn) {
+    if (hasOrder) {
+      mobileBtn.classList.remove('hidden');
+      mobileBtn.classList.add('flex');
+    } else {
+      mobileBtn.classList.add('hidden');
+      mobileBtn.classList.remove('flex');
+    }
+  }
+  if (footerItem) {
+    if (hasOrder) {
+      footerItem.classList.remove('hidden');
+    } else {
+      footerItem.classList.add('hidden');
+    }
+  }
 }
 
 function saveStats() {
@@ -2519,6 +2567,8 @@ function resetLifetimeStats() {
     lifetimeStats.karmaPoints = 1420;
     lifetimeStats.donationPledged = 0;
     lifetimeStats.orderHistory = [];
+    lastCompletedOrder = null;
+    updateLiveRouteVisibility();
     saveStats();
     renderDashboard();
     renderCompactPodium();
@@ -3526,6 +3576,7 @@ function finalizeOrderAndOpenTracking() {
   };
 
   lastCompletedOrder = orderRecord;
+  updateLiveRouteVisibility();
 
   // Update Lifetime Stats
   lifetimeStats.orders += 1;
@@ -4088,6 +4139,12 @@ function scrollToSection(id) {
 }
 
 function openLiveTrackingModal() {
+  if (!lastCompletedOrder) {
+    soundBlip();
+    showToast("No active order! Place a ₹0 phantom order first to track Rider Sharma Ji 🛵", "orange");
+    scrollToSection('menu-section');
+    return;
+  }
   soundBlip();
   const trackingView = document.getElementById('tracking-view');
   if (trackingView) {
