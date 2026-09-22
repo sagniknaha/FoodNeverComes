@@ -136,6 +136,16 @@ function updateRestaurantDistances(area) {
   if (typeof updateLocationRestaurants === 'function') {
     updateLocationRestaurants(userLocation);
   }
+  const heroLoc = document.getElementById('hero-location-name');
+  if (heroLoc) {
+    if (userLocation.locality && userLocation.city && userLocation.locality.toLowerCase() !== userLocation.city.toLowerCase()) {
+      heroLoc.textContent = `${userLocation.locality} & ${userLocation.city}'s`;
+    } else if (userLocation.city) {
+      heroLoc.textContent = `${userLocation.city}'s`;
+    } else {
+      heroLoc.textContent = "Barrackpore & Kolkata's";
+    }
+  }
   selectedRestaurant = 'all';
   renderRestaurantsCarousel();
   renderDishes();

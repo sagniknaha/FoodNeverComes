@@ -8,7 +8,7 @@
   <!-- Google Fonts: Plus Jakarta Sans, Outfit, DM Sans, Syne, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=Syne:wght@700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Syne:wght@700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
@@ -175,8 +175,8 @@
           fontFamily: {
             sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
             brand: ['"Plus Jakarta Sans"', '"Outfit"', 'sans-serif'],
-            display: ['"Outfit"', 'sans-serif'],
-            heading: ['"Syne"', 'sans-serif'],
+            display: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+            heading: ['"Plus Jakarta Sans"', '"Outfit"', 'sans-serif'],
             mono: ['"JetBrains Mono"', 'monospace']
           },
           colors: {
@@ -411,12 +411,12 @@
               <span class="w-2 h-2 rounded-full bg-swiggy-orange anim-pulse"></span>
               FNC NEGATIVE FULFILLMENT PROTOCOL v7.0 • FREE PHANTOM CHECKOUT
             </div>
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight text-swiggy-dark leading-[1.15]">
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-brand font-black tracking-tight text-swiggy-dark leading-[1.12]">
               Order food you crave.<br/>
-              <span class="text-swiggy-orange">We make sure it never arrives.</span>
+              <span class="text-swiggy-orange font-black">We make sure it never arrives.</span>
             </h1>
             <p class="mt-4 text-base sm:text-lg text-swiggy-muted font-normal max-w-xl leading-relaxed">
-              Explore 500+ authentic cravings across Barrackpore &amp; Kolkata's top local restaurants. Phantom food is <strong class="text-swiggy-dark font-semibold">100% Free (₹0)</strong> with instant simulated checkout. Want to make a real impact? Contribute your spared food bill to <strong class="text-swiggy-dark font-semibold">The Smileys Foundation</strong> via dedicated PhonePe / Razorpay UPI with instant 80G tax exemption!
+              Explore 500+ authentic cravings across <span id="hero-location-name" class="font-semibold text-swiggy-dark">Barrackpore &amp; Kolkata's</span> top local restaurants. Phantom food is <strong class="text-swiggy-dark font-semibold">100% Free (₹0)</strong> with instant simulated checkout. Want to make a real impact? Contribute your spared food bill to <strong class="text-swiggy-dark font-semibold">The Smileys Foundation</strong> via dedicated PhonePe / Razorpay UPI with instant 80G tax exemption!
             </p>
 
             <!-- Dual Action CTAs -->
@@ -3005,6 +3005,16 @@ function updateRestaurantDistances(area) {
   // Update restaurant list and distance labels based on genuine coordinates
   if (typeof updateLocationRestaurants === 'function') {
     updateLocationRestaurants(userLocation);
+  }
+  const heroLoc = document.getElementById('hero-location-name');
+  if (heroLoc) {
+    if (userLocation.locality && userLocation.city && userLocation.locality.toLowerCase() !== userLocation.city.toLowerCase()) {
+      heroLoc.textContent = `${userLocation.locality} & ${userLocation.city}'s`;
+    } else if (userLocation.city) {
+      heroLoc.textContent = `${userLocation.city}'s`;
+    } else {
+      heroLoc.textContent = "Barrackpore & Kolkata's";
+    }
   }
   selectedRestaurant = 'all';
   renderRestaurantsCarousel();
