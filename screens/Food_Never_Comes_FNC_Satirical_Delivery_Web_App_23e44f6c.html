@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Never Comes (FNC) — The delivery app that keeps its distance | foodnevercomes.com</title>
+  <!-- Google Fonts: Space Grotesk (geometric sans) and JetBrains Mono (monospace counters) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CDN for high-fidelity responsive utility styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              bg: '#0a0b0e',
+              surface: '#12141a',
+              card: '#181b24',
+              border: '#252936',
+              mint: '#10f5a2',       // neon mint for health & stats saved
+              mintDim: '#0a3d2a',
+              coral: '#ff5c5c',      // food/urgency coral
+              coralDim: '#3a1616',
+              amber: '#f59e0b',
+              electricBlue: '#38bdf8'
+            }
+          },
+          animation: {
+            'pulse-fast': 'pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'shimmer': 'shimmer 2s infinite linear',
+            'stuck-rider': 'stuckRider 2.5s ease-in-out infinite',
+            'fade-in': 'fadeIn 0.25s ease-out',
+            'slide-up': 'slideUp 0.3s ease-out',
+          },
+          keyframes: {
+            shimmer: {
+              '0%': { backgroundPosition: '-200% 0' },
+              '100%': { backgroundPosition: '200% 0' }
+            },
+            stuckRider: {
+              '0%, 100%': { transform: 'translateX(0px) rotate(0deg)' },
+              '25%': { transform: 'translateX(3px) rotate(1deg)' },
+              '75%': { transform: 'translateX(-3px) rotate(-1deg)' }
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(16px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbars and glow accents */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0b0e; }
+    ::-webkit-scrollbar-thumb { background: #252936; border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #374151; }
+
+    .glow-mint {
+      box-shadow: 0 0 25px -4px rgba(16, 245, 162, 0.35);
+    }
+    .glow-coral {
+      box-shadow: 0 0 25px -4px rgba(255, 92, 92, 0.35);
+    }
+    .neon-text-mint {
+      text-shadow: 0 0 12px rgba(16, 245, 162, 0.4);
+    }
+    .grid-bg-pattern {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    }
+    /* Infinite road animation for stuck rider */
+    @keyframes roadMove {
+      0% { background-position: 0 0; }
+      100% { background-position: -40px 0; }
+    }
+    .road-stripes {
+      background-image: repeating-linear-gradient(90deg, #10f5a2 0, #10f5a2 12px, transparent 12px, transparent 24px);
+      animation: roadMove 1.4s linear infinite;
+    }
+  </style>
+</head>
+<body class="bg-brand-bg text-gray-100 font-sans antialiased selection:bg-brand-mint selection:text-black min-h-screen flex flex-col relative overflow-x-hidden">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Top Announcement Bar -->
+  <aside aria-label="Announcement" class="bg-gradient-to-r from-brand-card via-brand-surface to-brand-card border-b border-brand-border/60 text-xs py-1.5 px-4 text-center text-gray-400 flex items-center justify-center gap-2">
+    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-brand-mint/10 text-brand-mint border border-brand-mint/20">LIVE GUILT REDUCTION</span>
+    <span>Guarantee: If your order ever arrives, you get a full refund + an apology letter from our bike.</span>
+  </aside>
+
+  <!-- Sticky Navbar -->
+  <header class="sticky top-0 z-40 bg-brand-bg/85 backdrop-blur-md border-b border-brand-border/70 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <a href="#" onclick="scrollToSection('hero'); return false;" class="flex items-center gap-3 group focus:outline-none">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-card to-brand-border border border-brand-border flex items-center justify-center font-mono font-black text-xl text-brand-mint group-hover:border-brand-mint/60 transition-all shadow-inner relative overflow-hidden">
+          <span class="relative z-10">FNC</span>
+          <div class="absolute inset-0 bg-brand-mint/5 group-hover:bg-brand-mint/15 transition-all"></div>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xl font-bold tracking-tight text-white group-hover:text-brand-mint transition-colors">Food Never Comes</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-brand-coral/10 text-brand-coral border border-brand-coral/25">SATIRE</span>
+          </div>
+          <span class="text-xs text-gray-400 font-mono hidden sm:inline">Order it. Skip it. Win anyway.</span>
+        </div>
+      </a>
+
+      <!-- Quick Nav Links -->
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300">
+        <a href="#how-it-works" onclick="scrollToSection('how-it-works'); return false;" class="hover:text-brand-mint transition-colors">How It Ghostworks</a>
+        <a href="#menu-section" onclick="scrollToSection('menu-section'); return false;" class="hover:text-brand-mint transition-colors">Menu Catalog</a>
+        <a href="#impact-dashboard" onclick="scrollToSection('impact-dashboard'); return false;" class="hover:text-brand-mint transition-colors">Lifetime Wins</a>
+        <a href="#leaderboard-section" onclick="scrollToSection('leaderboard-section'); return false;" class="hover:text-brand-mint transition-colors">Hall of Abstinence</a>
+      </nav>
+
+      <!-- Cart Button & Active User Badge -->
+      <div class="flex items-center gap-3">
+        <!-- User Badge -->
+        <button onclick="editDisplayNamePrompt()" title="Click to rename display tag" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-surface border border-brand-border hover:border-gray-600 transition-colors text-xs font-mono text-gray-300">
+          <span class="w-2 h-2 rounded-full bg-brand-mint animate-pulse"></span>
+          <span id="nav-user-name" class="font-semibold text-gray-200">You (Ghost Eater)</span>
+          <span class="text-gray-500 text-[10px]">✎</span>
+        </button>
+
+        <!-- Cart Trigger Drawer Button -->
+        <button id="cart-drawer-btn" onclick="openCartDrawer()" class="relative flex items-center gap-2.5 px-4 py-2 rounded-xl bg-brand-mint text-black font-semibold font-mono text-sm hover:bg-[#25fdb0] active:scale-95 transition-all glow-mint">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span class="hidden sm:inline">Phantom Cart</span>
+          <span id="nav-cart-badge" class="px-2 py-0.5 rounded-full bg-black text-brand-mint text-xs font-bold font-mono">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <main class="flex-grow">
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="relative pt-12 pb-20 overflow-hidden border-b border-brand-border/60 grid-bg-pattern">
+      <!-- Ambient decorative glow orbs -->
+      <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-brand-mint/5 blur-[120px] pointer-events-none rounded-full"></div>
+      <div class="absolute -top-12 right-12 w-64 h-64 bg-brand-coral/5 blur-[100px] pointer-events-none rounded-full"></div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <!-- Floating tag -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-surface/90 border border-brand-border text-xs font-mono text-gray-300 mb-6 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-brand-coral animate-ping"></span>
+          <span>Ghost Delivery Protocol v4.0</span>
+          <span class="text-gray-500">•</span>
+          <span class="text-brand-mint">Zero calories ingested guaranteed</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white max-w-4xl mx-auto leading-[1.1]">
+          The delivery app that <br class="hidden sm:inline">
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-mint via-teal-300 to-brand-electricBlue">keeps its distance.</span>
+        </h1>
+
+        <p class="mt-6 text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto font-sans leading-relaxed">
+          Order 1,400 kcal double-cheese butter naans or loaded pizzas right now. 
+          We collect your fake payment, send our phantom rider on an eternal detour, and hand you back 
+          <strong class="text-brand-mint font-semibold">100% of your metabolic health & waiting time</strong>.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <button onclick="scrollToSection('menu-section')" class="px-7 py-3.5 rounded-xl bg-brand-coral text-white font-bold font-mono text-sm tracking-wide hover:bg-[#ff7070] active:scale-95 transition-all glow-coral flex items-center gap-2">
+            <span>START NOT EATING</span>
+            <span>↓</span>
+          </button>
+          <button onclick="scrollToSection('how-it-works')" class="px-6 py-3.5 rounded-xl bg-brand-surface border border-brand-border text-gray-300 font-mono text-sm hover:border-gray-500 hover:text-white transition-all">
+            See the Mechanics
+          </button>
+        </div>
+
+        <!-- Live Running Mock Metric Pill -->
+        <div class="mt-12 inline-grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto text-left w-full px-2">
+          <div class="p-3.5 rounded-xl bg-brand-surface/60 border border-brand-border/80">
+            <div class="text-[11px] font-mono text-gray-400">Total Phantom Orders</div>
+            <div class="text-xl font-mono font-bold text-white mt-0.5">84,921</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-brand-surface/60 border border-brand-border/80">
+            <div class="text-[11px] font-mono text-gray-400">Calories Averted</div>
+            <div class="text-xl font-mono font-bold text-brand-mint mt-0.5">62,840,110</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-brand-surface/60 border border-brand-border/80">
+            <div class="text-[11px] font-mono text-gray-400">Hours Not Staring at Door</div>
+            <div class="text-xl font-mono font-bold text-brand-electricBlue mt-0.5">71,400 hrs</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-brand-surface/60 border border-brand-border/80">
+            <div class="text-[11px] font-mono text-gray-400">Arrival Rate</div>
+            <div class="text-xl font-mono font-bold text-brand-coral mt-0.5">0.00%</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS (3-STEP BLOCK) -->
+    <section id="how-it-works" class="py-16 bg-brand-surface/40 border-b border-brand-border/60">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-xl mx-auto mb-12">
+          <h2 class="text-xs font-mono uppercase tracking-widest text-brand-mint">Guilt-Free Technology</h2>
+          <p class="text-2xl sm:text-3xl font-bold text-white mt-2">How It Works (In 3 Non-Steps)</p>
+          <p class="text-sm text-gray-400 mt-2">The only app designed from day one with negative fulfilment.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          <!-- Step 1 -->
+          <div class="relative p-6 rounded-2xl bg-brand-card/70 border border-brand-border group hover:border-brand-mint/40 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-brand-surface border border-brand-border flex items-center justify-center font-mono text-xl text-brand-mint mb-4 group-hover:scale-110 transition-transform">
+              01
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">1. Indulge & Order</h3>
+            <p class="text-sm text-gray-400 leading-relaxed">
+              Crave that 1,200 calorie Butter Chicken Biryani or Nutella stuffed waffle? Add it all to your cart. Fill out our dummy checkout with zero financial risk.
+            </p>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="relative p-6 rounded-2xl bg-brand-card/70 border border-brand-border group hover:border-brand-coral/40 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-brand-surface border border-brand-border flex items-center justify-center font-mono text-xl text-brand-coral mb-4 group-hover:scale-110 transition-transform">
+              02
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">2. It Never Arrives</h3>
+            <p class="text-sm text-gray-400 leading-relaxed">
+              Our rider pauses midway at a tea stall forever. The kitchen is busy browsing reels. The GPS dot circles a roundabout in an eternal zen loop.
+            </p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="relative p-6 rounded-2xl bg-brand-card/70 border border-brand-border group hover:border-brand-mint/40 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-brand-surface border border-brand-border flex items-center justify-center font-mono text-xl text-brand-mint mb-4 group-hover:scale-110 transition-transform">
+              03
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">3. You Win Life Back</h3>
+            <p class="text-sm text-gray-400 leading-relaxed">
+              Live counter ticks your saved calories and saved waiting time directly into your lifetime health vault. You got the dopamine rush of ordering, with zero consequences.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MENU & RESTAURANT CATALOG SECTION -->
+    <section id="menu-section" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-coral">Infinite Menu • 0% Delivery</span>
+          <h2 class="text-3xl font-bold text-white mt-1">Phantom Kitchens & Delicacies</h2>
+          <p class="text-sm text-gray-400 mt-1">Pick your desired cravings. Every calorie listed is a calorie you won't digest.</p>
+        </div>
+
+        <!-- Search & Filter count -->
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <input 
+              id="menu-search-input" 
+              type="text" 
+              oninput="handleSearch(this.value)"
+              placeholder="Search dishes or cravings..." 
+              class="w-64 bg-brand-surface border border-brand-border rounded-xl px-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-mint font-sans"
+            />
+            <span class="absolute right-3 top-3 text-gray-500 text-xs font-mono">⌘K</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar mb-8" id="category-pills">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Menu Grid -->
+      <div id="dishes-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Dishes populated by JS -->
+      </div>
+
+    </section>
+
+    <!-- LIFETIME IMPACT DASHBOARD (LOCALSTORAGE PERSISTED) -->
+    <section id="impact-dashboard" class="py-16 bg-brand-surface/60 border-t border-b border-brand-border/70 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+          <div>
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-brand-mint/10 border border-brand-mint/20 text-brand-mint text-xs font-mono mb-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand-mint"></span>
+              YOUR PERSONAL RECOVERY VAULT
+            </div>
+            <h2 class="text-3xl font-bold text-white">Lifetime Impact Dashboard</h2>
+            <p class="text-sm text-gray-400 mt-1">Cumulative metrics of food that remained safely in fictional kitchens.</p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button onclick="resetLifetimeStats()" class="px-3.5 py-2 rounded-xl bg-brand-card hover:bg-brand-border/60 border border-brand-border text-xs text-gray-400 hover:text-white font-mono transition-all">
+              ↺ Reset My Stats
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Key Stat Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <!-- Card 1: Orders Placed & Averted -->
+          <div class="p-6 rounded-2xl bg-brand-card border border-brand-border relative overflow-hidden group hover:border-brand-mint/30 transition-all">
+            <div class="text-xs font-mono text-gray-400 uppercase tracking-wider">Orders Un-delivered</div>
+            <div id="dash-total-orders" class="text-4xl font-extrabold font-mono text-white mt-3 neon-text-mint">0</div>
+            <p class="text-xs text-gray-400 mt-2">Zero brown paper bags cluttering your kitchen counter.</p>
+            <div class="absolute right-4 bottom-4 text-3xl opacity-10 group-hover:opacity-20 transition-opacity">📦</div>
+          </div>
+
+          <!-- Card 2: Calories Saved -->
+          <div class="p-6 rounded-2xl bg-brand-card border border-brand-border relative overflow-hidden group hover:border-brand-mint/30 transition-all">
+            <div class="text-xs font-mono text-brand-mint uppercase tracking-wider">Calories Saved</div>
+            <div id="dash-total-cals" class="text-4xl font-extrabold font-mono text-brand-mint mt-3 neon-text-mint">0</div>
+            <p id="dash-cals-equiv" class="text-xs text-gray-300 mt-2 font-mono">≈ 0 min brisk walking</p>
+            <div class="absolute right-4 bottom-4 text-3xl opacity-10 group-hover:opacity-20 transition-opacity">🔥</div>
+          </div>
+
+          <!-- Card 3: Time Saved -->
+          <div class="p-6 rounded-2xl bg-brand-card border border-brand-border relative overflow-hidden group hover:border-brand-electricBlue/30 transition-all">
+            <div class="text-xs font-mono text-brand-electricBlue uppercase tracking-wider">Wait Time Saved</div>
+            <div id="dash-total-time" class="text-4xl font-extrabold font-mono text-brand-electricBlue mt-3">0 <span class="text-xl">min</span></div>
+            <p id="dash-time-equiv" class="text-xs text-gray-300 mt-2 font-mono">≈ 0 episodes of The Office</p>
+            <div class="absolute right-4 bottom-4 text-3xl opacity-10 group-hover:opacity-20 transition-opacity">⏳</div>
+          </div>
+
+          <!-- Card 4: Money Never Charged -->
+          <div class="p-6 rounded-2xl bg-brand-card border border-brand-border relative overflow-hidden group hover:border-brand-coral/30 transition-all">
+            <div class="text-xs font-mono text-brand-coral uppercase tracking-wider">Money Never Charged</div>
+            <div id="dash-total-money" class="text-4xl font-extrabold font-mono text-white mt-3">₹0</div>
+            <p class="text-xs text-gray-400 mt-2">Card details evaporated into pure parody air.</p>
+            <div class="absolute right-4 bottom-4 text-3xl opacity-10 group-hover:opacity-20 transition-opacity">💳</div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FRIENDS LEADERBOARD (HALL OF ABSTINENCE) -->
+    <section id="leaderboard-section" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-8">
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-mint">Social Guilt Index</span>
+          <h2 class="text-3xl font-bold text-white mt-1">Hall of Abstinence Leaderboard</h2>
+          <p class="text-sm text-gray-400 mt-2">
+            See how your ghost-eating restraint stacks up against fellow phantom foodies. 
+            <span class="text-brand-coral/80 text-xs block mt-1">(Local demonstration simulation: profiles are fictional buddies living in your browser storage)</span>
+          </p>
+        </div>
+
+        <!-- Custom User Profile Bar -->
+        <div class="mb-6 p-4 rounded-xl bg-brand-surface border border-brand-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-brand-mint/20 border border-brand-mint/40 flex items-center justify-center text-lg">
+              🧘
+            </div>
+            <div>
+              <div class="text-xs text-gray-400 font-mono">Your Active Handle:</div>
+              <div id="leaderboard-active-name" class="font-bold text-white text-base">You (Ghost Eater)</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+            <input 
+              id="handle-input" 
+              type="text" 
+              maxlength="20" 
+              placeholder="Set new handle..." 
+              class="bg-brand-card border border-brand-border rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-mint flex-1 sm:w-44 font-mono"
+            />
+            <button onclick="updateHandleFromInput()" class="px-3.5 py-1.5 rounded-lg bg-brand-mint text-black font-semibold text-xs font-mono hover:bg-[#25fdb0] transition-colors">
+              Update
+            </button>
+          </div>
+        </div>
+
+        <!-- Leaderboard Table Container -->
+        <div class="rounded-2xl border border-brand-border bg-brand-surface overflow-hidden shadow-2xl">
+          <div class="p-4 bg-brand-card/80 border-b border-brand-border flex items-center justify-between text-xs font-mono text-gray-400">
+            <div class="flex items-center gap-4">
+              <span class="w-8 text-center">RANK</span>
+              <span>PHANTOM PATRON</span>
+            </div>
+            <div class="flex items-center gap-6">
+              <span class="hidden sm:inline">ORDERS SKIPPED</span>
+              <span class="w-24 text-right text-brand-mint font-bold">CALORIES SAVED</span>
+            </div>
+          </div>
+
+          <div id="leaderboard-rows" class="divide-y divide-brand-border/60">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- CART SLIDE-OUT DRAWER -->
+  <div id="cart-drawer-backdrop" onclick="closeCartDrawer()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+  <aside id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-brand-surface border-l border-brand-border z-50 translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-2xl">
+    <!-- Drawer Header -->
+    <div class="p-5 border-b border-brand-border flex items-center justify-between bg-brand-card/40">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-brand-mint/10 border border-brand-mint/30 flex items-center justify-center text-brand-mint">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-white">Your Phantom Cart</h2>
+          <p class="text-[11px] text-gray-400 font-mono">Dishes slated for permanent non-arrival</p>
+        </div>
+      </div>
+      <button onclick="closeCartDrawer()" class="w-8 h-8 rounded-lg bg-brand-card hover:bg-brand-border flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+        ✕
+      </button>
+    </div>
+
+    <!-- Drawer Items List -->
+    <div id="cart-items-container" class="flex-grow overflow-y-auto p-5 space-y-4">
+      <!-- Items or Empty State injected by JS -->
+    </div>
+
+    <!-- Drawer Footer Summary -->
+    <div class="p-5 border-t border-brand-border bg-brand-card/70 space-y-4">
+      <!-- Running Total Stats -->
+      <div class="p-3.5 rounded-xl bg-brand-surface border border-brand-border space-y-2">
+        <div class="flex justify-between text-xs text-gray-400">
+          <span>Items to never receive</span>
+          <span id="cart-total-qty" class="font-mono text-white">0</span>
+        </div>
+        <div class="flex justify-between text-xs text-gray-400">
+          <span class="flex items-center gap-1 text-brand-mint">
+            <span>🔥</span> Calories to avoid
+          </span>
+          <span id="cart-total-cals" class="font-mono font-bold text-brand-mint">0 kcal</span>
+        </div>
+        <div class="flex justify-between text-xs text-gray-400">
+          <span class="flex items-center gap-1 text-brand-electricBlue">
+            <span>⏱️</span> Prep & wait time avoided
+          </span>
+          <span id="cart-total-time" class="font-mono font-bold text-brand-electricBlue">0 min</span>
+        </div>
+        <div class="pt-2 border-t border-brand-border/60 flex justify-between text-sm">
+          <span class="font-medium text-gray-200">Phantom Subtotal</span>
+          <span id="cart-total-price" class="font-mono font-bold text-white text-base">₹0</span>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <button id="checkout-drawer-btn" onclick="openCheckoutModal()" class="w-full py-3.5 rounded-xl bg-brand-coral hover:bg-[#ff7070] text-white font-bold font-mono text-sm tracking-wide transition-all active:scale-98 glow-coral flex items-center justify-center gap-2 disabled:opacity-40 disabled:pointer-events-none">
+        <span>PROCEED TO DUMMY CHECKOUT</span>
+        <span>→</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- DUMMY CHECKOUT PAYMENT MODAL -->
+  <div id="checkout-modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] opacity-0 pointer-events-none transition-opacity duration-200 flex items-center justify-center p-4">
+    <div id="checkout-modal" class="w-full max-w-lg bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-2xl scale-95 transition-transform duration-200">
+      
+      <!-- Modal Header -->
+      <div class="p-5 border-b border-brand-border bg-brand-card/50 flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-mono uppercase tracking-wider text-brand-coral">No real money leaves your account</span>
+          <h2 class="text-lg font-bold text-white">Simulated Checkout</h2>
+        </div>
+        <button onclick="closeCheckoutModal()" class="w-8 h-8 rounded-lg bg-brand-card hover:bg-brand-border flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+          ✕
+        </button>
+      </div>
+
+      <!-- Form Body -->
+      <form id="dummy-checkout-form" onsubmit="handleCheckoutSubmit(event)" class="p-6 space-y-4">
+        
+        <!-- Delivery Address -->
+        <div>
+          <label class="block text-xs font-mono text-gray-300 mb-1.5">Phantom Delivery Destination</label>
+          <input 
+            type="text" 
+            required 
+            id="checkout-address"
+            placeholder="Flat 402, Ghost Tower, Neverland Avenue" 
+            class="w-full bg-brand-card border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-mint font-sans"
+          />
+        </div>
+
+        <!-- Payment Method Tabs -->
+        <div>
+          <label class="block text-xs font-mono text-gray-300 mb-1.5">Payment Illusion Method</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="setPaymentMethod('card')" id="pay-method-card" class="py-2.5 px-3 rounded-xl border border-brand-mint bg-brand-mint/10 text-brand-mint text-xs font-mono font-semibold flex items-center justify-center gap-2 transition-all">
+              💳 Fictional Card
+            </button>
+            <button type="button" onclick="setPaymentMethod('upi')" id="pay-method-upi" class="py-2.5 px-3 rounded-xl border border-brand-border bg-brand-card text-gray-400 text-xs font-mono font-semibold flex items-center justify-center gap-2 hover:border-gray-500 transition-all">
+              📱 Ghost UPI
+            </button>
+          </div>
+        </div>
+
+        <!-- Card Fields Container -->
+        <div id="payment-fields-card" class="space-y-3 pt-1">
+          <div>
+            <label class="block text-[11px] font-mono text-gray-400 mb-1">Cardholder Name</label>
+            <input 
+              type="text" 
+              required 
+              id="card-name" 
+              placeholder="Prof. Phantom Eater" 
+              class="w-full bg-brand-card border border-brand-border rounded-xl px-3.5 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-brand-mint font-sans"
+            />
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-mono text-gray-400 mb-1">Card Number (auto-spaced)</label>
+            <input 
+              type="text" 
+              required 
+              id="card-number" 
+              maxlength="19" 
+              placeholder="4242 •••• •••• 4242" 
+              oninput="formatCardNumber(this)"
+              class="w-full bg-brand-card border border-brand-border rounded-xl px-3.5 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-brand-mint font-mono"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-mono text-gray-400 mb-1">Expiry (MM/YY)</label>
+              <input 
+                type="text" 
+                required 
+                id="card-expiry" 
+                maxlength="5" 
+                placeholder="12/28" 
+                oninput="formatExpiry(this)"
+                class="w-full bg-brand-card border border-brand-border rounded-xl px-3.5 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-brand-mint font-mono"
+              />
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono text-gray-400 mb-1">CVV</label>
+              <input 
+                type="password" 
+                required 
+                id="card-cvv" 
+                maxlength="4" 
+                placeholder="•••" 
+                class="w-full bg-brand-card border border-brand-border rounded-xl px-3.5 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-brand-mint font-mono"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- UPI Fields Container (Hidden initially) -->
+        <div id="payment-fields-upi" class="space-y-3 pt-1 hidden">
+          <div>
+            <label class="block text-[11px] font-mono text-gray-400 mb-1">Virtual Payment Address (VPA)</label>
+            <input 
+              type="text" 
+              id="upi-id" 
+              placeholder="guiltfree@oknevercomes" 
+              class="w-full bg-brand-card border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-brand-mint font-mono"
+            />
+          </div>
+          <p class="text-[11px] text-gray-500">A fake ping will be sent to your imagination for approval.</p>
+        </div>
+
+        <!-- Amount summary in modal -->
+        <div class="p-3 rounded-xl bg-brand-card border border-brand-border/60 flex items-center justify-between text-xs">
+          <span class="text-gray-400">Total Unbilled Balance:</span>
+          <span id="modal-subtotal" class="font-mono font-bold text-brand-mint text-sm">₹0</span>
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          id="checkout-submit-btn" 
+          class="w-full py-3.5 rounded-xl bg-brand-mint text-black font-bold font-mono text-sm tracking-wide hover:bg-[#25fdb0] active:scale-98 transition-all glow-mint flex items-center justify-center gap-2"
+        >
+          <span id="checkout-btn-text">AUTHORIZE ZERO CHARGE & SKIP MEAL</span>
+          <div id="checkout-spinner" class="hidden w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+        </button>
+
+        <p class="text-center text-[10px] text-gray-500 font-mono">
+          🔒 Encrypted with 0-bit mock cryptography. Nothing leaves this browser.
+        </p>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ORDER TRACKING FULLSCREEN OVERLAY (THE CORE TWIST) -->
+  <div id="tracking-view" class="fixed inset-0 z-[80] bg-brand-bg hidden flex-col overflow-y-auto">
+    
+    <!-- Tracking Navbar -->
+    <header class="border-b border-brand-border bg-brand-surface/90 px-6 py-4 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-brand-card border border-brand-border flex items-center justify-center font-mono font-bold text-brand-mint">
+          FNC
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-white text-sm sm:text-base">Order #FNC-99827-NEVER</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-brand-coral/20 text-brand-coral border border-brand-coral/30 animate-pulse">INDEFINITELY IN TRANSIT</span>
+          </div>
+          <span class="text-xs text-gray-400 font-mono">Phantom Route: Kitchen → Roundabout → Eternity</span>
+        </div>
+      </div>
+
+      <button onclick="exitTrackingView()" class="px-4 py-2 rounded-xl bg-brand-card hover:bg-brand-border border border-brand-border text-xs font-mono text-gray-300 hover:text-white transition-all">
+        Back to Catalog ✕
+      </button>
+    </header>
+
+    <!-- Tracking Main Grid -->
+    <div class="flex-grow max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left Column: The Stuck Map & Humor Status (7 Cols) -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Live Joke Status Card -->
+        <div class="p-6 rounded-2xl bg-brand-surface border border-brand-border shadow-xl relative overflow-hidden">
+          <div class="text-xs font-mono text-brand-coral uppercase tracking-wider mb-2 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-brand-coral animate-ping"></span>
+            LIVE RIDER TELEMETRY
+          </div>
+
+          <!-- Main Dynamic Rotating Joke Status -->
+          <h2 id="tracking-headline-status" class="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
+            "Rider stopped for cutting chai at Sharma tea stall."
+          </h2>
+
+          <p id="tracking-sub-status" class="text-sm text-gray-400 mt-2 font-mono">
+            ETA: recalibrating across infinite time horizons...
+          </p>
+
+          <!-- Rider Stuck Progress Bar Container -->
+          <div class="mt-8 space-y-3">
+            <div class="flex justify-between text-xs font-mono text-gray-400">
+              <span>Restaurateur prep</span>
+              <span class="text-brand-coral font-bold">STUCK AT 44% (PERMANENT)</span>
+              <span>Your Doorbell</span>
+            </div>
+
+            <!-- The Bar -->
+            <div class="h-4 bg-brand-card rounded-full overflow-hidden p-0.5 border border-brand-border relative">
+              <div id="stuck-progress-fill" class="h-full bg-gradient-to-r from-brand-mint via-emerald-400 to-brand-coral rounded-full transition-all duration-500 relative" style="width: 44%;">
+                <!-- Rider icon attached to progress tip -->
+                <div class="absolute -right-3 -top-2.5 text-lg animate-stuck-rider cursor-pointer" title="Rider enjoying life">
+                  🛵
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-[11px] text-gray-500 font-mono">
+              <span>Distance travelled: 1.2 km</span>
+              <span>Remaining: ∞ km</span>
+            </div>
+          </div>
+
+          <!-- Animated Road Graphic Mockup -->
+          <div class="mt-6 p-4 rounded-xl bg-brand-card/90 border border-brand-border relative overflow-hidden">
+            <div class="text-[10px] font-mono text-gray-500 mb-2">GPS SATELLITE RADAR VIEW</div>
+            <div class="h-10 bg-brand-bg rounded-lg border border-brand-border/60 relative flex items-center overflow-hidden">
+              <div class="absolute inset-0 road-stripes opacity-40"></div>
+              <div class="relative z-10 flex items-center justify-between w-full px-6">
+                <span class="text-xs">🏪 Kitchen</span>
+                <div class="flex items-center gap-1">
+                  <span class="text-base">🛵</span>
+                  <span class="text-[10px] font-mono text-brand-mint bg-brand-mint/10 px-1 rounded">Chai break</span>
+                </div>
+                <span class="text-xs opacity-40">🏠 Your House (Unreached)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Auto-scrolling Dispatch Log -->
+        <div class="p-6 rounded-2xl bg-brand-surface border border-brand-border shadow-xl">
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-xs font-mono text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-brand-mint animate-pulse"></span>
+              REAL-TIME DISPATCH LOG (AUTO-SCROLLING)
+            </div>
+            <span class="text-[10px] font-mono text-gray-500">Live telemetry</span>
+          </div>
+
+          <div id="tracking-dispatch-log" class="h-56 overflow-y-auto space-y-3 font-mono text-xs pr-2">
+            <!-- Injected by log ticker -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: The Health & Time Saved Jackpot (5 Cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <!-- Big Trophy Reward Card -->
+        <div class="p-6 rounded-2xl bg-gradient-to-b from-brand-card to-brand-surface border border-brand-mint/40 shadow-2xl relative overflow-hidden glow-mint">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-mint/10 border border-brand-mint/30 text-brand-mint text-xs font-mono font-bold mb-4">
+            <span>🎉</span> THE ABSTINENCE WIN
+          </div>
+
+          <h3 class="text-xl font-bold text-white">Congratulations, You Won!</h3>
+          <p class="text-xs text-gray-400 mt-1">Because this meal will never land at your door, you instantly banked:</p>
+
+          <!-- 2 Big Numeric Counters -->
+          <div class="mt-6 space-y-5">
+            
+            <!-- Calories Saved Counter -->
+            <div class="p-4 rounded-xl bg-brand-bg/80 border border-brand-border">
+              <div class="text-xs font-mono text-gray-400">CALORIES AVERTED FROM DIGESTION</div>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span id="track-cal-counter" class="text-4xl sm:text-5xl font-extrabold font-mono text-brand-mint neon-text-mint">0</span>
+                <span class="text-sm font-mono text-brand-mint font-semibold">kcal</span>
+              </div>
+              <p id="track-cal-equiv" class="text-xs font-mono text-gray-400 mt-2 border-t border-brand-border/60 pt-2 text-emerald-400">
+                Calculating metabolic equivalence...
+              </p>
+            </div>
+
+            <!-- Minutes Saved Counter -->
+            <div class="p-4 rounded-xl bg-brand-bg/80 border border-brand-border">
+              <div class="text-xs font-mono text-gray-400">WAITING & GUILT TIME SAVED</div>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span id="track-time-counter" class="text-4xl sm:text-5xl font-extrabold font-mono text-brand-electricBlue">0</span>
+                <span class="text-sm font-mono text-brand-electricBlue font-semibold">minutes</span>
+              </div>
+              <p id="track-time-equiv" class="text-xs font-mono text-gray-400 mt-2 border-t border-brand-border/60 pt-2 text-sky-400">
+                Calculating productivity equivalence...
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Items Ordered Summary Recap -->
+          <div class="mt-6 pt-4 border-t border-brand-border/80">
+            <div class="text-xs font-mono text-gray-400 mb-2">GHOST ORDER CONTENTS:</div>
+            <div id="track-order-items-summary" class="space-y-1.5 text-xs font-mono text-gray-300">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+
+          <!-- Bottom Button -->
+          <div class="mt-6">
+            <button onclick="exitTrackingView()" class="w-full py-3 rounded-xl bg-brand-mint text-black font-bold font-mono text-xs hover:bg-[#25fdb0] transition-colors">
+              CONFIRM SATISFACTION & RETURN TO CATALOG
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-brand-surface border-t border-brand-border/70 py-12 mt-16 text-gray-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 rounded bg-brand-card border border-brand-border flex items-center justify-center font-mono font-bold text-brand-mint text-xs">
+            FNC
+          </div>
+          <span class="font-bold text-white text-sm">foodnevercomes.com</span>
+          <span class="text-gray-500">•</span>
+          <span>Order it. Skip it. Win anyway.</span>
+        </div>
+
+        <div class="flex items-center gap-6 font-mono text-[11px]">
+          <a href="#" onclick="alert('Our privacy policy: We collect no food, we collect no money, we store no cookies outside your own browser localStorage.'); return false;" class="hover:text-gray-200">Zero-Data Policy</a>
+          <a href="#" onclick="alert('Terms: You acknowledge and agree that your stomach remains empty and your heart remains light.'); return false;" class="hover:text-gray-200">Non-Fulfillment Terms</a>
+          <a href="#" onclick="scrollToSection('hero'); return false;" class="text-brand-mint hover:underline">↑ Top</a>
+        </div>
+      </div>
+
+      <!-- Satirical Disclaimer -->
+      <div class="pt-6 border-t border-brand-border/60 text-center text-gray-500 text-[11px] font-sans leading-relaxed">
+        <strong class="text-gray-400">Satirical Notice & Disclaimer:</strong> foodnevercomes.com is a parody web application created in good humor. 
+        No real food orders are dispatched, no bank transactions occur, no credit cards are processed, and no real delivery personnel are delayed at tea stalls. 
+        All restaurants, dishes, statistics, and leaderboard peers are entirely fictional and contained locally on this browser device.
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT ENGINE -->
+  <script>
+    /* ==========================================================
+       DATA STORE: RESTAURANTS & DISHES CATALOG
+       ========================================================== */
+    const CATEGORIES = [
+      { id: 'all', label: 'All Cravings' },
+      { id: 'biryani', label: 'Biryani & Kebabs' },
+      { id: 'north-indian', label: 'North Indian' },
+      { id: 'pizza', label: 'Pizzas & Burgers' },
+      { id: 'chinese', label: 'Wok & Dimsums' },
+      { id: 'desserts', label: 'Guilt Desserts' }
+    ];
+
+    const DISHES = [
+      {
+        id: 'dish-1',
+        name: 'Midnight Butter Chicken Khichdi',
+        restaurant: 'Lazy Spoon Rasoi',
+        category: 'north-indian',
+        emoji: '🥘',
+        price: 360,
+        calories: 980,
+        waitTime: 42,
+        tag: 'High Craving',
+        desc: 'Rich cashew gravy simmered with excess amul butter that you will happily not digest.'
+      },
+      {
+        id: 'dish-2',
+        name: 'Extravagant Dum Gosht Biryani',
+        restaurant: 'Eternity Handi Co.',
+        category: 'biryani',
+        emoji: '🍲',
+        price: 490,
+        calories: 1250,
+        waitTime: 55,
+        tag: 'Bestseller',
+        desc: 'Fragrant basmati layered with tender saffron pieces, sealed with dough never to be broken.'
+      },
+      {
+        id: 'dish-3',
+        name: 'Truffle Mac & 4-Cheese Volcano',
+        restaurant: 'Fat Crust Labs',
+        category: 'pizza',
+        emoji: '🍕',
+        price: 540,
+        calories: 1480,
+        waitTime: 48,
+        tag: 'Calorie Bomb',
+        desc: 'Gooey cheddar, mozzarella and truffle glaze. A heart cardiologist’s nightmare avoided.'
+      },
+      {
+        id: 'dish-4',
+        name: 'Schezwan Triple Wok Fried Rice',
+        restaurant: 'Dragon Wok Express',
+        category: 'chinese',
+        emoji: '🥡',
+        price: 310,
+        calories: 890,
+        waitTime: 35,
+        tag: 'Midnight Special',
+        desc: 'Spicy chili oil, crispy fried noodles, and zero bloating for tomorrow morning.'
+      },
+      {
+        id: 'dish-5',
+        name: 'Molten Nutella Lava Brownie',
+        restaurant: 'Sugar Coma Patisserie',
+        category: 'desserts',
+        emoji: '🍫',
+        price: 240,
+        calories: 720,
+        waitTime: 25,
+        tag: 'Instant Regret',
+        desc: 'Warm Belgian chocolate cake stuffed with pure hazelnut spread. Saved your teeth.'
+      },
+      {
+        id: 'dish-6',
+        name: 'Garlic Butter Stuffed Paneer Tikka',
+        restaurant: 'Lazy Spoon Rasoi',
+        category: 'north-indian',
+        emoji: '🍢',
+        price: 380,
+        calories: 820,
+        waitTime: 38,
+        tag: 'Protein Illusion',
+        desc: 'Smoky clay-oven paneer cubes coated in roasted garlic butter. Zero gym visits required.'
+      },
+      {
+        id: 'dish-7',
+        name: 'Hyderabadi Kachhi Biryani Box',
+        restaurant: 'Eternity Handi Co.',
+        category: 'biryani',
+        emoji: '🍚',
+        price: 430,
+        calories: 1100,
+        waitTime: 50,
+        tag: 'Heavy Lifter',
+        desc: 'Slow cooked marinated spices and fried onions. You saved yourself a 3-hour food coma.'
+      },
+      {
+        id: 'dish-8',
+        name: 'Double Smash Bacon Cheeseburger',
+        restaurant: 'Fat Crust Labs',
+        category: 'pizza',
+        emoji: '🍔',
+        price: 410,
+        calories: 1160,
+        waitTime: 40,
+        tag: 'Late Night Cheat',
+        desc: 'Two crispy edged patties with double American cheese and secret thousand-island sauce.'
+      },
+      {
+        id: 'dish-9',
+        name: 'Steamed Crystal Truffle Dimsums (8pc)',
+        restaurant: 'Dragon Wok Express',
+        category: 'chinese',
+        emoji: '🥟',
+        price: 360,
+        calories: 450,
+        waitTime: 30,
+        tag: 'Aesthetic Craving',
+        desc: 'Translucent parcels infused with edamame and water chestnuts that will never get cold.'
+      },
+      {
+        id: 'dish-10',
+        name: 'Lotus Biscoff Loaded Cheesecake',
+        restaurant: 'Sugar Coma Patisserie',
+        category: 'desserts',
+        emoji: '🍰',
+        price: 290,
+        calories: 840,
+        waitTime: 20,
+        tag: 'Decadence',
+        desc: 'Crushed spiced caramelized biscuits folded into Philadelphia cream cheese.'
+      },
+      {
+        id: 'dish-11',
+        name: 'Garlic Chur Chur Naan Thali',
+        restaurant: 'Lazy Spoon Rasoi',
+        category: 'north-indian',
+        emoji: '🫓',
+        price: 340,
+        calories: 990,
+        waitTime: 36,
+        tag: 'Carb Mountain',
+        desc: 'Crumbled layered tandoori naan drenched in pure desi ghee with Dal Makhani.'
+      },
+      {
+        id: 'dish-12',
+        name: 'Woodfired Pepperoni Supreme Pie',
+        restaurant: 'Fat Crust Labs',
+        category: 'pizza',
+        emoji: '🍕',
+        price: 590,
+        calories: 1390,
+        waitTime: 45,
+        tag: 'Weekend Classic',
+        desc: 'Hand-stretched sourdough base with spicy pork pepperoni cups and hot honey drizzle.'
+      }
+    ];
+
+    /* Humorous Statuses for the live tracking view */
+    const JOKE_HEADLINES = [
+      "Rider stopped for cutting chai at Sharma tea stall.",
+      "ETA updated: forever.",
+      "Kitchen closed the order screen and opened Instagram reels.",
+      "Rider entered a magical roundabout, circling since 20 minutes.",
+      "Chef accidentally ate the biryani to 'test for poison'.",
+      "Delivery bag absorbed into a parallel guilt-free dimension.",
+      "Rider got into a friendly debate about local politics at the red light.",
+      "Google Maps suggested a scenic route through the Himalayas."
+    ];
+
+    const DISPATCH_LOG_MESSAGES = [
+      "Order registered by server in the cloud (it stayed in the cloud)",
+      "Kitchen receipt printed on non-existent thermal paper",
+      "Rider 'Ramesh' assigned (currently watching cricket score)",
+      "Rider accepted batch order #291 at a distant neighborhood",
+      "Status update: Rider stopped to untie shoe lace",
+      "Kitchen manager stepped out for smoke break",
+      "Rider helmet camera shows peaceful roadside sunset",
+      "Estimated delivery recalculated: ∞ min remaining",
+      "Internal sensor: 0 calories entered user's bloodstream",
+      "Order status: Permanently suspended in culinary bliss"
+    ];
+
+    /* Initial seed leaderboard profiles */
+    const SEED_LEADERBOARD = [
+      { name: "Arjun Mehta", emoji: "🚴", orders: 18, caloriesSaved: 23400, timeSaved: 780 },
+      { name: "Priya Sharma", emoji: "🧘‍♀️", orders: 14, caloriesSaved: 17850, timeSaved: 610 },
+      { name: "Vikram Das", emoji: "🥑", orders: 11, caloriesSaved: 14100, timeSaved: 490 },
+      { name: "Sneha Kapur", emoji: "🥗", orders: 8, caloriesSaved: 9750, timeSaved: 360 },
+      { name: "Rohan V.", emoji: "🏃‍♂️", orders: 5, caloriesSaved: 6200, timeSaved: 220 }
+    ];
+
+    /* ==========================================================
+       APPLICATION STATE
+       ========================================================== */
+    let currentCategory = 'all';
+    let searchQuery = '';
+    let cart = {}; // { dishId: quantity }
+    let paymentMethod = 'card'; // 'card' or 'upi'
+    let currentActiveOrder = null; // Stores details of current order being tracked
+
+    // Persisted Lifetime stats structure
+    let lifetimeStats = {
+      orders: 0,
+      caloriesSaved: 0,
+      timeSaved: 0,
+      moneySaved: 0,
+      userName: "You (Ghost Eater)"
+    };
+
+    // Leaderboard state
+    let leaderboardData = [];
+
+    // Tracking timers
+    let trackingHeadlineInterval = null;
+    let trackingLogInterval = null;
+
+    /* ==========================================================
+       STORAGE INITIALIZATION & PERSISTENCE
+       ========================================================== */
+    function initStorage() {
+      try {
+        const storedStats = localStorage.getItem('fnc_lifetime_stats');
+        if (storedStats) {
+          lifetimeStats = Object.assign(lifetimeStats, JSON.parse(storedStats));
+        }
+        const storedName = localStorage.getItem('fnc_user_name');
+        if (storedName) {
+          lifetimeStats.userName = storedName;
+        }
+      } catch (e) {
+        console.warn("localStorage not accessible, running in memory fallback.");
+      }
+      syncUserLabels();
+      renderLifetimeDashboard();
+      initLeaderboard();
+    }
+
+    function saveStats() {
+      try {
+        localStorage.setItem('fnc_lifetime_stats', JSON.stringify(lifetimeStats));
+        localStorage.setItem('fnc_user_name', lifetimeStats.userName);
+      } catch (e) {}
+    }
+
+    function syncUserLabels() {
+      const navEl = document.getElementById('nav-user-name');
+      const lbEl = document.getElementById('leaderboard-active-name');
+      if (navEl) navEl.textContent = lifetimeStats.userName;
+      if (lbEl) lbEl.textContent = lifetimeStats.userName;
+    }
+
+    function resetLifetimeStats() {
+      if (confirm("Reset your cumulative phantom achievements? Your saved calories & time will return to zero!")) {
+        lifetimeStats.orders = 0;
+        lifetimeStats.caloriesSaved = 0;
+        lifetimeStats.timeSaved = 0;
+        lifetimeStats.moneySaved = 0;
+        saveStats();
+        renderLifetimeDashboard();
+        initLeaderboard();
+        showToast("Stats reset to zero. Time to start skipping meals again!", "info");
+      }
+    }
+
+    /* ==========================================================
+       MENU & CATEGORIES RENDERING
+       ========================================================== */
+    function renderCategories() {
+      const container = document.getElementById('category-pills');
+      if (!container) return;
+
+      container.innerHTML = CATEGORIES.map(cat => {
+        const isActive = cat.id === currentCategory;
+        return `
+          <button 
+            onclick="setCategory('${cat.id}')"
+            class="px-4 py-2 rounded-xl text-xs font-mono font-medium whitespace-nowrap transition-all ${
+              isActive 
+                ? 'bg-brand-mint text-black font-bold shadow-md shadow-brand-mint/20' 
+                : 'bg-brand-surface border border-brand-border text-gray-400 hover:text-white hover:border-gray-600'
+            }"
+          >
+            ${cat.label}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function setCategory(catId) {
+      currentCategory = catId;
+      renderCategories();
+      renderDishes();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val.trim().toLowerCase();
+      renderDishes();
+    }
+
+    function renderDishes() {
+      const grid = document.getElementById('dishes-grid');
+      if (!grid) return;
+
+      const filtered = DISHES.filter(dish => {
+        const matchesCategory = currentCategory === 'all' || dish.category === currentCategory;
+        const matchesSearch = !searchQuery || 
+          dish.name.toLowerCase().includes(searchQuery) ||
+          dish.restaurant.toLowerCase().includes(searchQuery) ||
+          dish.desc.toLowerCase().includes(searchQuery);
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-16 text-center">
+            <span class="text-4xl">🥦</span>
+            <p class="mt-3 text-gray-400 text-sm font-mono">No phantom dishes matched "${searchQuery}".</p>
+            <button onclick="setCategory('all'); document.getElementById('menu-search-input').value=''; searchQuery='';" class="mt-3 px-4 py-2 rounded-xl bg-brand-surface border border-brand-border text-xs text-brand-mint font-mono">
+              Clear filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(dish => {
+        const qtyInCart = cart[dish.id] || 0;
+        return `
+          <div class="rounded-2xl bg-brand-surface border border-brand-border/80 hover:border-brand-mint/50 transition-all p-5 flex flex-col justify-between group hover:shadow-xl hover:shadow-brand-mint/5 relative">
+            <div>
+              <!-- Top Row: Icon & Tag -->
+              <div class="flex items-start justify-between gap-2 mb-3">
+                <span class="text-4xl p-2.5 rounded-xl bg-brand-card border border-brand-border group-hover:scale-105 transition-transform inline-block">
+                  ${dish.emoji}
+                </span>
+                <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-brand-border/60 text-gray-300 border border-brand-border">
+                  ${dish.tag}
+                </span>
+              </div>
+
+              <!-- Dish & Restaurant Title -->
+              <h3 class="text-base font-bold text-white group-hover:text-brand-mint transition-colors leading-snug">
+                ${dish.name}
+              </h3>
+              <p class="text-xs text-gray-500 font-mono mt-0.5">${dish.restaurant}</p>
+
+              <p class="text-xs text-gray-400 mt-2.5 line-clamp-2 leading-relaxed">
+                ${dish.desc}
+              </p>
+
+              <!-- Meta Badges (Calories & Prep Time) -->
+              <div class="mt-4 flex flex-wrap gap-2 text-[11px] font-mono">
+                <span class="px-2 py-0.5 rounded bg-brand-mint/10 text-brand-mint border border-brand-mint/20 flex items-center gap-1">
+                  <span>🔥</span> ${dish.calories} kcal avoided
+                </span>
+                <span class="px-2 py-0.5 rounded bg-brand-card text-gray-300 border border-brand-border flex items-center gap-1">
+                  <span>⏱️</span> ${dish.waitTime} min prep
+                </span>
+              </div>
+            </div>
+
+            <!-- Price & Add/Qty Actions -->
+            <div class="mt-6 pt-4 border-t border-brand-border/60 flex items-center justify-between">
+              <div>
+                <span class="text-xs text-gray-500 block">Fake Price</span>
+                <span class="text-base font-mono font-bold text-white">₹${dish.price}</span>
+              </div>
+
+              ${qtyInCart === 0 ? `
+                <button 
+                  onclick="addToCart('${dish.id}')"
+                  class="px-4 py-2 rounded-xl bg-brand-card hover:bg-brand-mint hover:text-black border border-brand-border text-white text-xs font-mono font-bold transition-all active:scale-95 flex items-center gap-1.5"
+                >
+                  <span>+</span> ADD
+                </button>
+              ` : `
+                <div class="flex items-center gap-2 bg-brand-card border border-brand-mint/50 rounded-xl px-2 py-1">
+                  <button onclick="decrementCart('${dish.id}')" class="w-6 h-6 rounded flex items-center justify-center text-brand-mint hover:bg-brand-surface font-bold text-sm">
+                    −
+                  </button>
+                  <span class="font-mono text-xs font-bold text-white px-1.5">${qtyInCart}</span>
+                  <button onclick="addToCart('${dish.id}')" class="w-6 h-6 rounded flex items-center justify-center text-brand-mint hover:bg-brand-surface font-bold text-sm">
+                    +
+                  </button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* ==========================================================
+       CART LOGIC & DRAWER MANAGEMENT
+       ========================================================== */
+    function addToCart(dishId) {
+      cart[dishId] = (cart[dishId] || 0) + 1;
+      updateCartUI();
+      renderDishes();
+      const dish = DISHES.find(d => d.id === dishId);
+      if (dish) {
+        showToast(`Added "${dish.name}" to Phantom Cart (+${dish.calories} kcal saved)`, 'mint');
+      }
+    }
+
+    function decrementCart(dishId) {
+      if (!cart[dishId]) return;
+      cart[dishId] -= 1;
+      if (cart[dishId] <= 0) {
+        delete cart[dishId];
+      }
+      updateCartUI();
+      renderDishes();
+    }
+
+    function removeFromCart(dishId) {
+      delete cart[dishId];
+      updateCartUI();
+      renderDishes();
+    }
+
+    function getCartSummary() {
+      let count = 0;
+      let calories = 0;
+      let time = 0;
+      let price = 0;
+      const items = [];
+
+      for (const [id, qty] of Object.entries(cart)) {
+        const dish = DISHES.find(d => d.id === id);
+        if (dish && qty > 0) {
+          count += qty;
+          calories += (dish.calories * qty);
+          time += (dish.waitTime * qty);
+          price += (dish.price * qty);
+          items.push({ dish, qty });
+        }
+      }
+
+      return { count, calories, time, price, items };
+    }
+
+    function updateCartUI() {
+      const summary = getCartSummary();
+
+      // Navbar badge
+      const navBadge = document.getElementById('nav-cart-badge');
+      if (navBadge) navBadge.textContent = summary.count;
+
+      // Drawer totals
+      const qtyEl = document.getElementById('cart-total-qty');
+      const calsEl = document.getElementById('cart-total-cals');
+      const timeEl = document.getElementById('cart-total-time');
+      const priceEl = document.getElementById('cart-total-price');
+      const checkoutBtn = document.getElementById('checkout-drawer-btn');
+
+      if (qtyEl) qtyEl.textContent = summary.count;
+      if (calsEl) calsEl.textContent = `${summary.calories.toLocaleString()} kcal`;
+      if (timeEl) timeEl.textContent = `${summary.time} min`;
+      if (priceEl) priceEl.textContent = `₹${summary.price.toLocaleString()}`;
+
+      if (checkoutBtn) {
+        checkoutBtn.disabled = summary.count === 0;
+      }
+
+      // Drawer items list
+      const container = document.getElementById('cart-items-container');
+      if (!container) return;
+
+      if (summary.items.length === 0) {
+        container.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center py-16 px-4">
+            <div class="w-16 h-16 rounded-2xl bg-brand-card border border-brand-border flex items-center justify-center text-3xl mb-4">
+              👻
+            </div>
+            <h4 class="text-base font-bold text-white">Your Phantom Cart is Empty</h4>
+            <p class="text-xs text-gray-400 mt-1 max-w-xs leading-relaxed">
+              Add some heavy dishes from the menu to watch your avoided calories climb before checkout.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = summary.items.map(({ dish, qty }) => {
+        return `
+          <div class="p-3.5 rounded-xl bg-brand-card border border-brand-border/70 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">${dish.emoji}</span>
+              <div>
+                <h4 class="text-xs font-bold text-white leading-tight">${dish.name}</h4>
+                <div class="text-[11px] font-mono text-gray-400 mt-0.5">
+                  ₹${dish.price * qty} • <span class="text-brand-mint font-semibold">${dish.calories * qty} kcal</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Qty controls -->
+            <div class="flex items-center gap-2">
+              <div class="flex items-center bg-brand-surface border border-brand-border rounded-lg px-2 py-0.5">
+                <button onclick="decrementCart('${dish.id}')" class="text-xs font-mono text-brand-mint hover:text-white px-1">
+                  −
+                </button>
+                <span class="text-xs font-mono font-bold text-white px-1.5">${qty}</span>
+                <button onclick="addToCart('${dish.id}')" class="text-xs font-mono text-brand-mint hover:text-white px-1">
+                  +
+                </button>
+              </div>
+              <button onclick="removeFromCart('${dish.id}')" class="text-gray-500 hover:text-brand-coral text-xs p-1" title="Remove item">
+                ✕
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openCartDrawer() {
+      const drawer = document.getElementById('cart-drawer');
+      const backdrop = document.getElementById('cart-drawer-backdrop');
+      if (drawer && backdrop) {
+        backdrop.classList.remove('opacity-0', 'pointer-events-none');
+        backdrop.classList.add('opacity-100');
+        drawer.classList.remove('translate-x-full');
+      }
+    }
+
+    function closeCartDrawer() {
+      const drawer = document.getElementById('cart-drawer');
+      const backdrop = document.getElementById('cart-drawer-backdrop');
+      if (drawer && backdrop) {
+        backdrop.classList.add('opacity-0', 'pointer-events-none');
+        backdrop.classList.remove('opacity-100');
+        drawer.classList.add('translate-x-full');
+      }
+    }
+
+    /* ==========================================================
+       DUMMY CHECKOUT & PAYMENT MODAL
+       ========================================================== */
+    function openCheckoutModal() {
+      const summary = getCartSummary();
+      if (summary.count === 0) {
+        showToast("Cart is empty! Add phantom dishes first.", "error");
+        return;
+      }
+      closeCartDrawer();
+
+      const modalSubtotal = document.getElementById('modal-subtotal');
+      if (modalSubtotal) {
+        modalSubtotal.textContent = `₹${summary.price.toLocaleString()} (₹0 charged)`;
+      }
+
+      const backdrop = document.getElementById('checkout-modal-backdrop');
+      const modal = document.getElementById('checkout-modal');
+      if (backdrop && modal) {
+        backdrop.classList.remove('opacity-0', 'pointer-events-none');
+        backdrop.classList.add('opacity-100');
+        modal.classList.remove('scale-95');
+        modal.classList.add('scale-100');
+      }
+    }
+
+    function closeCheckoutModal() {
+      const backdrop = document.getElementById('checkout-modal-backdrop');
+      const modal = document.getElementById('checkout-modal');
+      if (backdrop && modal) {
+        backdrop.classList.add('opacity-0', 'pointer-events-none');
+        backdrop.classList.remove('opacity-100');
+        modal.classList.add('scale-95');
+        modal.classList.remove('scale-100');
+      }
+    }
+
+    function setPaymentMethod(method) {
+      paymentMethod = method;
+      const cardTab = document.getElementById('pay-method-card');
+      const upiTab = document.getElementById('pay-method-upi');
+      const cardFields = document.getElementById('payment-fields-card');
+      const upiFields = document.getElementById('payment-fields-upi');
+
+      if (method === 'card') {
+        cardTab.className = "py-2.5 px-3 rounded-xl border border-brand-mint bg-brand-mint/10 text-brand-mint text-xs font-mono font-semibold flex items-center justify-center gap-2 transition-all";
+        upiTab.className = "py-2.5 px-3 rounded-xl border border-brand-border bg-brand-card text-gray-400 text-xs font-mono font-semibold flex items-center justify-center gap-2 hover:border-gray-500 transition-all";
+        cardFields.classList.remove('hidden');
+        upiFields.classList.add('hidden');
+      } else {
+        upiTab.className = "py-2.5 px-3 rounded-xl border border-brand-mint bg-brand-mint/10 text-brand-mint text-xs font-mono font-semibold flex items-center justify-center gap-2 transition-all";
+        cardTab.className = "py-2.5 px-3 rounded-xl border border-brand-border bg-brand-card text-gray-400 text-xs font-mono font-semibold flex items-center justify-center gap-2 hover:border-gray-500 transition-all";
+        upiFields.classList.remove('hidden');
+        cardFields.classList.add('hidden');
+      }
+    }
+
+    // Auto format card number with spaces every 4 digits
+    function formatCardNumber(input) {
+      let value = input.value.replace(/\D/g, '');
+      let formatted = '';
+      for (let i = 0; i < value.length; i++) {
+        if (i > 0 && i % 4 === 0) formatted += ' ';
+        formatted += value[i];
+      }
+      input.value = formatted;
+    }
+
+    // Auto format MM/YY expiry
+    function formatExpiry(input) {
+      let value = input.value.replace(/\D/g, '');
+      if (value.length >= 2) {
+        input.value = value.slice(0, 2) + '/' + value.slice(2, 4);
+      } else {
+        input.value = value;
+      }
+    }
+
+    // Checkout submission handling with fake ~1.5s spinner
+    function handleCheckoutSubmit(e) {
+      e.preventDefault();
+      const btnText = document.getElementById('checkout-btn-text');
+      const spinner = document.getElementById('checkout-spinner');
+      const submitBtn = document.getElementById('checkout-submit-btn');
+
+      btnText.textContent = "CONTACTING GHOST DISPATCH SERVERS...";
+      spinner.classList.remove('hidden');
+      submitBtn.disabled = true;
+
+      const summary = getCartSummary();
+
+      setTimeout(() => {
+        btnText.textContent = "AUTHORIZE ZERO CHARGE & SKIP MEAL";
+        spinner.classList.add('hidden');
+        submitBtn.disabled = false;
+        closeCheckoutModal();
+
+        // Register the active order & record to lifetime stats
+        finalizeOrderAndOpenTracking(summary);
+      }, 1500);
+    }
+
+    /* ==========================================================
+       ORDER FINALIZATION & ORDER TRACKING SCREEN (THE TWIST)
+       ========================================================== */
+    function finalizeOrderAndOpenTracking(summary) {
+      currentActiveOrder = {
+        id: 'FNC-' + Math.floor(10000 + Math.random() * 90000) + '-NEVER',
+        items: [...summary.items],
+        totalCalories: summary.calories,
+        totalTime: summary.time,
+        totalPrice: summary.price,
+        timestamp: new Date().toLocaleTimeString()
+      };
+
+      // Update Lifetime Stats
+      const prevCals = lifetimeStats.caloriesSaved;
+      lifetimeStats.orders += 1;
+      lifetimeStats.caloriesSaved += summary.calories;
+      lifetimeStats.timeSaved += summary.time;
+      lifetimeStats.moneySaved += summary.price;
+      saveStats();
+      renderLifetimeDashboard();
+
+      // Check Rank movement in leaderboard & notify
+      updateUserInLeaderboard(summary.calories);
+
+      // Clear current cart
+      cart = {};
+      updateCartUI();
+      renderDishes();
+
+      // Launch Tracking View
+      launchTrackingView(currentActiveOrder);
+    }
+
+    function launchTrackingView(order) {
+      const trackingView = document.getElementById('tracking-view');
+      trackingView.classList.remove('hidden');
+      trackingView.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+
+      // Reset & Start Headline Rotator
+      startTrackingHeadlines();
+
+      // Reset & Start Live Auto-scrolling Dispatch Log
+      startTrackingLog(order);
+
+      // Start Animated Counters for Calories & Minutes Saved
+      startCountUp('track-cal-counter', order.totalCalories, 1800);
+      startCountUp('track-time-counter', order.totalTime, 1400);
+
+      // Equivalence descriptions
+      const calEquivEl = document.getElementById('track-cal-equiv');
+      const timeEquivEl = document.getElementById('track-time-equiv');
+
+      const walkMinutes = Math.round(order.totalCalories / 5);
+      const stairMinutes = Math.round(order.totalCalories / 10);
+      calEquivEl.textContent = `= Equivalent to a ${walkMinutes}-min brisk walk or ${stairMinutes} mins climbing stairs without moving an inch!`;
+
+      const officeEpisodes = (order.totalTime / 22).toFixed(1);
+      timeEquivEl.textContent = `= Equivalent to ${officeEpisodes} episodes of The Office not spent waiting at the door.`;
+
+      // Order contents recap
+      const summaryContainer = document.getElementById('track-order-items-summary');
+      if (summaryContainer) {
+        summaryContainer.innerHTML = order.items.map(({ dish, qty }) => `
+          <div class="flex justify-between items-center py-1 border-b border-brand-border/40">
+            <span>${dish.emoji} ${dish.name} × ${qty}</span>
+            <span class="text-brand-mint font-semibold">+${dish.calories * qty} kcal saved</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function exitTrackingView() {
+      const trackingView = document.getElementById('tracking-view');
+      trackingView.classList.add('hidden');
+      trackingView.classList.remove('flex');
+      document.body.style.overflow = 'auto';
+
+      if (trackingHeadlineInterval) clearInterval(trackingHeadlineInterval);
+      if (trackingLogInterval) clearInterval(trackingLogInterval);
+
+      showToast("Order tracked: Still 0% arrived! Well done on saving those calories.", "mint");
+      scrollToSection('impact-dashboard');
+    }
+
+    function startTrackingHeadlines() {
+      const headlineEl = document.getElementById('tracking-headline-status');
+      let index = 0;
+      headlineEl.textContent = `"${JOKE_HEADLINES[0]}"`;
+
+      if (trackingHeadlineInterval) clearInterval(trackingHeadlineInterval);
+      trackingHeadlineInterval = setInterval(() => {
+        index = (index + 1) % JOKE_HEADLINES.length;
+        headlineEl.classList.add('opacity-0');
+        setTimeout(() => {
+          headlineEl.textContent = `"${JOKE_HEADLINES[index]}"`;
+          headlineEl.classList.remove('opacity-0');
+          headlineEl.classList.add('transition-opacity', 'duration-300');
+        }, 300);
+      }, 4200);
+    }
+
+    function startTrackingLog(order) {
+      const logContainer = document.getElementById('tracking-dispatch-log');
+      logContainer.innerHTML = '';
+
+      let logPool = [
+        ...DISPATCH_LOG_MESSAGES,
+        `Kitchen marked "${order.items[0]?.dish.name || 'Food'}" as: 'Under spiritual contemplation'`,
+        "Rider paused at tea stall. Cutting chai temperature: Optimal",
+        "Rider checking Google Maps satellite mode: Roundabout looks scenic",
+        "Signal update: Ping verified. User stomach is tranquil and light"
+      ];
+
+      let displayedCount = 0;
+
+      function addLogEntry(text) {
+        const time = new Date().toLocaleTimeString();
+        const entry = document.createElement('div');
+        entry.className = "flex items-start gap-2.5 text-gray-300 py-1 border-b border-brand-border/30 animate-fade-in";
+        entry.innerHTML = `
+          <span class="text-brand-mint font-bold shrink-0">[${time}]</span>
+          <span class="text-gray-300">${text}</span>
+        `;
+        logContainer.appendChild(entry);
+        logContainer.scrollTop = logContainer.scrollHeight;
+      }
+
+      // Initial entries
+      addLogEntry("Order dispatched to non-Euclidean delivery routing engine");
+      addLogEntry(`Cart saved: ${order.totalCalories} kcal prevented from entry`);
+
+      if (trackingLogInterval) clearInterval(trackingLogInterval);
+      trackingLogInterval = setInterval(() => {
+        if (logPool.length > 0) {
+          const nextMsg = logPool[displayedCount % logPool.length];
+          addLogEntry(nextMsg);
+          displayedCount++;
+        }
+      }, 3000);
+    }
+
+    // Number counting up animation
+    function startCountUp(elementId, targetValue, durationMs = 1500) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      let start = 0;
+      const startTime = performance.now();
+
+      function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / durationMs, 1);
+        // easeOutQuad
+        const ease = 1 - (1 - progress) * (1 - progress);
+        const current = Math.floor(start + (targetValue - start) * ease);
+        el.textContent = current.toLocaleString();
+
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        } else {
+          el.textContent = targetValue.toLocaleString();
+        }
+      }
+      requestAnimationFrame(update);
+    }
+
+    /* ==========================================================
+       LIFETIME DASHBOARD RENDERING
+       ========================================================== */
+    function renderLifetimeDashboard() {
+      const ordersEl = document.getElementById('dash-total-orders');
+      const calsEl = document.getElementById('dash-total-cals');
+      const timeEl = document.getElementById('dash-total-time');
+      const moneyEl = document.getElementById('dash-total-money');
+      const calEquivEl = document.getElementById('dash-cals-equiv');
+      const timeEquivEl = document.getElementById('dash-time-equiv');
+
+      if (ordersEl) ordersEl.textContent = lifetimeStats.orders.toLocaleString();
+      if (calsEl) calsEl.textContent = lifetimeStats.caloriesSaved.toLocaleString();
+      if (timeEl) timeEl.innerHTML = `${lifetimeStats.timeSaved.toLocaleString()} <span class="text-xl">min</span>`;
+      if (moneyEl) moneyEl.textContent = `₹${lifetimeStats.moneySaved.toLocaleString()}`;
+
+      if (calEquivEl) {
+        const walkHrs = (lifetimeStats.caloriesSaved / 300).toFixed(1);
+        calEquivEl.textContent = `≈ ${walkHrs} hours of brisk walking saved`;
+      }
+      if (timeEquivEl) {
+        const officeEpisodes = Math.round(lifetimeStats.timeSaved / 22);
+        timeEquivEl.textContent = `≈ ${officeEpisodes} episodes of sitcoms gained`;
+      }
+    }
+
+    /* ==========================================================
+       FRIENDS LEADERBOARD (HALL OF ABSTINENCE)
+       ========================================================== */
+    function initLeaderboard() {
+      leaderboardData = SEED_LEADERBOARD.map(p => ({ ...p }));
+      insertUserIntoLeaderboard(false);
+    }
+
+    function insertUserIntoLeaderboard(notify = true) {
+      // Filter out previous user record if any
+      leaderboardData = leaderboardData.filter(p => !p.isCurrentUser);
+
+      // Create user record
+      const userRecord = {
+        name: lifetimeStats.userName,
+        emoji: "🧘‍♂️",
+        orders: lifetimeStats.orders,
+        caloriesSaved: lifetimeStats.caloriesSaved,
+        timeSaved: lifetimeStats.timeSaved,
+        isCurrentUser: true
+      };
+
+      leaderboardData.push(userRecord);
+
+      // Sort descending by caloriesSaved
+      leaderboardData.sort((a, b) => b.caloriesSaved - a.caloriesSaved);
+
+      renderLeaderboardTable();
+    }
+
+    function updateUserInLeaderboard(additionalCals) {
+      // Find old index
+      const oldIndex = leaderboardData.findIndex(p => p.isCurrentUser);
+      insertUserIntoLeaderboard(false);
+      const newIndex = leaderboardData.findIndex(p => p.isCurrentUser);
+
+      if (oldIndex !== -1 && newIndex < oldIndex) {
+        const overtakenPeer = leaderboardData[newIndex + 1];
+        if (overtakenPeer && !overtakenPeer.isCurrentUser) {
+          showToast(`🏆 Ranking Up! You passed ${overtakenPeer.name} on the Hall of Abstinence!`, 'coral');
+        }
+      }
+    }
+
+    function renderLeaderboardTable() {
+      const container = document.getElementById('leaderboard-rows');
+      if (!container) return;
+
+      container.innerHTML = leaderboardData.map((peer, idx) => {
+        const rank = idx + 1;
+        const isUser = peer.isCurrentUser;
+        const rankBadge = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+
+        return `
+          <div class="p-4 flex items-center justify-between text-xs font-mono transition-colors ${
+            isUser ? 'bg-brand-mint/10 border-l-4 border-brand-mint text-white' : 'hover:bg-brand-card/50 text-gray-300'
+          }">
+            <div class="flex items-center gap-4">
+              <span class="w-8 text-center font-bold text-sm ${rank <= 3 ? 'text-brand-mint' : 'text-gray-400'}">
+                ${rankBadge}
+              </span>
+              <div class="flex items-center gap-2.5">
+                <span class="text-lg">${peer.emoji}</span>
+                <div>
+                  <span class="font-bold ${isUser ? 'text-brand-mint underline decoration-brand-mint/40 underline-offset-4' : 'text-white'}">
+                    ${peer.name}
+                  </span>
+                  ${isUser ? '<span class="ml-2 text-[10px] px-1.5 py-0.2 rounded bg-brand-mint text-black font-semibold">YOU</span>' : ''}
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-6">
+              <span class="text-gray-400 hidden sm:inline">${peer.orders} orders</span>
+              <span class="w-24 text-right font-extrabold text-sm ${isUser ? 'text-brand-mint neon-text-mint' : 'text-gray-200'}">
+                ${peer.caloriesSaved.toLocaleString()} <span class="text-[10px] font-normal text-gray-400">kcal</span>
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function editDisplayNamePrompt() {
+      const newName = prompt("Enter your phantom eater handle:", lifetimeStats.userName);
+      if (newName && newName.trim()) {
+        lifetimeStats.userName = newName.trim();
+        saveStats();
+        syncUserLabels();
+        insertUserIntoLeaderboard(false);
+        showToast(`Handle changed to "${lifetimeStats.userName}"`, 'mint');
+      }
+    }
+
+    function updateHandleFromInput() {
+      const input = document.getElementById('handle-input');
+      if (input && input.value.trim()) {
+        lifetimeStats.userName = input.value.trim();
+        input.value = '';
+        saveStats();
+        syncUserLabels();
+        insertUserIntoLeaderboard(false);
+        showToast(`Handle updated to "${lifetimeStats.userName}"!`, 'mint');
+      }
+    }
+
+    /* ==========================================================
+       UTILITY: TOAST NOTIFICATIONS & SMOOTH SCROLL
+       ========================================================== */
+    function showToast(message, type = 'mint') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = `px-4 py-3 rounded-xl border text-xs font-mono font-medium shadow-2xl flex items-center gap-2.5 animate-slide-up pointer-events-auto transition-all ${
+        type === 'coral' 
+          ? 'bg-brand-card border-brand-coral/50 text-white shadow-brand-coral/20' 
+          : type === 'error'
+          ? 'bg-red-950 border-red-500 text-red-200'
+          : 'bg-brand-card border-brand-mint/50 text-white shadow-brand-mint/20'
+      }`;
+
+      const icon = type === 'coral' ? '🏆' : type === 'error' ? '⚠️' : '✨';
+      toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-8px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // Keyboard shortcut (CMD/CTRL+K to focus search)
+    window.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        const searchInput = document.getElementById('menu-search-input');
+        if (searchInput) {
+          searchInput.focus();
+          searchInput.select();
+        }
+      }
+    });
+
+    /* ==========================================================
+       INITIAL RUN
+       ========================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      initStorage();
+      renderCategories();
+      renderDishes();
+      updateCartUI();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+/* Food Never Comes (FNC) — Custom Styles & Keyframes */
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F8F8F8;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4D5D9;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FC8019;
+}
+
+/* Veg / Non-Veg Indicator Badges */
+.type-veg {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #48A939;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFF;
+  flex-shrink: 0;
+}
+.type-veg::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #48A939;
+  border-radius: 50%;
+}
+
+.type-nonveg {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #E43B4F;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFF;
+  flex-shrink: 0;
+}
+.type-nonveg::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 3.5px solid transparent;
+  border-right: 3.5px solid transparent;
+  border-bottom: 6px solid #E43B4F;
+}
+
+/* Animations */
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.03); }
+}
+.anim-pulse {
+  animation: pulseSoft 2s infinite ease-in-out;
+}
+
+@keyframes dashLine {
+  from { background-position: 0 0; }
+  to { background-position: 24px 0; }
+}
+.road-track {
+  background: repeating-linear-gradient(90deg, #FC8019 0, #FC8019 12px, transparent 12px, transparent 24px);
+  background-size: 24px 100%;
+  animation: dashLine 0.8s linear infinite;
+}
+
+/* Sound Visualizer Bars */
+.sound-bar {
+  display: inline-block;
+  width: 2px;
+  height: 10px;
+  background-color: currentColor;
+  margin: 0 1px;
+  border-radius: 1px;
+  animation: barJump 1s ease-in-out infinite alternate;
+}
+.sound-bar:nth-child(2) { animation-delay: 0.2s; height: 14px; }
+.sound-bar:nth-child(3) { animation-delay: 0.4s; height: 8px; }
+
+@keyframes barJump {
+  0% { transform: scaleY(0.4); }
+  100% { transform: scaleY(1.3); }
+}
+
+/* Glowing effects */
+.glow-gold {
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
+}
+.glow-orange {
+  box-shadow: 0 0 25px rgba(252, 128, 25, 0.4);
+}
+
+/* Hide scrollbars for pill bars & carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Radar Sweep Animation */
+@keyframes radarSweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.radar-sweep-line {
+  transform-origin: 50% 50%;
+  animation: radarSweep 4s linear infinite;
+}
+
+/* Radar Ping Ripple */
+@keyframes pingRipple {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+.radar-ping {
+  animation: pingRipple 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+/* 80G Certificate Printable Container */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-certificate, #printable-certificate * {
+    visibility: visible;
+  }
+  #printable-certificate {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "food-never-comes",
+  "version": "1.0.0",
+  "description": "Food Never Comes (FNC) — Full-Stack Satirical Food Delivery & 80G Charitable Giving Platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node db/seed.js",
+    "build": "node db/seed.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "keywords": [
+    "food-delivery",
+    "satire",
+    "sqlite",
+    "nodejs",
+    "charity",
+    "80g",
+    "razorpay",
+    "upi"
+  ],
+  "author": "Food Never Comes Team",
+  "license": "MIT"
+}

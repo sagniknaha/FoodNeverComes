@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Food Never Comes (FNC) — Negative Delivery with Dedicated Radar & Smileys NGO</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans, Outfit, DM Sans, Syne, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=Syne:wght@700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Real Razorpay Checkout SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css"/>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+            brand: ['"Plus Jakarta Sans"', '"Outfit"', 'sans-serif'],
+            display: ['"Outfit"', 'sans-serif'],
+            heading: ['"Syne"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          colors: {
+            fnc: {
+              orange: '#FC8019',
+              orangeHover: '#E26D0A',
+              orangeLight: '#FFF2E6',
+              dark: '#282C3F',
+              muted: '#686B78',
+              lightMuted: '#93959F',
+              border: '#E9E9EB',
+              bgLight: '#F8F8F8',
+              green: '#48A939',
+              greenDark: '#267E3E',
+              greenLight: '#E8F5E9'
+            },
+            swiggy: {
+              orange: '#FC8019',
+              orangeHover: '#E26D0A',
+              orangeLight: '#FFF2E6',
+              dark: '#282C3F',
+              muted: '#686B78',
+              lightMuted: '#93959F',
+              border: '#E9E9EB',
+              bgLight: '#F8F8F8',
+              green: '#48A939',
+              greenDark: '#267E3E',
+              greenLight: '#E8F5E9'
+            },
+            rzp: {
+              blue: '#0C2340',
+              accent: '#0A85EA',
+              teal: '#00C389'
+            },
+            karma: {
+              gold: '#F59E0B',
+              amberLight: '#FEF3C7'
+            }
+          },
+          boxShadow: {
+            'swiggy': '0 15px 40px -20px rgba(40,44,63,0.15)',
+            'card': '0 2px 12px 0 rgba(0,0,0,0.06)',
+            'hover': '0 14px 30px -4px rgba(40,44,63,0.14)',
+            'glow-gold': '0 0 25px rgba(245, 158, 11, 0.45)',
+            'glow-blue': '0 0 25px rgba(10, 133, 234, 0.4)'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-white text-swiggy-dark font-sans antialiased selection:bg-swiggy-orange selection:text-white min-h-screen flex flex-col pb-24">
+
+  <!-- Toast Notification Stack -->
+  <div class="fixed top-20 right-6 z-[130] flex flex-col gap-2.5 pointer-events-none" id="toast-container"></div>
+
+  <!-- Top Live Satire & Ticker Bar -->
+  <div class="bg-gradient-to-r from-stone-950 via-stone-900 to-stone-950 text-white text-[11px] font-mono py-2 px-4 border-b border-stone-800/80 relative z-50 shadow-sm" id="top-ticker-bar">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <!-- Left: Protocol status and dynamic ticker -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap text-left">
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-swiggy-orange text-white shadow-xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-white anim-pulse"></span>
+          LIVE PROTOCOL
+        </span>
+        <span class="text-stone-300 font-sans text-xs">
+          <strong>1,420+</strong> cravings neutralized today • <strong>1,250,400 kcal</strong> spared • Rider Sharma Ji on 4th chai ☕ • Zero-checkout on 500+ ghost dishes
+        </span>
+      </div>
+
+      <!-- Right: Quick Indicators -->
+      <div class="hidden md:flex items-center gap-4 shrink-0 text-xs font-sans">
+        <button onclick="soundBlip(); openLocationModal();" class="flex items-center gap-1 text-stone-300 hover:text-swiggy-orange transition-colors" title="Click to view/change delivery zone">
+          <span>📍</span>
+          <span class="font-bold underline decoration-dotted decoration-stone-500 hover:decoration-swiggy-orange">Kolkata / Bangalore Hub</span>
+        </button>
+        <span class="text-stone-600">•</span>
+        <a href="#smileys-section" onclick="soundWarmBell(); scrollToSection('smileys-section'); return false;" class="inline-flex items-center gap-1 text-amber-300 hover:text-amber-200 transition-colors font-medium">
+          <span>💛</span>
+          <span>80G Tax Exemption (50% Deduction)</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200/90 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Upper Nav Row -->
+      <div class="h-20 flex items-center justify-between gap-3 lg:gap-6">
+        
+        <!-- Logo & Location -->
+        <div class="flex items-center gap-4 lg:gap-6">
+          <a class="flex items-center gap-3 group cursor-pointer" href="#" onclick="soundBlip(); scrollToSection('hero'); return false;">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-swiggy-orangeHover via-swiggy-orange to-amber-500 flex items-center justify-center text-white font-display font-black text-xl shadow-md group-hover:shadow-lg group-hover:scale-105 active:scale-95 transition-all">
+              FNC
+            </div>
+            <div class="flex flex-col">
+              <div class="flex items-center gap-1.5">
+                <span class="font-brand font-bold text-sm sm:text-base leading-tight tracking-tight text-swiggy-dark group-hover:text-swiggy-orange transition-colors">Food Never Comes</span>
+                <span class="hidden sm:inline-block w-2 h-2 rounded-full bg-swiggy-green anim-pulse" title="Negative Fulfillment Protocol Online"></span>
+              </div>
+              <span class="text-[10px] text-swiggy-muted font-semibold tracking-wider uppercase font-mono">Guilt-Free Negative Delivery</span>
+            </div>
+          </a>
+
+          <!-- Location Dropdown Pill (Browser Geolocation Enabled) -->
+          <div class="hidden md:flex items-center gap-2.5 text-xs border-l border-stone-200 pl-5 py-1.5 cursor-pointer group hover:bg-orange-50/50 rounded-2xl px-3 transition-all" onclick="soundBlip(); openLocationModal();" title="Click to detect GPS or switch location">
+            <div class="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center text-swiggy-orange group-hover:scale-110 group-hover:bg-swiggy-orange group-hover:text-white transition-all">
+              📍
+            </div>
+            <div class="flex flex-col text-left">
+              <div class="flex items-center gap-1">
+                <span class="font-display font-extrabold text-swiggy-dark group-hover:text-swiggy-orange transition-colors truncate max-w-[150px]" id="current-location-text">Detecting location...</span>
+                <span class="text-swiggy-orange font-bold text-[10px]">▼</span>
+              </div>
+              <span class="text-swiggy-muted text-[11px] truncate max-w-[160px]">Sharma Chai Detour Zone</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center Search Bar with Keyboard Shortcut -->
+        <div class="relative hidden lg:block flex-1 max-w-md">
+          <input class="w-full pl-10 pr-12 py-2.5 rounded-2xl bg-stone-100/80 border border-stone-200 text-xs focus:outline-none focus:border-swiggy-orange focus:bg-white text-swiggy-dark placeholder-stone-400 transition-all shadow-inner" id="search-input" oninput="soundBlip(); handleSearch(this.value)" placeholder="Search 500+ dishes, biryani, pizzas, burgers..." type="text"/>
+          <span class="absolute left-3.5 top-3 text-stone-400 text-xs">🔍</span>
+          <span class="absolute right-3 top-2.5 hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-stone-400 bg-white border border-stone-200 rounded shadow-2xs">/</span>
+        </div>
+
+        <!-- Right Action Items -->
+        <div class="flex items-center gap-2 sm:gap-3 font-display font-semibold text-xs sm:text-sm">
+          
+          <!-- Live Radar Trigger Button -->
+          <button class="hidden lg:flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-stone-900 text-white hover:bg-black transition-all active:scale-95 shadow-xs group" onclick="openLiveTrackingModal()" title="Inspect Rider Sharma Ji's live tea stall coordinates">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span class="text-xs font-bold text-stone-200 group-hover:text-white">Live Radar</span>
+            <span class="text-xs text-swiggy-orange">📡</span>
+          </button>
+
+          <!-- Karma Points Button / Drawer Trigger -->
+          <button class="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 text-amber-950 hover:bg-amber-100 transition-all active:scale-95 shadow-xs" onclick="soundBlip(); openRewardsDrawer();" title="View FNC Karma Rewards">
+            <span class="text-base">✨</span>
+            <div class="flex flex-col text-left leading-none">
+              <span class="text-[9px] font-mono font-bold text-amber-800 uppercase">Karma Vault</span>
+              <span class="font-extrabold text-xs font-mono text-amber-950" id="nav-karma-points">1,420 pts</span>
+            </div>
+          </button>
+
+          <!-- Smileys NGO Quick Trigger -->
+          <a class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-blue-50 border border-blue-200 text-blue-900 hover:bg-blue-100 transition-all active:scale-95 text-xs font-bold shadow-xs" href="#smileys-section" onclick="soundWarmBell(); scrollToSection('smileys-section'); return false;">
+            <span>💛</span>
+            <span>Smileys NGO</span>
+            <span class="text-[9px] bg-blue-600 text-white font-mono px-1.5 py-0.5 rounded-full">80G</span>
+          </a>
+
+          <!-- Leaderboard 1,000+ Drawer Trigger -->
+          <button class="hidden xl:flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-stone-200 bg-stone-50 hover:border-stone-400 text-swiggy-dark text-xs transition-all active:scale-95 shadow-xs" onclick="openLeaderboardDrawer()" title="1,000+ Patrons Leaderboard">
+            <span>👑</span>
+            <span class="font-bold text-[11px]">1,000+ Patrons</span>
+          </button>
+
+          <!-- Sound Toggle Button with Audio Visualizer -->
+          <button class="flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-stone-200 bg-stone-50 hover:border-swiggy-orange text-swiggy-dark text-xs transition-all active:scale-95 shadow-xs" id="sound-btn" onclick="toggleSound()" title="Universal Sound on Everything You Click">
+            <span class="text-swiggy-orange" id="sound-icon">🔊</span>
+            <span class="flex items-center text-swiggy-orange" id="sound-anim">
+              <span class="sound-bar"></span>
+              <span class="sound-bar"></span>
+              <span class="sound-bar"></span>
+            </span>
+            <span class="font-bold text-[11px] hidden md:inline" id="sound-text">SFX ON</span>
+          </button>
+
+          <!-- FNC Cart Button -->
+          <button class="flex items-center gap-2.5 bg-swiggy-orange hover:bg-swiggy-orangeHover text-white px-4 py-2.5 rounded-2xl transition-all active:scale-95 shadow-md hover:shadow-lg" onclick="soundBlip(); openCartDrawer();">
+            <div class="relative flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+                <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <span class="absolute -top-2 -right-2 bg-stone-900 text-white text-[10px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-xs" id="nav-cart-badge">0</span>
+            </div>
+            <span class="font-bold hidden sm:inline text-xs">Cart (₹0)</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Quick Navigation Chips Bar (Sub-header) -->
+      <div class="py-2.5 border-t border-stone-100 flex items-center justify-between text-xs font-display overflow-x-auto no-scrollbar gap-2">
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button onclick="soundBlip(); scrollToSection('restaurant-carousel-section')" class="px-3 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-swiggy-orange text-stone-700 font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap">
+            <span>🏪</span> Ghost Kitchens (10)
+          </button>
+          <button onclick="soundBlip(); scrollToSection('menu-section')" class="px-3 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-swiggy-orange text-stone-700 font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap">
+            <span>🍽️</span> 500+ Dishes
+          </button>
+          <button onclick="openLiveTrackingModal()" class="px-3 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-swiggy-orange text-stone-700 font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap">
+            <span>🛵</span> Rider Chai Radar
+          </button>
+          <button onclick="openLeaderboardDrawer()" class="px-3 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-swiggy-orange text-stone-700 font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap">
+            <span>👑</span> 1,000+ Patrons
+          </button>
+          <button onclick="soundWarmBell(); scrollToSection('smileys-section')" class="px-3 py-1 rounded-full bg-blue-50/70 hover:bg-blue-100 text-blue-900 font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap">
+            <span>💛</span> Smileys NGO 80G Fund
+          </button>
+          <button onclick="soundBlip(); scrollToSection('impact-dashboard')" class="px-3 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-swiggy-orange text-stone-700 font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap">
+            <span>📊</span> Your Impact
+          </button>
+        </div>
+
+        <div class="hidden lg:flex items-center gap-2 text-[11px] font-mono text-stone-500">
+          <span>Negative Delivery SLA:</span>
+          <strong class="text-swiggy-green">0.00s Guaranteed</strong>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-grow">
+
+    <!-- HERO SECTION -->
+    <section class="bg-gradient-to-b from-[#FFF2E6]/60 via-white to-white border-b border-swiggy-border py-8 md:py-12" id="hero">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <!-- Hero Copy -->
+          <div class="lg:col-span-7">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-swiggy-orangeLight text-swiggy-orange border border-orange-200 text-xs font-bold font-display mb-4">
+              <span class="w-2 h-2 rounded-full bg-swiggy-orange anim-pulse"></span>
+              FNC NEGATIVE FULFILLMENT PROTOCOL v7.0 • FREE PHANTOM CHECKOUT
+            </div>
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight text-swiggy-dark leading-[1.15]">
+              Order food you crave.<br/>
+              <span class="text-swiggy-orange">We make sure it never arrives.</span>
+            </h1>
+            <p class="mt-4 text-base sm:text-lg text-swiggy-muted font-normal max-w-xl leading-relaxed">
+              Explore 500+ authentic cravings across Barrackpore &amp; Kolkata's top local restaurants. Phantom food is <strong class="text-swiggy-dark font-semibold">100% Free (₹0)</strong> with instant simulated checkout. Want to make a real impact? Contribute your spared food bill to <strong class="text-swiggy-dark font-semibold">The Smileys Foundation</strong> via dedicated PhonePe / Razorpay UPI with instant 80G tax exemption!
+            </p>
+
+            <!-- Dual Action CTAs -->
+            <div class="mt-6 flex flex-col sm:flex-row gap-3 items-stretch max-w-xl">
+              <div class="p-4 rounded-2xl bg-gradient-to-r from-orange-50 to-white border border-dashed border-swiggy-orange flex-1 flex items-center justify-between gap-3 shadow-xs">
+                <div class="flex items-center gap-3">
+                  <span class="text-2xl">⚡</span>
+                  <div>
+                    <div class="font-display font-bold text-xs uppercase tracking-wide text-swiggy-dark">100% FREE PHANTOM FOOD</div>
+                    <div class="text-[11px] text-swiggy-muted">ZERO CHECKOUT • INSTANT CHAI DETOUR</div>
+                  </div>
+                </div>
+                <button class="px-3.5 py-2 rounded-xl bg-swiggy-orange hover:bg-swiggy-orangeHover text-white font-display font-bold text-xs shadow-md transition-all active:scale-95" onclick="soundPop(); scrollToSection('menu-section')">
+                  Explore 500+ Dishes
+                </button>
+              </div>
+
+              <button class="px-5 py-3 rounded-2xl bg-gradient-to-r from-blue-900 to-rzp-blue text-white font-display font-bold text-xs shadow-md hover:shadow-lg flex items-center justify-center gap-2 border border-blue-800 transition-all active:scale-95" onclick="openDonationGateway(100)">
+                <span>💛</span>
+                <span>Smileys NGO UPI Giving</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Hero Telemetry Metric Cards -->
+          <div class="lg:col-span-5 grid grid-cols-2 gap-3.5">
+            <div class="p-4 rounded-2xl bg-white border border-swiggy-border shadow-card hover:shadow-hover hover:-translate-y-1 transition-all group cursor-pointer" onclick="soundBlip()">
+              <div class="text-[11px] text-swiggy-muted font-bold uppercase tracking-wider font-mono">Orders Un-Arrived</div>
+              <div class="text-2xl sm:text-3xl font-display font-extrabold text-swiggy-dark mt-1 group-hover:text-swiggy-orange">94,320</div>
+              <div class="text-[11px] text-swiggy-lightMuted mt-0.5">Dispatched to tea stall</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-white border border-green-200 shadow-card hover:shadow-hover hover:-translate-y-1 transition-all group cursor-pointer" onclick="soundBlip()">
+              <div class="text-[11px] text-swiggy-green font-bold uppercase tracking-wider font-mono flex items-center justify-between">
+                <span>Calories Averted</span>
+                <span>🔥</span>
+              </div>
+              <div class="text-2xl sm:text-3xl font-display font-extrabold text-swiggy-green mt-1">74.2M</div>
+              <div class="text-[11px] text-green-700/70 mt-0.5">Clean bloodstreams</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-white border border-amber-200 shadow-card hover:shadow-hover hover:-translate-y-1 transition-all group cursor-pointer" onclick="soundBlip(); openRewardsDrawer();">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] text-amber-700 font-bold uppercase tracking-wider font-mono">FNC Karma Pool</span>
+                <span>✨</span>
+              </div>
+              <div class="text-2xl sm:text-3xl font-display font-extrabold text-amber-600 mt-1" id="hero-karma-display">1.42k</div>
+              <div class="text-[11px] text-stone-500 mt-0.5">Redeemable guilt vouchers</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-white border border-blue-200 shadow-card hover:shadow-hover hover:-translate-y-1 transition-all group cursor-pointer" onclick="openDonationGateway(100)">
+              <div class="text-[11px] text-blue-700 font-bold uppercase tracking-wider font-mono flex items-center justify-between">
+                <span>Smiley Meals Given</span>
+                <span>📚</span>
+              </div>
+              <div class="text-2xl sm:text-3xl font-display font-extrabold text-blue-900 mt-1">5,420+</div>
+              <div class="text-[11px] text-blue-600 mt-0.5">Rural kids nourished</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- NEARBY GHOST KITCHENS CAROUSEL -->
+    <section class="py-6 border-b border-swiggy-border bg-stone-50/60">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="font-heading font-extrabold text-base text-swiggy-dark flex items-center gap-2">
+              <span>🏪 Nearby Ghost Kitchens</span>
+              <span class="text-xs font-mono font-normal text-swiggy-orange bg-orange-100 px-2 py-0.5 rounded-full">All Riders Stalled</span>
+            </h3>
+            <p class="text-[11px] text-swiggy-muted">Curated partner restaurants around Bangalore with 0% delivery reach.</p>
+          </div>
+          <button onclick="filterByRestaurant('all')" class="text-xs font-display font-bold text-swiggy-orange hover:underline">
+            View All
+          </button>
+        </div>
+
+        <div class="flex items-center gap-3 overflow-x-auto no-scrollbar pb-2 pt-1" id="restaurant-carousel">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- HORIZONTAL CATEGORY & FILTER TOOLBAR -->
+    <section class="sticky top-20 z-30 bg-white/95 backdrop-blur-md border-b border-swiggy-border py-3 shadow-xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-3">
+        <!-- Categories -->
+        <div class="flex items-center gap-2.5 overflow-x-auto no-scrollbar w-full md:w-auto" id="category-pills">
+          <!-- Dynamic Category Pills Rendered by JS -->
+        </div>
+
+        <!-- Filter & Sort Controls -->
+        <div class="flex items-center gap-2.5 shrink-0 self-end md:self-auto">
+          <!-- Veg / Non-Veg Toggle -->
+          <div class="flex items-center bg-stone-100 p-1 rounded-full border border-swiggy-border text-xs font-display font-bold">
+            <button onclick="setVegFilter('all')" id="filter-veg-all" class="px-3 py-1.5 rounded-full text-xs font-display font-bold border-2 border-swiggy-dark bg-swiggy-dark text-white transition-all shadow-xs">
+              All
+            </button>
+            <button onclick="setVegFilter('veg')" id="filter-veg-veg" class="px-3 py-1.5 rounded-full text-xs font-display font-bold border border-transparent text-swiggy-muted hover:text-swiggy-dark transition-all flex items-center gap-1">
+              <span class="type-veg"></span> Pure Veg
+            </button>
+            <button onclick="setVegFilter('nonveg')" id="filter-veg-nonveg" class="px-3 py-1.5 rounded-full text-xs font-display font-bold border border-transparent text-swiggy-muted hover:text-swiggy-dark transition-all flex items-center gap-1">
+              <span class="type-nonveg"></span> Non-Veg
+            </button>
+          </div>
+
+          <!-- Sort Dropdown -->
+          <div class="relative">
+            <select onchange="setSortBy(this.value)" class="text-xs font-display font-semibold rounded-xl border border-swiggy-border bg-white px-3 py-2 pr-7 text-swiggy-dark focus:outline-none focus:border-swiggy-orange cursor-pointer shadow-xs">
+              <option value="default">Sort: Default</option>
+              <option value="cals-desc">🔥 Highest Guilt Averted</option>
+              <option value="rating">★ Highest Rated</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AUTHENTIC 500+ DISH CATALOG -->
+    <section class="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" id="menu-section">
+      <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 mb-6">
+        <div>
+          <h2 class="text-2xl font-heading font-extrabold tracking-tight text-swiggy-dark">
+            500+ Dishes to Crave &amp; Never Ingest
+          </h2>
+          <p class="text-xs sm:text-sm text-swiggy-muted mt-0.5" id="dishes-count-label">
+            Authentic restaurant plating • 0% delivery probability • 100% Free phantom food
+          </p>
+        </div>
+        <div class="text-xs font-mono font-bold text-swiggy-green flex items-center gap-1.5 bg-swiggy-greenLight px-3 py-1 rounded-md border border-green-200 shadow-xs">
+          <span>✓</span> Calorie Dissipation Certified
+        </div>
+      </div>
+
+      <!-- Dishes Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="dishes-grid">
+        <!-- Rendered with FNC ADD overlapping buttons -->
+      </div>
+
+      <!-- Pagination / Load More Button -->
+      <div class="mt-10 text-center" id="dishes-pagination-controls">
+        <button onclick="loadMoreDishes()" class="px-8 py-3.5 rounded-2xl bg-swiggy-dark hover:bg-swiggy-orange text-white font-display font-bold text-xs tracking-wider uppercase transition-all shadow-md active:scale-95">
+          Load More Guilt-Free Dishes ➔
+        </button>
+      </div>
+    </section>
+
+    <!-- THE SMILEYS FOUNDATION CHARITABLE GIVING SECTION -->
+    <section class="py-12 bg-gradient-to-r from-amber-50 via-orange-50/50 to-blue-50 border-t border-b border-orange-200" id="smileys-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-3xl border border-orange-200 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-0">
+          
+          <!-- Children Photo Column with Real Asset -->
+          <div class="lg:col-span-5 relative min-h-[320px] lg:min-h-full">
+            <img 
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuApyiuBZePWzqR-Q7C6uT6pGe_qOzX_ili0E_JJBb_ekDr8rR7Y6H6wXbLMVQ7vQhVlOQmztUJhbl6IubULJYRjiabUbK9d9a7ijomNjlNNdYBI3FkW-X8jovjSa58Wzc2HX1gPIZgWrV3g-Pzh2z9bCxAMfLJVClwV0xKvm6kjv11R4YfN5mYMOLKlRP5D3lCO2DPiap8k-oR9GEpMA8b1LgaUz0UJfVRlarg0xC6iPy0y3zBCgCSCHQ" 
+              alt="Rural Indian school children happily studying in classroom with books and pencils" 
+              class="w-full h-full object-cover"
+              loading="lazy"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-stone-900/20 to-transparent flex flex-col justify-end p-6 text-white">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded bg-blue-600 text-white font-mono text-[10px] font-bold uppercase">Verified NGO Partner</span>
+                <span class="px-2 py-0.5 rounded bg-swiggy-green text-white font-mono text-[10px] font-bold uppercase">80G Tax Exempt</span>
+              </div>
+              <h3 class="font-heading font-extrabold text-xl text-white">The Smileys Foundation</h3>
+              <p class="text-xs text-stone-200 font-sans mt-0.5">Empowering 5,420+ rural schoolchildren with books, nutritious meals &amp; digital literacy.</p>
+            </div>
+          </div>
+
+          <!-- Giving Narrative & Interactive Tiers -->
+          <div class="lg:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-between">
+            <div>
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-900 font-mono text-[11px] font-bold mb-3">
+                <span>💛</span>
+                <span>DEDICATED REAL UPI / RAZORPAY GATEWAY</span>
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-heading font-extrabold text-swiggy-dark tracking-tight leading-snug">
+                You saved ₹400 &amp; 1,200 calories.<br/>
+                <span class="text-swiggy-orange">Feed a curious young mind instead.</span>
+              </h2>
+              <p class="mt-3 text-xs sm:text-sm text-swiggy-muted leading-relaxed">
+                Phantom food on this site is always ₹0. Channel your real savings into schoolbooks, notebooks, pencils, hot morning porridge, and digital tablets for underprivileged students through <strong class="text-swiggy-dark">The Smileys Foundation</strong> via direct PhonePe / Razorpay UPI.
+              </p>
+
+              <!-- NGO Impact Stats -->
+              <div class="grid grid-cols-3 gap-3 my-5">
+                <div class="p-2.5 rounded-xl bg-stone-50 border border-swiggy-border text-center">
+                  <div class="text-base sm:text-lg font-heading font-black text-blue-900">5,420+</div>
+                  <div class="text-[10px] font-mono text-swiggy-muted uppercase">Children Aided</div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-stone-50 border border-swiggy-border text-center">
+                  <div class="text-base sm:text-lg font-heading font-black text-swiggy-green">100%</div>
+                  <div class="text-[10px] font-mono text-swiggy-muted uppercase">Direct NGO Pass</div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-stone-50 border border-swiggy-border text-center">
+                  <div class="text-base sm:text-lg font-heading font-black text-amber-600">+500</div>
+                  <div class="text-[10px] font-mono text-swiggy-muted uppercase">Bonus Karma Pts</div>
+                </div>
+              </div>
+
+              <!-- Micro-Donation Selectors -->
+              <div class="space-y-2">
+                <label class="block text-xs font-display font-bold text-swiggy-dark">Select Micro-Giving Tier to add to Cart / Checkout:</label>
+                <div class="grid grid-cols-3 gap-2.5" id="donation-tier-buttons">
+                  <button type="button" onclick="soundWarmBell(); selectDonationTier(50)" class="donation-btn py-2.5 px-3 rounded-xl border-2 border-swiggy-border bg-white font-display text-xs font-bold text-swiggy-dark flex flex-col items-center gap-0.5 transition-all active:scale-95" id="tier-btn-50">
+                    <span class="text-sm font-extrabold text-blue-900">₹50</span>
+                    <span class="text-[10px] text-swiggy-muted font-normal">Pencils &amp; Books</span>
+                  </button>
+                  <button type="button" onclick="soundWarmBell(); selectDonationTier(100)" class="donation-btn py-2.5 px-3 rounded-xl border-2 border-blue-600 bg-blue-50/70 font-display text-xs font-bold text-blue-900 flex flex-col items-center gap-0.5 transition-all active:scale-95 shadow-xs" id="tier-btn-100">
+                    <span class="text-sm font-extrabold text-blue-900">₹100</span>
+                    <span class="text-[10px] text-blue-700 font-normal">Week's Hot Meals</span>
+                  </button>
+                  <button type="button" onclick="soundWarmBell(); selectDonationTier(250)" class="donation-btn py-2.5 px-3 rounded-xl border-2 border-swiggy-border bg-white font-display text-xs font-bold text-swiggy-dark flex flex-col items-center gap-0.5 transition-all active:scale-95" id="tier-btn-250">
+                    <span class="text-sm font-extrabold text-blue-900">₹250</span>
+                    <span class="text-[10px] text-swiggy-muted font-normal">Full Digital Kit</span>
+                  </button>
+                </div>
+                
+                <!-- Custom Donation Input -->
+                <div class="pt-2 flex items-center gap-2">
+                  <div class="relative flex-1">
+                    <span class="absolute left-3 top-2 text-xs font-mono font-bold text-stone-400">₹</span>
+                    <input type="number" id="custom-donation-input" min="10" placeholder="Enter custom amount..." class="w-full pl-7 pr-3 py-1.5 rounded-xl border border-swiggy-border text-xs text-swiggy-dark focus:outline-none focus:border-blue-600 font-mono"/>
+                  </div>
+                  <button type="button" onclick="soundWarmBell(); setCustomDonation()" class="px-4 py-1.5 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-900 text-xs font-display font-bold transition-all active:scale-95">
+                    Set Amount
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Smileys Action Button -->
+            <div class="mt-6 pt-4 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="text-xs text-swiggy-muted flex items-center gap-1.5">
+                <span class="text-blue-600 font-bold">✓</span> Includes official 80G Tax Exemption Certificate on checkout.
+              </div>
+              <button class="w-full sm:w-auto px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-display font-extrabold text-xs shadow-md transition-all active:scale-95 flex items-center justify-center gap-2" onclick="soundWarmBell(); addDonationToCartAndOpen()">
+                <span>💛 Add ₹<span id="btn-donation-amount-display">100</span> to Phantom Cart</span>
+                <span>➔</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- LIFETIME ABSTINENCE VAULT (DASHBOARD) -->
+    <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" id="impact-dashboard">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded bg-swiggy-greenLight text-swiggy-greenDark font-bold text-xs font-mono mb-1.5">
+            <span>🛡️</span> LIFETIME SATISFACTION &amp; KARMA VAULT
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-heading font-extrabold text-swiggy-dark tracking-tight">Your Swiggy Abstinence Vault</h2>
+          <p class="text-xs sm:text-sm text-swiggy-muted mt-0.5">Live tracking of saved calories, spared money, and banked FNC Karma.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="px-4 py-2 rounded-xl bg-amber-50 border border-amber-300 hover:bg-amber-100 text-xs font-display font-bold text-amber-900 shadow-xs transition-all active:scale-95 flex items-center gap-1.5" onclick="soundBlip(); openRewardsDrawer();">
+            <span>🎁 Redeem Karma</span>
+          </button>
+          <button class="px-3.5 py-2 rounded-xl bg-white border border-swiggy-border hover:border-swiggy-dark hover:bg-stone-50 text-xs font-display font-semibold text-swiggy-dark shadow-xs transition-all active:scale-95" onclick="soundBlip(); openOrderHistoryModal()">
+            <span>📜 Past Orders</span>
+          </button>
+          <button class="px-3 py-2 rounded-xl bg-white border border-swiggy-border hover:border-red-400 hover:text-red-600 text-xs font-display font-semibold text-swiggy-muted shadow-xs transition-all active:scale-95" onclick="soundBlip(); resetLifetimeStats()" title="Reset Vault Stats">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Metric 1 -->
+        <div class="p-5 rounded-2xl bg-white border border-swiggy-border shadow-card hover:shadow-hover hover:-translate-y-1 transition-all">
+          <div class="flex items-center justify-between text-xs font-mono text-swiggy-muted font-bold">
+            <span>ORDERS UN-ARRIVED</span>
+            <span class="text-base">🛵</span>
+          </div>
+          <div class="text-3xl font-display font-extrabold text-swiggy-dark mt-2 tabular-nums" id="dash-total-orders">0</div>
+          <p class="text-[11px] text-swiggy-muted mt-1">Containers safely spared from landfill.</p>
+        </div>
+
+        <!-- Metric 2 -->
+        <div class="p-5 rounded-2xl bg-white border border-green-200 shadow-card hover:shadow-hover hover:-translate-y-1 transition-all">
+          <div class="flex items-center justify-between text-xs font-mono text-swiggy-green font-bold">
+            <span>CALORIES PREVENTED</span>
+            <span>🔥</span>
+          </div>
+          <div class="text-3xl font-display font-extrabold text-swiggy-green mt-2 tabular-nums" id="dash-total-cals">0</div>
+          <p class="text-[11px] text-green-700 font-mono mt-1 font-semibold" id="dash-cals-equiv">≈ 0 hrs brisk walking saved</p>
+        </div>
+
+        <!-- Metric 3 -->
+        <div class="p-5 rounded-2xl bg-white border border-amber-200 shadow-card hover:shadow-hover hover:-translate-y-1 transition-all">
+          <div class="flex items-center justify-between text-xs font-mono text-amber-700 font-bold">
+            <span>FNC KARMA POINTS</span>
+            <span>✨</span>
+          </div>
+          <div class="text-3xl font-display font-extrabold text-amber-600 mt-2 tabular-nums" id="dash-total-karma">1,420</div>
+          <p class="text-[11px] text-amber-800 font-mono mt-1" id="dash-karma-equiv">Tier: Zen Monk Level 4</p>
+        </div>
+
+        <!-- Metric 4 -->
+        <div class="p-5 rounded-2xl bg-white border border-blue-200 shadow-card hover:shadow-hover hover:-translate-y-1 transition-all">
+          <div class="flex items-center justify-between text-xs font-mono text-blue-700 font-bold">
+            <span>SMILEY GIVING PLEDGED</span>
+            <span>💛</span>
+          </div>
+          <div class="text-3xl font-display font-extrabold text-blue-900 mt-2 tabular-nums" id="dash-total-donation">₹0</div>
+          <p class="text-[11px] text-blue-700 font-mono mt-1" id="dash-donation-equiv">0 student meals funded</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPACT LEADERBOARD WIDGET (PODIUM PREVIEW) -->
+    <section class="py-10 bg-gradient-to-b from-stone-50 via-white to-stone-50 border-t border-swiggy-border" id="leaderboard-section">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+          <div>
+            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded bg-amber-100 text-amber-900 font-bold text-xs font-mono mb-1">
+              <span>👑</span> 1,000+ VERIFIED ABSTAINERS
+            </div>
+            <h2 class="text-2xl font-heading font-extrabold text-swiggy-dark">Hall of Abstinence &amp; Karma</h2>
+            <p class="text-xs text-swiggy-muted">Top champions avoiding midnight carbs &amp; nourishing children.</p>
+          </div>
+
+          <button onclick="openLeaderboardDrawer()" class="px-5 py-2.5 rounded-xl bg-swiggy-dark hover:bg-swiggy-orange text-white font-display font-bold text-xs shadow-md transition-all active:scale-95 flex items-center gap-2">
+            <span>View All 1,000+ Patrons</span>
+            <span>➔</span>
+          </button>
+        </div>
+
+        <!-- Podium Top 3 Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5" id="compact-podium-cards">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Active User Compact Summary Card -->
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-50 via-white to-orange-50 border-2 border-amber-300 shadow-glow-gold flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 to-swiggy-orange text-white flex items-center justify-center font-bold text-lg shadow-sm anim-pulse">
+              👑
+            </div>
+            <div>
+              <div class="text-[10px] text-amber-800 font-mono font-bold uppercase">YOUR CLIMBER STATUS</div>
+              <div class="font-heading font-extrabold text-sm text-swiggy-dark" id="podium-user-name">Ghost Gourmet</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <input class="bg-white border border-swiggy-border rounded-xl px-3 py-1.5 text-xs text-swiggy-dark focus:outline-none focus:border-swiggy-orange flex-1 sm:w-44 font-sans shadow-xs" id="handle-input" maxlength="22" placeholder="Rename handle..." type="text"/>
+            <button class="px-4 py-1.5 rounded-xl bg-swiggy-dark hover:bg-swiggy-orange text-white font-display font-bold text-xs transition-all active:scale-95 shadow-xs" onclick="soundBlip(); saveNewHandle()">
+              Save
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- PERSISTENT FLOATING BOTTOM CART BAR -->
+  <div class="fixed bottom-4 left-0 right-0 z-40 px-4 pointer-events-none flex justify-center" id="floating-cart-container">
+    <div class="max-w-2xl w-full bg-swiggy-orange text-white py-3.5 px-6 rounded-2xl flex items-center justify-between shadow-2xl cursor-pointer pointer-events-auto transform translate-y-36 opacity-0 transition-all duration-300 hover:bg-swiggy-orangeHover hover:scale-[1.01] active:scale-[0.99]" id="floating-cart-bar" onclick="soundBlip(); openCartDrawer()">
+      <div class="flex flex-col">
+        <div class="text-xs uppercase font-mono font-bold tracking-wider" id="float-count">0 ITEMS ADDED</div>
+        <div class="font-display font-extrabold text-base" id="float-total">100% Free Phantom Order • ₹0</div>
+      </div>
+      <div class="flex items-center gap-2 font-display font-extrabold text-sm tracking-wide">
+        <span>VIEW PHANTOM CART</span>
+        <span class="text-base">➔</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FNC SIDE DRAWER CART -->
+  <div class="fixed inset-0 bg-swiggy-dark/60 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300" id="cart-backdrop" onclick="soundBlip(); closeCartDrawer()"></div>
+  <aside class="fixed top-0 right-0 h-full w-full max-w-md bg-white border-l border-swiggy-border z-50 translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-2xl" id="cart-drawer">
+    <!-- Header -->
+    <div class="p-5 border-b border-swiggy-border flex items-center justify-between bg-white">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-swiggy-orangeLight text-swiggy-orange flex items-center justify-center font-bold text-base">
+          🛍️
+        </div>
+        <div>
+          <h2 class="text-base font-heading font-extrabold text-swiggy-dark">Your Phantom Cart</h2>
+          <p class="text-[11px] text-swiggy-muted">Dishes slated for permanent non-arrival</p>
+        </div>
+      </div>
+      <button class="w-8 h-8 rounded-lg hover:bg-swiggy-bgLight flex items-center justify-center text-swiggy-muted hover:text-swiggy-dark font-bold text-sm" onclick="soundBlip(); closeCartDrawer()">
+        ✕
+      </button>
+    </div>
+
+    <!-- Items List -->
+    <div class="flex-grow overflow-y-auto p-5 space-y-4" id="cart-items-container">
+      <!-- Items or Empty State injected by JS -->
+    </div>
+
+    <!-- Smileys NGO Round-Up Strip inside Cart -->
+    <div class="px-5 py-3 bg-blue-50/70 border-t border-b border-blue-200 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">💛</span>
+        <div>
+          <div class="text-xs font-display font-bold text-blue-900 leading-tight">Round-up for Smileys NGO</div>
+          <div class="text-[10px] text-blue-700 font-sans">Real 80G Tax Deductible Donation</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button class="text-[11px] px-2.5 py-1 rounded-lg bg-white border border-blue-300 text-blue-900 font-bold hover:bg-blue-100 transition-colors" onclick="soundWarmBell(); toggleCartDonation(50)">+₹50</button>
+        <button class="text-[11px] px-2.5 py-1 rounded-lg bg-white border border-blue-300 text-blue-900 font-bold hover:bg-blue-100 transition-colors" onclick="soundWarmBell(); toggleCartDonation(100)">+₹100</button>
+      </div>
+    </div>
+
+    <!-- Bill Details & Distinct Checkout Routing -->
+    <div class="p-5 border-t border-swiggy-border bg-swiggy-bgLight space-y-3.5">
+      <div class="p-4 rounded-xl bg-white border border-swiggy-border space-y-2 text-xs font-sans shadow-xs">
+        <div class="font-display font-bold text-swiggy-dark text-xs pb-1 border-b border-swiggy-border flex justify-between items-center">
+          <span>Bill Breakdown</span>
+          <span class="text-[10px] font-mono text-swiggy-green font-bold">100% Guilt Spared</span>
+        </div>
+        <div class="flex justify-between text-swiggy-muted">
+          <span>Phantom Food (Simulated)</span>
+          <span class="font-mono font-bold text-swiggy-green" id="cart-subtotal">₹0 (Waived)</span>
+        </div>
+        <div class="flex justify-between text-blue-800 font-medium" id="cart-donation-row" style="display: none;">
+          <span>Smileys NGO Giving (80G)</span>
+          <span class="font-mono font-bold text-blue-900" id="cart-donation-val">₹0</span>
+        </div>
+        <div class="flex justify-between text-swiggy-green font-semibold">
+          <span>Delivery Fee (Distance: Infinity)</span>
+          <span>FREE</span>
+        </div>
+        <div class="flex justify-between text-swiggy-green font-semibold pt-1 border-t border-swiggy-border">
+          <span>🔥 Calories Prevented</span>
+          <span class="font-mono font-bold" id="cart-cals-val">0 kcal</span>
+        </div>
+        <div class="flex justify-between text-swiggy-dark font-display font-extrabold text-sm pt-2 border-t border-swiggy-border">
+          <span>TOTAL PAYABLE</span>
+          <span class="text-swiggy-orange" id="cart-total-pay">₹0</span>
+        </div>
+      </div>
+
+      <!-- Checkout Button: Automatically routes to Zero-Checkout or NGO Gateway -->
+      <button class="w-full py-3.5 rounded-xl bg-gradient-to-r from-swiggy-orange to-swiggy-orangeHover text-white font-display font-extrabold text-sm tracking-wide transition-all active:scale-98 shadow-md flex items-center justify-center gap-2 disabled:opacity-40 disabled:pointer-events-none" id="checkout-btn" onclick="handleCartCheckout()">
+        <span id="checkout-btn-label">CONFIRM ZERO-CALORIE ORDER (₹0)</span>
+        <span>➔</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- DEDICATED SMILEYS NGO DONATION GATEWAY (PHONEPE / RAZORPAY / UPI) -->
+  <div class="fixed inset-0 bg-swiggy-dark/70 backdrop-blur-md z-[110] opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-3 sm:p-4" id="donation-gateway-backdrop">
+    <div class="w-full max-w-lg bg-white rounded-3xl overflow-hidden shadow-2xl scale-95 transition-all duration-300 border border-slate-200 flex flex-col max-h-[94vh]">
+      
+      <!-- Blue Header -->
+      <div class="bg-rzp-blue text-white p-5 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-xl shadow-glow-blue">
+            💛
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-sm sm:text-base">The Smileys Foundation Children's Fund</h3>
+            <p class="text-slate-400 text-xs font-mono">Official 80G Tax-Deductible Donation Gateway</p>
+          </div>
+        </div>
+        <button onclick="closeDonationGateway()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs">✕</button>
+      </div>
+
+      <!-- Amount Strip -->
+      <div class="bg-blue-50/70 border-b border-blue-200 px-6 py-3 flex items-center justify-between text-xs">
+        <div>
+          <span class="text-blue-900 font-medium">Pledge for <span id="rzp-user-name-tag" class="font-bold">Ghost Gourmet</span>:</span>
+          <span class="text-blue-700 font-mono text-[11px] block" id="gw-meals-display">5 hot student meals funded</span>
+        </div>
+        <div class="font-display font-black text-xl text-blue-950" id="gw-amount-display">
+          ₹100.00
+        </div>
+      </div>
+
+      <!-- Payment Method Navigation Tabs -->
+      <div class="grid grid-cols-3 border-b border-stone-200 bg-stone-50 text-xs font-display font-bold">
+        <button type="button" onclick="switchPaymentGatewayTab('upi')" id="gw-tab-btn-upi" class="py-3 px-2 text-center border-b-2 border-blue-600 bg-white text-blue-950 flex items-center justify-center gap-1.5 transition-all">
+          <span>⚡</span>
+          <span>UPI QR & Apps</span>
+        </button>
+        <button type="button" onclick="switchPaymentGatewayTab('razorpay')" id="gw-tab-btn-razorpay" class="py-3 px-2 text-center border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center justify-center gap-1.5 transition-all">
+          <span>💳</span>
+          <span>Razorpay</span>
+        </button>
+        <button type="button" onclick="switchPaymentGatewayTab('bank')" id="gw-tab-btn-bank" class="py-3 px-2 text-center border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center justify-center gap-1.5 transition-all">
+          <span>🏦</span>
+          <span>Bank Transfer</span>
+        </button>
+      </div>
+
+      <!-- Body Container: Scrollable -->
+      <div class="p-5 overflow-y-auto space-y-4 text-center flex-grow">
+        
+        <!-- TAB 1: UPI QR & Deep Links -->
+        <div id="gw-tab-content-upi" class="space-y-4">
+          <!-- Live Scannable UPI QR Container -->
+          <div class="p-3 bg-stone-50 rounded-2xl border border-stone-200 inline-block shadow-inner">
+            <img id="gw-qr-image" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi%3A%2F%2Fpay%3Fpa%3D9874958471%40superyes%26pn%3DThe%2520Smileys%2520Foundation%26am%3D100%26cu%3DINR%26tn%3DSmileys%2520NGO%252080G%2520Donation" alt="UPI QR Code to 9874958471@superyes" class="w-44 h-44 sm:w-48 sm:h-48 mx-auto rounded-xl object-contain"/>
+            <div class="text-[10px] text-stone-500 font-mono mt-1">Scan with any UPI App (GPay, PhonePe, Paytm, Super.money)</div>
+          </div>
+
+          <!-- Official Receiver UPI ID Pill -->
+          <div class="flex items-center justify-between p-2.5 bg-blue-50 border border-blue-200 rounded-xl text-xs">
+            <div class="flex items-center gap-1.5 text-left truncate">
+              <span class="font-mono font-bold text-blue-900">Receiver UPI ID:</span>
+              <code class="font-mono font-bold text-blue-950 truncate" id="gw-upi-id-display">9874958471@superyes</code>
+            </div>
+            <button type="button" onclick="copyUpiId()" class="shrink-0 px-2.5 py-1 rounded-lg bg-blue-700 hover:bg-blue-800 text-white font-mono text-[11px] font-bold active:scale-95 shadow-xs transition-all flex items-center gap-1">
+              <span>📋</span> Copy
+            </button>
+          </div>
+
+          <!-- Direct UPI Deep Link Buttons -->
+          <div class="space-y-1 text-left">
+            <span class="text-[10px] font-mono font-bold text-swiggy-muted uppercase">Fast Pay via Native Mobile Apps</span>
+            <div class="grid grid-cols-4 gap-2">
+              <button type="button" onclick="openDirectUpiApp('PhonePe')" class="py-2 px-1.5 rounded-xl border border-purple-200 bg-purple-50/70 hover:bg-purple-100 text-xs font-bold text-purple-900 flex flex-col items-center justify-center gap-0.5 transition-all active:scale-95">
+                <span class="text-sm">📱</span>
+                <span class="text-[10px]">PhonePe</span>
+              </button>
+              <button type="button" onclick="openDirectUpiApp('GooglePay')" class="py-2 px-1.5 rounded-xl border border-blue-200 bg-blue-50/70 hover:bg-blue-100 text-xs font-bold text-blue-900 flex flex-col items-center justify-center gap-0.5 transition-all active:scale-95">
+                <span class="text-sm">🌐</span>
+                <span class="text-[10px]">GPay</span>
+              </button>
+              <button type="button" onclick="openDirectUpiApp('Paytm')" class="py-2 px-1.5 rounded-xl border border-cyan-200 bg-cyan-50/70 hover:bg-cyan-100 text-xs font-bold text-cyan-900 flex flex-col items-center justify-center gap-0.5 transition-all active:scale-95">
+                <span class="text-sm">⚡</span>
+                <span class="text-[10px]">Paytm</span>
+              </button>
+              <button type="button" onclick="openDirectUpiApp('BHIM')" class="py-2 px-1.5 rounded-xl border border-emerald-200 bg-emerald-50/70 hover:bg-emerald-100 text-xs font-bold text-emerald-900 flex flex-col items-center justify-center gap-0.5 transition-all active:scale-95">
+                <span class="text-sm">🇮🇳</span>
+                <span class="text-[10px]">BHIM/Other</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: Razorpay Gateway (Cards, Netbanking, Wallets) -->
+        <div id="gw-tab-content-razorpay" class="hidden space-y-4 text-left">
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-rzp-blue text-white space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-bold text-blue-300">RAZORPAY CHECKOUT STANDARD</span>
+              <span class="text-xs bg-blue-500/30 px-2 py-0.5 rounded text-blue-200 font-mono">v1 SDK</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Pay securely using all major Indian and international Credit / Debit Cards, 50+ Netbanking banks, Cred, and mobile wallets.
+            </p>
+            <div class="flex items-center gap-2 text-base text-slate-300">
+              <span title="Visa">💳 Visa</span>
+              <span title="Mastercard">Mastercard</span>
+              <span title="RuPay">RuPay</span>
+              <span title="Netbanking">🏛️ Netbanking</span>
+            </div>
+          </div>
+
+          <!-- Trigger Button -->
+          <button type="button" onclick="triggerRealRazorpayCheckout()" class="w-full py-3.5 rounded-2xl bg-[#0C2340] hover:bg-[#0A1D34] text-white font-display font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg transition-all active:scale-98 border border-blue-400/40">
+            <span class="text-blue-400 font-mono font-bold text-base">₹</span>
+            <span>Launch Razorpay Payment Window</span>
+            <span>➔</span>
+          </button>
+
+          <!-- Custom Razorpay Key ID Settings (Collapsible) -->
+          <div class="pt-2 border-t border-stone-200">
+            <details class="text-xs text-stone-500 group">
+              <summary class="cursor-pointer font-mono font-bold text-[11px] text-blue-900 hover:text-blue-700 flex items-center gap-1">
+                <span>⚙️ Developer / Custom Razorpay Key ID (Optional)</span>
+              </summary>
+              <div class="mt-2 space-y-1.5 p-3 rounded-xl bg-stone-50 border border-stone-200">
+                <label class="text-[10px] font-mono text-stone-600 block">Enter your Razorpay Key ID (e.g. rzp_test_... or rzp_live_...):</label>
+                <input type="text" id="rzp-custom-key-input" placeholder="rzp_test_YourKeyHere" class="w-full px-3 py-1.5 rounded-lg border border-stone-300 text-xs font-mono text-stone-800 focus:outline-none focus:border-blue-600" onchange="saveRazorpayKey(this.value)"/>
+                <p class="text-[10px] text-stone-400">Stored safely in local browser storage only.</p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- TAB 3: Bank Transfer (NEFT / IMPS) -->
+        <div id="gw-tab-content-bank" class="hidden space-y-3 text-left">
+          <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-2.5 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-stone-800">Trust Account Details</span>
+              <span class="text-[10px] font-mono bg-blue-100 text-blue-900 px-2 py-0.5 rounded font-bold">NEFT / IMPS / RTGS</span>
+            </div>
+            <div class="space-y-1.5 font-mono text-[11px] text-stone-600">
+              <div class="flex justify-between py-1 border-b border-stone-200">
+                <span>Beneficiary Name:</span>
+                <strong class="text-stone-900">The Smileys Foundation Trust</strong>
+              </div>
+              <div class="flex justify-between items-center py-1 border-b border-stone-200">
+                <span>Account Number:</span>
+                <div class="flex items-center gap-1">
+                  <strong class="text-stone-900">50200067829104</strong>
+                  <button type="button" onclick="copyText('50200067829104', 'Account Number')" class="text-blue-700 hover:text-blue-900 text-xs">📋</button>
+                </div>
+              </div>
+              <div class="flex justify-between items-center py-1 border-b border-stone-200">
+                <span>IFSC Code:</span>
+                <div class="flex items-center gap-1">
+                  <strong class="text-stone-900">HDFC0001049</strong>
+                  <button type="button" onclick="copyText('HDFC0001049', 'IFSC Code')" class="text-blue-700 hover:text-blue-900 text-xs">📋</button>
+                </div>
+              </div>
+              <div class="flex justify-between py-1 border-b border-stone-200">
+                <span>Account Type:</span>
+                <strong class="text-stone-900">Current Account</strong>
+              </div>
+              <div class="flex justify-between py-1">
+                <span>Bank &amp; Branch:</span>
+                <strong class="text-stone-900">HDFC Bank Ltd, Indiranagar, Bangalore</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRANSACTION UTR / REFERENCE INPUT -->
+        <div class="pt-3 border-t border-stone-200 text-left space-y-2">
+          <label class="text-[10px] font-mono font-bold text-stone-600 uppercase flex items-center justify-between">
+            <span>Enter UPI UTR / Bank Reference No. (Optional for Instant 80G)</span>
+            <span class="text-blue-700">12 Digits</span>
+          </label>
+          <div class="relative">
+            <input type="text" id="gw-utr-input" placeholder="e.g. 426819284719 or PAY_XXXXXX" maxlength="30" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs font-mono text-stone-900 placeholder-stone-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 bg-white"/>
+            <span class="absolute right-3 top-2.5 text-stone-400 text-xs font-mono">#</span>
+          </div>
+          <p class="text-[10px] text-stone-500">
+            Your 12-digit UTR appears in your PhonePe / GPay / Bank SMS after paying. It will be recorded on your 80G Certificate.
+          </p>
+        </div>
+
+        <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 text-left text-[11px] text-emerald-800">
+          <strong>✓ 80G Tax Exemption:</strong> 50% deduction under Section 80G. Digital certificate minted instantly upon confirmation!
+        </div>
+      </div>
+
+      <!-- Verification Button -->
+      <div class="p-4 bg-stone-50 border-t border-stone-200">
+        <button onclick="executeDonationPayment()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 hover:opacity-95 text-white font-display font-extrabold text-sm tracking-wide shadow-lg flex items-center justify-center gap-2 transition-all active:scale-98" id="gw-pay-btn">
+          <span id="gw-btn-label">VERIFY PAYMENT &amp; MINT 80G CERTIFICATE</span>
+          <div class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" id="gw-spinner"></div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOCATION SELECTOR & GPS DETECTION MODAL -->
+  <div class="fixed inset-0 bg-swiggy-dark/70 backdrop-blur-sm z-[125] opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4" id="location-modal-backdrop">
+    <div class="w-full max-w-md bg-white rounded-3xl overflow-hidden shadow-2xl border border-stone-200 flex flex-col">
+      <div class="p-5 border-b border-swiggy-border flex items-center justify-between bg-stone-50">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl">📍</span>
+          <div>
+            <h3 class="font-heading font-extrabold text-base text-swiggy-dark">Delivery Location &amp; Radar Hub</h3>
+            <p class="text-[11px] text-swiggy-muted">Set your location for nearby ghost kitchens &amp; rider detours</p>
+          </div>
+        </div>
+        <button onclick="closeLocationModal()" class="w-8 h-8 rounded-full hover:bg-stone-200 flex items-center justify-center text-stone-500 font-bold text-sm">✕</button>
+      </div>
+
+      <div class="p-5 space-y-4">
+        <!-- GPS Auto-Detect Button -->
+        <button onclick="initGeolocation(); closeLocationModal();" class="w-full py-3 px-4 rounded-2xl bg-swiggy-orangeLight border-2 border-swiggy-orange text-swiggy-orange font-display font-extrabold text-xs flex items-center justify-center gap-2 hover:bg-orange-100 transition-all active:scale-98 shadow-xs">
+          <span class="text-base">🎯</span>
+          <span>Auto-Detect My GPS Location</span>
+        </button>
+
+        <!-- Manual City/Locality Search -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-mono font-bold text-swiggy-muted uppercase">Or Enter Your Area / City</label>
+          <div class="flex gap-2">
+            <input type="text" id="manual-location-input" placeholder="e.g. Barakpur, Kolkata or Koramangala, Bangalore" class="flex-grow px-3 py-2 rounded-xl border border-swiggy-border text-xs focus:outline-none focus:border-swiggy-orange text-swiggy-dark" onkeydown="if(event.key==='Enter') handleCustomLocationSubmit()"/>
+            <button onclick="handleCustomLocationSubmit()" class="px-4 py-2 rounded-xl bg-swiggy-dark text-white font-display font-bold text-xs hover:bg-black transition-all">
+              Set
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick City Presets -->
+        <div class="space-y-1.5 pt-2 border-t border-stone-200">
+          <span class="text-[10px] font-mono font-bold text-swiggy-muted uppercase">Popular Delivery Hubs</span>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <button onclick="selectManualLocation('Barakpur, Kolkata')" class="p-2.5 rounded-xl border border-stone-200 hover:border-swiggy-orange hover:bg-orange-50 text-left font-display font-semibold text-swiggy-dark transition-colors">
+              📍 Barakpur, Kolkata
+            </button>
+            <button onclick="selectManualLocation('Park Street, Kolkata')" class="p-2.5 rounded-xl border border-stone-200 hover:border-swiggy-orange hover:bg-orange-50 text-left font-display font-semibold text-swiggy-dark transition-colors">
+              📍 Park Street, Kolkata
+            </button>
+            <button onclick="selectManualLocation('Indiranagar, Bangalore')" class="p-2.5 rounded-xl border border-stone-200 hover:border-swiggy-orange hover:bg-orange-50 text-left font-display font-semibold text-swiggy-dark transition-colors">
+              📍 Indiranagar, Bangalore
+            </button>
+            <button onclick="selectManualLocation('Koramangala, Bangalore')" class="p-2.5 rounded-xl border border-stone-200 hover:border-swiggy-orange hover:bg-orange-50 text-left font-display font-semibold text-swiggy-dark transition-colors">
+              📍 Koramangala, Bangalore
+            </button>
+            <button onclick="selectManualLocation('Bandra West, Mumbai')" class="p-2.5 rounded-xl border border-stone-200 hover:border-swiggy-orange hover:bg-orange-50 text-left font-display font-semibold text-swiggy-dark transition-colors">
+              📍 Bandra West, Mumbai
+            </button>
+            <button onclick="selectManualLocation('Connaught Place, Delhi')" class="p-2.5 rounded-xl border border-stone-200 hover:border-swiggy-orange hover:bg-orange-50 text-left font-display font-semibold text-swiggy-dark transition-colors">
+              📍 Connaught Place, Delhi
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 bg-stone-50 border-t border-stone-200 text-center">
+        <span class="text-[10px] text-stone-400 font-mono">Radar dynamically recalculates rider detour distances</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEDICATED LIVE DELIVERY AGENT GPS RADAR MAP SCREEN -->
+  <div class="fixed inset-0 z-[100] bg-white hidden flex-col overflow-y-auto" id="tracking-view">
+    <!-- Top Bar -->
+    <header class="border-b border-swiggy-border bg-white px-6 py-4 flex items-center justify-between sticky top-0 z-20 shadow-xs">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-swiggy-orange text-white flex items-center justify-center font-display font-extrabold text-sm shadow-xs">
+          FNC
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-display font-bold text-swiggy-dark text-sm sm:text-base" id="track-order-id">Order #FNC-99827-NEVER</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-swiggy-orangeLight text-swiggy-orange border border-orange-200">
+              PERMANENT CHAI DETOUR
+            </span>
+          </div>
+          <span class="text-xs text-swiggy-muted">Destination: Infinite horizon • Indiranagar Hub</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button class="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-xs font-display font-bold transition-all active:scale-95" onclick="openCertificateModal()">
+          📜 80G Tax Certificate
+        </button>
+        <button class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 border border-swiggy-border text-xs font-display font-bold transition-all active:scale-95" onclick="openReceiptModal()">
+          🧾 Receipt
+        </button>
+        <button class="px-4 py-2 rounded-xl bg-swiggy-bgLight hover:bg-stone-200 border border-swiggy-border text-xs font-display font-bold text-swiggy-dark transition-all active:scale-95" onclick="exitTrackingView()">
+          Back to Menu ✕
+        </button>
+      </div>
+    </header>
+
+    <!-- Tracking Body -->
+    <div class="flex-grow max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left: Interactive GPS Radar Map & Live Telemetry -->
+      <div class="lg:col-span-7 space-y-6">
+        <div class="p-6 rounded-3xl bg-white border border-swiggy-border shadow-card overflow-hidden">
+          
+          <!-- Radar Canvas Container -->
+          <div class="p-4 rounded-2xl bg-stone-900 text-white flex flex-col items-center justify-center relative overflow-hidden mb-6">
+            <div class="w-full flex items-center justify-between text-[10px] font-mono text-stone-400 mb-2">
+              <span class="flex items-center gap-1 text-emerald-400 font-bold">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 anim-pulse"></span> SATELLITE RADAR LOCK
+              </span>
+              <span class="text-swiggy-orange font-bold font-mono">STALL SPEED: 0.00 KM/H</span>
+            </div>
+
+            <!-- HTML5 Interactive Radar Canvas -->
+            <canvas id="radar-canvas" width="360" height="360" class="rounded-full shadow-2xl max-w-full"></canvas>
+
+            <!-- Radar Map Legend -->
+            <div class="mt-4 flex items-center gap-6 text-xs font-mono">
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-blue-500 shadow-glow-blue"></span>
+                <span>🏠 Your House</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-swiggy-orange shadow-glow-orange"></span>
+                <span>🛵 Rider Sharma Ji (Chai Break) ☕</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Telemetry Status Box -->
+          <div class="p-4 rounded-2xl bg-stone-50 border border-swiggy-border space-y-2">
+            <div class="flex items-center justify-between text-xs font-mono">
+              <span class="text-swiggy-orange font-bold uppercase" id="track-distance">Distance: 1.2 km • Speed: 0.00 km/h</span>
+              <span class="text-amber-800 font-bold bg-amber-100 px-2 py-0.5 rounded-full" id="track-chai-cups">4 cups consumed</span>
+            </div>
+            <h2 class="text-xl font-display font-extrabold text-swiggy-dark leading-snug" id="tracking-headline">
+              "Rider stopped for cutting chai at Sharma tea stall."
+            </h2>
+            <p class="text-xs text-swiggy-muted font-mono">
+              Detour Status: Stationary at roadside bench • Samosa in hand
+            </p>
+          </div>
+
+          <!-- Milestones Timeline -->
+          <div class="mt-6 border-l-2 border-swiggy-border ml-3 pl-6 space-y-5">
+            <div class="relative">
+              <span class="absolute -left-[31px] top-0 w-6 h-6 rounded-full bg-swiggy-green text-white flex items-center justify-center text-xs font-bold shadow-xs">✓</span>
+              <h4 class="text-xs font-display font-bold text-swiggy-dark">Zero-Cost Order Confirmed</h4>
+              <p class="text-[11px] text-swiggy-muted">₹0 deducted for food. 100% of calories safely intercepted.</p>
+            </div>
+            <div class="relative">
+              <span class="absolute -left-[31px] top-0 w-6 h-6 rounded-full bg-swiggy-green text-white flex items-center justify-center text-xs font-bold shadow-xs">✓</span>
+              <h4 class="text-xs font-display font-bold text-swiggy-dark">Kitchen Chef Sent on Break</h4>
+              <p class="text-[11px] text-swiggy-muted">0 pots washed, 0 oil burned, pure imaginary flavor delivered.</p>
+            </div>
+            <div class="relative">
+              <span class="absolute -left-[31px] top-0 w-6 h-6 rounded-full bg-swiggy-orange text-white flex items-center justify-center text-xs font-bold shadow-xs anim-pulse">☕</span>
+              <h4 class="text-xs font-display font-bold text-swiggy-orange">Rider Sharma Ji Savoring Chai #4</h4>
+              <p class="text-[11px] text-swiggy-muted">GPS verified stationary at roadside tea stall. No rush whatsoever.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Victory Savings & Rewards Banked -->
+      <div class="lg:col-span-5 space-y-6">
+        <div class="p-6 rounded-3xl bg-white border-2 border-swiggy-green shadow-xl relative overflow-hidden">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-swiggy-greenLight text-swiggy-greenDark text-xs font-mono font-bold mb-3 shadow-xs">
+            <span>🎉</span> 100% ABSTINENCE &amp; KARMA WIN
+          </div>
+          <h3 class="text-xl font-display font-extrabold text-swiggy-dark">You Saved Today!</h3>
+          <p class="text-xs text-swiggy-muted mt-0.5">By not receiving this order, you immediately banked:</p>
+
+          <div class="mt-5 space-y-3">
+            <div class="p-4 rounded-xl bg-swiggy-greenLight border border-green-200">
+              <div class="text-[10px] font-mono text-swiggy-greenDark font-bold uppercase flex items-center justify-between">
+                <span>CALORIES PREVENTED</span>
+                <span>🔥</span>
+              </div>
+              <div class="flex items-baseline gap-1.5 mt-1">
+                <span class="text-4xl font-display font-black text-swiggy-greenDark tabular-nums" id="track-cals-val">0</span>
+                <span class="text-xs font-mono font-bold text-swiggy-greenDark">kcal</span>
+              </div>
+            </div>
+
+            <!-- Karma Points Credited -->
+            <div class="p-4 rounded-xl bg-amber-50 border border-amber-300">
+              <div class="text-[10px] font-mono text-amber-900 font-bold uppercase flex items-center justify-between">
+                <span>NEW KARMA CREDITED</span>
+                <span>✨</span>
+              </div>
+              <div class="flex items-baseline gap-1.5 mt-1">
+                <span class="text-4xl font-display font-black text-amber-800 tabular-nums" id="track-karma-val">+0</span>
+                <span class="text-xs font-mono font-bold text-amber-700">Karma pts</span>
+              </div>
+              <p class="text-[11px] text-amber-950 mt-1 font-mono pt-1.5 border-t border-amber-200" id="track-donation-notice">
+                Includes Smileys Foundation giving bonus!
+              </p>
+            </div>
+          </div>
+
+          <button class="w-full mt-6 py-3.5 rounded-xl bg-swiggy-green hover:bg-swiggy-greenDark text-white font-display font-extrabold text-xs transition-all active:scale-95 shadow-md flex items-center justify-center gap-2" onclick="exitTrackingView()">
+            <span>CONFIRM SATISFACTION &amp; VIEW LEADERBOARD</span>
+            <span>➔</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FULL 1,000+ PATRONS LEADERBOARD DRAWER -->
+  <div class="fixed inset-0 bg-swiggy-dark/70 backdrop-blur-sm z-[115] opacity-0 pointer-events-none transition-opacity duration-300" id="lb-drawer-backdrop" onclick="closeLeaderboardDrawer()"></div>
+  <aside class="fixed top-0 right-0 h-full w-full max-w-xl bg-white border-l border-swiggy-border z-[116] translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-2xl" id="lb-full-drawer">
+    <!-- Header -->
+    <div class="p-5 border-b border-swiggy-border bg-stone-50 flex items-center justify-between">
+      <div>
+        <h3 class="font-heading font-extrabold text-base text-swiggy-dark">Hall of Abstinence &amp; Karma</h3>
+        <p class="text-[11px] text-swiggy-muted font-mono" id="lb-full-count-label">Displaying 1,000 Verified Abstainers • You: <span id="lb-user-name" class="font-bold text-swiggy-orange">Ghost Gourmet</span></p>
+      </div>
+      <button onclick="closeLeaderboardDrawer()" class="w-8 h-8 rounded-full hover:bg-stone-200 flex items-center justify-center text-stone-500 font-bold text-sm">✕</button>
+    </div>
+
+    <!-- Search & Tabs -->
+    <div class="p-4 border-b border-swiggy-border space-y-3 bg-white">
+      <div class="relative">
+        <input type="text" id="lb-search-input" oninput="handleLbSearch(this.value)" placeholder="Search patron by name or rank # (e.g. 42)..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-swiggy-border text-xs focus:outline-none focus:border-swiggy-dark"/>
+        <span class="absolute left-3 top-2.5 text-xs text-stone-400">🔍</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="filterLeaderboardDrawer('all')" id="lb-full-tab-all" class="px-4 py-1.5 rounded-full text-xs font-display font-bold border border-swiggy-dark bg-swiggy-dark text-white shadow-xs">
+          👑 All-Time
+        </button>
+        <button onclick="filterLeaderboardDrawer('week')" id="lb-full-tab-week" class="px-4 py-1.5 rounded-full text-xs font-display font-bold border border-swiggy-border bg-white text-swiggy-muted hover:border-swiggy-dark">
+          ⚡ This Week
+        </button>
+        <button onclick="filterLeaderboardDrawer('donors')" id="lb-full-tab-donors" class="px-4 py-1.5 rounded-full text-xs font-display font-bold border border-swiggy-border bg-white text-blue-700 hover:border-blue-600">
+          💛 Top Donors (Smileys NGO)
+        </button>
+      </div>
+    </div>
+
+    <!-- 1,000+ Patrons List -->
+    <div class="flex-grow overflow-y-auto divide-y divide-swiggy-border" id="lb-full-rows">
+      <!-- Injected by JS -->
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="p-4 bg-stone-50 border-t border-swiggy-border flex items-center justify-between text-xs font-display font-bold">
+      <button onclick="lbPrevPage()" id="lb-prev-btn" class="px-3.5 py-1.5 rounded-xl border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-40 disabled:pointer-events-none">
+        ← Previous 50
+      </button>
+      <span class="text-swiggy-muted font-mono text-[11px]" id="lb-page-indicator">Page 1 of 20</span>
+      <button onclick="lbNextPage()" id="lb-next-btn" class="px-3.5 py-1.5 rounded-xl border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-40 disabled:pointer-events-none">
+        Next 50 →
+      </button>
+    </div>
+  </aside>
+
+  <!-- DISH CUSTOMIZER MODAL -->
+  <div class="fixed inset-0 bg-swiggy-dark/70 backdrop-blur-sm z-[115] opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4" id="customizer-backdrop">
+    <div class="w-full max-w-md bg-white rounded-3xl overflow-hidden shadow-2xl scale-95 transition-all duration-300 border border-slate-200 flex flex-col max-h-[90vh]" id="customizer-modal">
+      <div class="p-5 border-b border-swiggy-border flex items-center justify-between bg-stone-50">
+        <div>
+          <h3 class="font-heading font-extrabold text-base text-swiggy-dark" id="customizer-title">Customize Guilt Level</h3>
+          <p class="text-[11px] text-swiggy-green font-mono font-semibold" id="customizer-base-cals">0 kcal base</p>
+        </div>
+        <button onclick="closeCustomizerModal()" class="w-8 h-8 rounded-full hover:bg-stone-200 flex items-center justify-center text-stone-500 font-bold text-sm">✕</button>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-3 flex-grow" id="customizer-addons-container">
+        <!-- Injected by JS -->
+      </div>
+
+      <div class="p-4 bg-stone-50 border-t border-swiggy-border flex items-center justify-between">
+        <div>
+          <div class="text-[11px] text-swiggy-muted font-mono" id="customizer-total-cals">0 kcal prevented</div>
+          <div class="font-display font-extrabold text-base text-swiggy-dark" id="customizer-total-price">₹0</div>
+        </div>
+        <button onclick="saveCustomizationAndAdd()" class="px-5 py-2.5 rounded-xl bg-swiggy-orange hover:bg-swiggy-orangeHover text-white font-display font-extrabold text-xs shadow-md transition-all active:scale-95">
+          Add with Extra Guilt
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 80G CERTIFICATE MODAL -->
+  <div class="fixed inset-0 bg-swiggy-dark/70 backdrop-blur-sm z-[120] opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4" id="certificate-backdrop">
+    <div class="w-full max-w-xl bg-white rounded-3xl overflow-hidden shadow-2xl border border-stone-200 flex flex-col" id="printable-certificate">
+      <div class="p-6 bg-gradient-to-r from-blue-900 to-rzp-blue text-white flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">📜</span>
+          <div>
+            <h3 class="font-heading font-extrabold text-lg">Official 80G Tax Exemption Certificate</h3>
+            <p class="text-xs text-blue-200 font-mono">The Smileys Foundation (Registered Public Charitable Trust)</p>
+          </div>
+        </div>
+        <button onclick="closeCertificateModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs">✕</button>
+      </div>
+
+      <div class="p-8 space-y-5 text-swiggy-dark">
+        <div class="text-center pb-4 border-b border-stone-200">
+          <div class="text-[11px] font-mono text-stone-500 uppercase tracking-wider">CERTIFICATE OF CHARITABLE GIVING</div>
+          <h2 class="text-2xl font-heading font-black text-blue-950 mt-1" id="cert-user-name">Ghost Gourmet</h2>
+          <p class="text-xs text-stone-600 mt-1">Has graciously contributed to the education and nutrition of rural underprivileged children.</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 text-xs">
+          <div class="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+            <span class="text-stone-500 text-[10px] font-mono uppercase">DONATION AMOUNT</span>
+            <div class="font-display font-extrabold text-lg text-blue-900" id="cert-amount">₹100.00</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+            <span class="text-stone-500 text-[10px] font-mono uppercase">STUDENT IMPACT</span>
+            <div class="font-display font-extrabold text-lg text-emerald-700" id="cert-meals">5 nutritious meals</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-stone-50 border border-stone-200 col-span-2 flex justify-between items-center">
+            <div>
+              <span class="text-stone-500 text-[10px] font-mono uppercase">VERIFIED TRANSACTION ID / UTR</span>
+              <div class="font-mono font-bold text-xs text-blue-900" id="cert-txn-id">TXN-426819284719</div>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">✓ 80G VERIFIED</span>
+          </div>
+        </div>
+
+        <div class="text-[11px] text-stone-500 leading-relaxed font-sans bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+          <strong>Tax Exemption Notice:</strong> Donations to The Smileys Foundation qualify for a 50% deduction under Section 80G of the Income Tax Act, 1961 (Registration No. DIT(E)/80G/2021-22/A/1049).
+        </div>
+
+        <div class="flex justify-between items-end pt-4 border-t border-stone-200 text-xs">
+          <div>
+            <div class="font-mono text-[10px] text-stone-400">DATE ISSUED</div>
+            <div class="font-bold text-swiggy-dark" id="cert-date">22 September 2026</div>
+          </div>
+          <div class="text-right">
+            <div class="font-mono text-[10px] text-stone-400">AUTHORIZED SIGNATORY</div>
+            <div class="font-display font-bold text-blue-900">The Smileys Foundation Trustee</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-stone-50 border-t border-stone-200 flex justify-end gap-2">
+        <button onclick="printCertificate()" class="px-4 py-2 rounded-xl bg-blue-800 hover:bg-blue-900 text-white font-display font-bold text-xs shadow-xs transition-all active:scale-95 flex items-center gap-1.5">
+          <span>🖨️ Print / Save PDF</span>
+        </button>
+        <button onclick="closeCertificateModal()" class="px-4 py-2 rounded-xl bg-white border border-stone-300 text-stone-700 font-display font-bold text-xs hover:bg-stone-100 transition-all">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHANTOM RECEIPT MODAL -->
+  <div class="fixed inset-0 bg-swiggy-dark/70 backdrop-blur-sm z-[120] opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4" id="receipt-backdrop">
+    <div class="w-full max-w-sm bg-white rounded-3xl overflow-hidden shadow-2xl border border-stone-200 flex flex-col font-mono text-xs">
+      <div class="p-5 bg-swiggy-dark text-white text-center">
+        <h3 class="font-brand font-bold text-sm tracking-wider">FOOD NEVER COMES</h3>
+        <p class="text-[10px] text-stone-400 mt-0.5">OFFICIAL NON-DELIVERY RECEIPT</p>
+      </div>
+
+      <div class="p-5 space-y-3">
+        <div class="flex justify-between text-[11px] pb-2 border-b border-dashed border-stone-300">
+          <span>Order: <strong id="receipt-id">FNC-882194</strong></span>
+          <span id="receipt-time">22 Sep, 12:15</span>
+        </div>
+
+        <div class="space-y-1.5" id="receipt-items">
+          <!-- Injected by JS -->
+        </div>
+
+        <div class="pt-2 border-t border-dashed border-stone-300 space-y-1">
+          <div class="flex justify-between">
+            <span>Simulated Food Cost:</span>
+            <span id="receipt-subtotal">₹490</span>
+          </div>
+          <div class="flex justify-between text-swiggy-green font-bold">
+            <span>Metabolic Calories Spared:</span>
+            <span id="receipt-cals">1,250 kcal</span>
+          </div>
+          <div class="flex justify-between text-blue-900 font-bold">
+            <span>Smileys NGO Giving:</span>
+            <span id="receipt-donation">₹100</span>
+          </div>
+          <div class="flex justify-between font-bold text-sm pt-2 border-t border-stone-300">
+            <span>Amount Charged:</span>
+            <span>₹0 (Food)</span>
+          </div>
+        </div>
+
+        <div class="text-center text-[10px] text-stone-400 pt-3 border-t border-stone-200">
+          Thank you for digesting 0 calories! 🧘
+        </div>
+      </div>
+
+      <div class="p-3 bg-stone-50 border-t border-stone-200 text-center">
+        <button onclick="closeReceiptModal()" class="w-full py-2 rounded-xl bg-swiggy-dark text-white font-display font-bold text-xs">
+          Close Receipt
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDER HISTORY MODAL -->
+  <div class="fixed inset-0 bg-swiggy-dark/70 backdrop-blur-sm z-[120] opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4" id="history-backdrop">
+    <div class="w-full max-w-lg bg-white rounded-3xl overflow-hidden shadow-2xl border border-stone-200 flex flex-col max-h-[85vh]">
+      <div class="p-5 border-b border-swiggy-border flex items-center justify-between bg-stone-50">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl">📜</span>
+          <h3 class="font-heading font-extrabold text-base text-swiggy-dark">Past Un-Deliveries Vault</h3>
+        </div>
+        <button onclick="closeOrderHistoryModal()" class="w-8 h-8 rounded-full hover:bg-stone-200 flex items-center justify-center text-stone-500 font-bold text-sm">✕</button>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-3 flex-grow" id="history-items-container">
+        <!-- Injected by JS -->
+      </div>
+
+      <div class="p-4 bg-stone-50 border-t border-swiggy-border text-right">
+        <button onclick="closeOrderHistoryModal()" class="px-5 py-2 rounded-xl bg-swiggy-dark text-white font-display font-bold text-xs">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FNC REWARDS DRAWER -->
+  <div class="fixed inset-0 bg-swiggy-dark/60 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300" id="rewards-backdrop" onclick="soundBlip(); closeRewardsDrawer()"></div>
+  <aside class="fixed top-0 left-0 h-full w-full max-w-md bg-white border-r border-swiggy-border z-50 -translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-2xl" id="rewards-drawer">
+    <div class="p-5 border-b border-swiggy-border flex items-center justify-between bg-gradient-to-r from-amber-50 to-orange-50">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg font-bold shadow-xs">
+          ✨
+        </div>
+        <div>
+          <h2 class="text-base font-heading font-extrabold text-amber-950">FNC Karma Vault</h2>
+          <p class="text-[11px] text-amber-800">10 Pts per 100 kcal • 1 Rupee Cashback per ₹10</p>
+        </div>
+      </div>
+      <button class="w-8 h-8 rounded-lg hover:bg-white flex items-center justify-center text-swiggy-muted hover:text-swiggy-dark font-bold text-sm" onclick="soundBlip(); closeRewardsDrawer()">
+        ✕
+      </button>
+    </div>
+
+    <div class="flex-grow overflow-y-auto p-5 space-y-4">
+      <!-- Balance Card -->
+      <div class="p-5 rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 text-white shadow-lg relative overflow-hidden">
+        <div class="text-[10px] font-mono uppercase tracking-widest text-amber-100">Guilt-Free Calorie Currency</div>
+        <div class="text-3xl font-display font-black mt-1 flex items-baseline gap-2">
+          <span id="rewards-karma-balance">1,420</span>
+          <span class="text-xs font-mono font-bold text-amber-200">KARMA PTS</span>
+        </div>
+        <div class="mt-3 pt-3 border-t border-white/20 flex justify-between text-xs text-amber-100">
+          <span>Abstinence Cashback: <strong class="text-white">₹142</strong></span>
+          <span>Rank: <strong class="text-white">Zen Monk Lvl 4</strong></span>
+        </div>
+      </div>
+
+      <!-- Redeemable Perks -->
+      <div class="space-y-2.5">
+        <div class="text-xs font-mono font-bold text-swiggy-muted uppercase">Redeem Satirical Perks</div>
+
+        <div class="p-3.5 rounded-xl border border-swiggy-border bg-stone-50 flex items-center justify-between gap-3 hover:border-amber-400 transition-colors">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">☕</span>
+            <div>
+              <div class="font-display font-bold text-xs text-swiggy-dark">Sharma Ji Cutting Chai Voucher</div>
+              <div class="text-[11px] text-swiggy-muted">Send samosa telepathically to your stalled rider.</div>
+            </div>
+          </div>
+          <button class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-display font-bold text-xs shadow-xs active:scale-95" onclick="soundChaChing(); showToast('Sharma Ji received your cutting chai! ☕', 'mint');">
+            200 Pts
+          </button>
+        </div>
+
+        <div class="p-3.5 rounded-xl border border-swiggy-border bg-stone-50 flex items-center justify-between gap-3 hover:border-amber-400 transition-colors">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🥇</span>
+            <div>
+              <div class="font-display font-bold text-xs text-swiggy-dark">Hall of Fame 24k Gold Border</div>
+              <div class="text-[11px] text-swiggy-muted">Glow on the Abstinence Leaderboard table.</div>
+            </div>
+          </div>
+          <button class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-display font-bold text-xs shadow-xs active:scale-95" onclick="soundFanfare(); showToast('24k Gold Aura applied to your handle! 👑', 'mint');">
+            500 Pts
+          </button>
+        </div>
+
+        <div class="p-3.5 rounded-xl border border-blue-200 bg-blue-50/60 flex items-center justify-between gap-3 hover:border-blue-400 transition-colors">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">📜</span>
+            <div>
+              <div class="font-display font-bold text-xs text-blue-950">Smileys Child Sponsorship Honors</div>
+              <div class="text-[11px] text-blue-700">Digital honors certificate for funding student books.</div>
+            </div>
+          </div>
+          <button class="px-3 py-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white font-display font-bold text-xs shadow-xs active:scale-95" onclick="soundWarmBell(); openCertificateModal();">
+            1000 Pts
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- COMPREHENSIVE SWIGGY-GRADE MULTI-COLUMN FOOTER -->
+  <footer class="bg-stone-950 text-stone-300 text-xs border-t border-stone-800 mt-16 pb-20 md:pb-12">
+    
+    <!-- Top Newsletter / "Calorie Denial Club" Strip -->
+    <div class="border-b border-stone-800/80 bg-stone-900/60 py-10 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div class="space-y-1.5 text-center lg:text-left max-w-xl">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-mono font-bold uppercase tracking-wider">
+            <span>🧘</span> CALORIE DENIAL CLUB
+          </div>
+          <h3 class="text-xl sm:text-2xl font-heading font-black text-white">Join 150,000+ Midnight Abstainers</h3>
+          <p class="text-stone-400 text-xs sm:text-sm">
+            Receive satirical craving interception alerts whenever you are about to order greasy midnight biryani. 0 calories, 100% peace of mind.
+          </p>
+        </div>
+
+        <form onsubmit="handleNewsletterSubscribe(event)" class="flex flex-col sm:flex-row gap-2.5 w-full max-w-md">
+          <input 
+            id="newsletter-email-input" 
+            type="email" 
+            placeholder="Enter your email to neutralize cravings..." 
+            class="px-4 py-3 rounded-xl bg-stone-800/90 border border-stone-700 text-xs text-white placeholder-stone-400 focus:outline-none focus:border-swiggy-orange flex-grow shadow-inner"
+            required
+          />
+          <button 
+            type="submit" 
+            class="px-6 py-3 rounded-xl bg-swiggy-orange hover:bg-swiggy-orangeHover text-white font-display font-extrabold text-xs shadow-md hover:shadow-lg transition-all active:scale-95 whitespace-nowrap flex items-center justify-center gap-1.5"
+          >
+            <span>Join Free</span>
+            <span>➔</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Main 5-Column Grid -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10">
+        
+        <!-- Column 1: FNC Brand & Negative Fulfillment -->
+        <div class="lg:col-span-1 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-swiggy-orange to-amber-500 flex items-center justify-center text-white font-display font-black text-lg shadow-sm">
+              FNC
+            </div>
+            <div>
+              <div class="font-heading font-black text-white text-base">foodnevercomes.com</div>
+              <div class="text-[10px] text-stone-500 font-mono">Negative Fulfillment v7.0</div>
+            </div>
+          </div>
+          <p class="text-stone-400 text-xs leading-relaxed">
+            The world's premier negative-fulfillment delivery parody. We neutralize midnight cravings before they hit your bloodstream, while channeling generosity into rural education through The Smileys Foundation.
+          </p>
+          
+          <!-- Trust Badges -->
+          <div class="space-y-1.5 pt-2 font-mono text-[11px]">
+            <div class="flex items-center gap-2 text-stone-400">
+              <span class="text-swiggy-green">✓</span> <span>100% Zero-Calorie Verified</span>
+            </div>
+            <div class="flex items-center gap-2 text-stone-400">
+              <span class="text-blue-400">✓</span> <span>Section 80G Registered Partner</span>
+            </div>
+            <div class="flex items-center gap-2 text-stone-400">
+              <span class="text-amber-400">✓</span> <span>0.00s Non-Delivery SLA</span>
+            </div>
+            <div class="flex items-center gap-2 text-stone-400">
+              <span class="text-stone-300">✓</span> <span>100% Client-Side Privacy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Authentic Local Restaurants (Google Maps) -->
+        <div class="space-y-3">
+          <h4 class="text-white font-display font-extrabold text-sm uppercase tracking-wider flex items-center gap-1.5">
+            <span>🏪</span> Iconic Local Restaurants
+          </h4>
+          <ul class="space-y-2 text-stone-400 text-xs font-medium">
+            <li><a href="#" onclick="soundBlip(); filterByRestaurant('rest-1'); scrollToSection('menu-section'); return false;" class="hover:text-swiggy-orange transition-colors">Dada Boudi Biryani (Barrackpore)</a></li>
+            <li><a href="#" onclick="soundBlip(); filterByRestaurant('rest-2'); scrollToSection('menu-section'); return false;" class="hover:text-swiggy-orange transition-colors">Arsalan (Park Circus)</a></li>
+            <li><a href="#" onclick="soundBlip(); filterByRestaurant('rest-3'); scrollToSection('menu-section'); return false;" class="hover:text-swiggy-orange transition-colors">Peter Cat (Park Street)</a></li>
+            <li><a href="#" onclick="soundBlip(); filterByRestaurant('rest-4'); scrollToSection('menu-section'); return false;" class="hover:text-swiggy-orange transition-colors">Aminia (Barrackpore)</a></li>
+            <li><a href="#" onclick="soundBlip(); filterByRestaurant('rest-5'); scrollToSection('menu-section'); return false;" class="hover:text-swiggy-orange transition-colors">Mocambo (Park Street)</a></li>
+            <li><a href="#" onclick="soundBlip(); filterByRestaurant('rest-6'); scrollToSection('menu-section'); return false;" class="hover:text-swiggy-orange transition-colors">Oudh 1590 (Awadhi Dining)</a></li>
+            <li><a href="#" onclick="soundBlip(); filterByRestaurant('rest-7'); scrollToSection('menu-section'); return false;" class="hover:text-swiggy-orange transition-colors">Chowman (Kolkata Chinese)</a></li>
+            <li><a href="#" onclick="soundBlip(); filterByRestaurant('rest-8'); scrollToSection('menu-section'); return false;" class="hover:text-swiggy-orange transition-colors">Balaram Mullick (Sweets)</a></li>
+            <li><a href="#" onclick="soundBlip(); filterByRestaurant('rest-9'); scrollToSection('menu-section'); return false;" class="hover:text-swiggy-orange transition-colors">Flurys (Park Street)</a></li>
+            <li><a href="#" onclick="soundBlip(); filterByRestaurant('rest-10'); scrollToSection('menu-section'); return false;" class="hover:text-swiggy-orange transition-colors">Shiraz Golden Restaurant</a></li>
+            <li><a href="#" onclick="soundBlip(); filterByRestaurant('all'); scrollToSection('menu-section'); return false;" class="text-swiggy-orange font-bold hover:underline">Explore 500+ Dishes ➔</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Satirical Science & Protocols -->
+        <div class="space-y-3">
+          <h4 class="text-white font-display font-extrabold text-sm uppercase tracking-wider flex items-center gap-1.5">
+            <span>🔬</span> Satirical Science
+          </h4>
+          <ul class="space-y-2 text-stone-400 text-xs font-medium">
+            <li><a href="#" onclick="soundBlip(); scrollToSection('hero'); return false;" class="hover:text-swiggy-orange transition-colors">Negative Fulfillment Protocol</a></li>
+            <li><a href="#" onclick="soundBlip(); scrollToSection('impact-dashboard'); return false;" class="hover:text-swiggy-orange transition-colors">Metabolic Calorie Aversion Theory</a></li>
+            <li><a href="#" onclick="openLiveTrackingModal(); return false;" class="hover:text-swiggy-orange transition-colors flex items-center gap-1"><span>Rider Sharma Ji Radar</span> <span class="text-[9px] bg-swiggy-orange text-white px-1.5 py-0.2 rounded font-mono">LIVE</span></a></li>
+            <li><a href="#" onclick="openRewardsDrawer(); return false;" class="hover:text-swiggy-orange transition-colors">Zen Monk Karma Currency</a></li>
+            <li><a href="#" onclick="openLeaderboardDrawer(); return false;" class="hover:text-swiggy-orange transition-colors">1,000+ Patrons Hall of Fame</a></li>
+            <li><a href="#" onclick="soundBlip(); scrollToSection('hero'); return false;" class="hover:text-swiggy-orange transition-colors">The Chai Stall Detour Hypothesis</a></li>
+            <li><a href="#" onclick="soundBlip(); scrollToSection('impact-dashboard'); return false;" class="hover:text-swiggy-orange transition-colors">Zero-Digestion Health Metrics</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 4: The Smileys Foundation (80G Giving) -->
+        <div class="space-y-3">
+          <h4 class="text-white font-display font-extrabold text-sm uppercase tracking-wider flex items-center gap-1.5">
+            <span>💛</span> Smileys NGO (80G)
+          </h4>
+          <ul class="space-y-2 text-stone-400 text-xs font-medium">
+            <li><a href="#smileys-section" onclick="soundWarmBell(); scrollToSection('smileys-section'); return false;" class="hover:text-blue-400 transition-colors">Registered Public Charitable Trust</a></li>
+            <li><a href="#smileys-section" onclick="soundWarmBell(); scrollToSection('smileys-section'); return false;" class="hover:text-blue-400 transition-colors">Section 80G (50% Tax Deduction)</a></li>
+            <li><a href="#" onclick="openCertificateModal(); return false;" class="text-amber-400 font-bold hover:underline flex items-center gap-1"><span>📜 Instant 80G Certificate</span></a></li>
+            <li><a href="#" onclick="copyUpiId(); return false;" class="hover:text-blue-400 transition-colors font-mono text-[11px]">UPI: 9874958471@superyes 📋</a></li>
+            <li><a href="#smileys-section" onclick="soundWarmBell(); scrollToSection('smileys-section'); return false;" class="hover:text-blue-400 transition-colors">Rural Student Nutrition &amp; Books</a></li>
+            <li><a href="#smileys-section" onclick="soundWarmBell(); scrollToSection('smileys-section'); return false;" class="hover:text-blue-400 transition-colors">Real Razorpay &amp; PhonePe Gateway</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 5: Delivery Zones We Intercept -->
+        <div class="space-y-3">
+          <h4 class="text-white font-display font-extrabold text-sm uppercase tracking-wider flex items-center gap-1.5">
+            <span>📍</span> Intercepted Zones
+          </h4>
+          <div class="space-y-2 text-xs font-mono text-stone-400">
+            <div>
+              <strong class="text-stone-200 block">Kolkata:</strong>
+              <span class="text-[11px] text-stone-500">Barakpur, Park Street, Salt Lake, New Town</span>
+            </div>
+            <div>
+              <strong class="text-stone-200 block">Bangalore:</strong>
+              <span class="text-[11px] text-stone-500">Indiranagar, Koramangala, HSR, Whitefield</span>
+            </div>
+            <div>
+              <strong class="text-stone-200 block">Mumbai:</strong>
+              <span class="text-[11px] text-stone-500">Bandra West, Andheri, Powai, Colaba</span>
+            </div>
+            <div>
+              <strong class="text-stone-200 block">Delhi NCR:</strong>
+              <span class="text-[11px] text-stone-500">Connaught Place, Cyber Hub, Hauz Khas</span>
+            </div>
+            <div>
+              <strong class="text-stone-200 block">Hyderabad &amp; Chennai:</strong>
+              <span class="text-[11px] text-stone-500">Hitec City, Jubilee Hills, Anna Nagar</span>
+            </div>
+            <button onclick="soundBlip(); openLocationModal();" class="text-swiggy-orange text-xs font-display font-bold hover:underline pt-1">
+              Switch or Detect Your Zone ➔
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Parody Disclaimer Box -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="p-5 rounded-2xl bg-stone-900/70 border border-stone-800 text-stone-400 text-[11px] leading-relaxed">
+        <strong class="text-stone-200">Satirical Delivery Notice &amp; Parody Disclaimer:</strong> 
+        foodnevercomes.com is a 100% non-commercial satirical art piece and charitable giving experiment. All brand trademarks and restaurant logos are referenced strictly under nominative fair use for artistic commentary and parody. No real food is ever cooked, packed, or delivered. All phantom food checkouts are 100% free (₹0). Real donation payments made through UPI (<code class="text-amber-400 font-bold">9874958471@superyes</code>) or Razorpay are channeled directly and exclusively to The Smileys Foundation for rural children's education and nutrition with Section 80G tax benefits.
+      </div>
+    </div>
+
+    <!-- Bottom Legal Row -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6 flex flex-col md:flex-row items-center justify-between gap-4 text-stone-500 text-[11px]">
+      <div>
+        © 2026 <strong class="font-brand font-bold">Food Never Comes (FNC)</strong>. Crafted with satirical devotion for late-night foodies.
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6 font-medium">
+        <a href="#" onclick="soundBlip(); alert('Zero-Data Policy: Nothing leaves your browser localStorage.'); return false;" class="hover:text-stone-300 transition-colors">Zero-Data Policy</a>
+        <a href="#" onclick="soundBlip(); alert('Terms of Non-Delivery: Guaranteed 0 calories and 0 delivery ever.'); return false;" class="hover:text-stone-300 transition-colors">Terms of Non-Delivery</a>
+        <a href="#smileys-section" onclick="soundWarmBell(); scrollToSection('smileys-section'); return false;" class="hover:text-blue-400 transition-colors">80G Compliance</a>
+        <a href="#" onclick="soundChaiClink(); showToast('Sharma Ji thanks you for the chai solidarity! ☕', 'mint'); return false;" class="hover:text-amber-400 transition-colors">Sharma Ji Chai Fund</a>
+        <a href="#" onclick="soundBlip(); scrollToSection('hero'); return false;" class="text-swiggy-orange font-bold hover:underline">↑ Back to Top</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MOBILE STICKY BOTTOM NAVIGATION BAR -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200 py-2 px-3 md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-around text-[10px] font-display font-bold text-stone-600" id="mobile-bottom-nav">
+    <button onclick="soundBlip(); scrollToSection('hero')" class="flex flex-col items-center gap-0.5 hover:text-swiggy-orange active:scale-95 transition-all">
+      <span class="text-base">🏠</span>
+      <span>Menu</span>
+    </button>
+    <button onclick="openLiveTrackingModal()" class="flex flex-col items-center gap-0.5 hover:text-swiggy-orange active:scale-95 transition-all relative">
+      <span class="text-base">📡</span>
+      <span>Radar</span>
+      <span class="absolute top-0 right-1 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+    </button>
+    <button onclick="openLeaderboardDrawer()" class="flex flex-col items-center gap-0.5 hover:text-swiggy-orange active:scale-95 transition-all">
+      <span class="text-base">👑</span>
+      <span>Patrons</span>
+    </button>
+    <button onclick="soundWarmBell(); scrollToSection('smileys-section')" class="flex flex-col items-center gap-0.5 text-blue-900 hover:text-blue-700 active:scale-95 transition-all">
+      <span class="text-base">💛</span>
+      <span>Smileys 80G</span>
+    </button>
+    <button onclick="soundBlip(); openCartDrawer()" class="flex flex-col items-center gap-0.5 text-swiggy-orange hover:text-swiggy-orangeHover active:scale-95 transition-all relative">
+      <span class="text-base">🛒</span>
+      <span>Cart (₹0)</span>
+      <span class="absolute -top-1 right-2 bg-swiggy-orange text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-xs" id="mobile-cart-badge">0</span>
+    </button>
+  </nav>
+
+  <!-- Application Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+{
+  "name": "projects/18327152139803653833",
+  "title": "Food Never Comes",
+  "visibility": "PRIVATE",
+  "createTime": "2026-09-22T04:00:11.415689Z",
+  "updateTime": "2026-09-22T06:15:39.626066Z",
+  "projectType": "TEXT_TO_UI_PRO",
+  "thumbnailScreenshot": {
+    "name": "projects/18327152139803653833/screens/23e44f6c80f3457db4ff8054e3cf86c1/fileEntries/screenshot",
+    "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1X5pkr8LoEaXippT7-f0uTkkiTjIdvq6z5JTD5QQmofEELlTLaZriJ_DrN3xpnus_jwRPPgatzgt-MPssxfhcsRdw4c3NW_2iYi8ea6IT-vTClt5eNuULhmEImNk6FaDF3Xl8BDA2pR9Hv4kUBV1WuZtmZVQu38m6A1b_lIyEQwOdNvQp_aNdG9Q1oCSNCvLutgEcUYn45GkaEokTyHCe2KtCbTJj92cVW9P1ggKQ0L64Eg9HknMU_wIqPP"
+  },
+  "origin": "STITCH",
+  "deviceType": "DESKTOP",
+  "designTheme": {},
+  "screenInstances": [
+    {
+      "id": "06f1f3c55cdb4635afe85d69c96f6ced",
+      "sourceScreen": "projects/18327152139803653833/screens/06f1f3c55cdb4635afe85d69c96f6ced",
+      "x": 9856,
+      "y": 4560,
+      "width": 512,
+      "height": 382
+    },
+    {
+      "id": "10d1fac929ae4a43a6899a58d45081d2",
+      "sourceScreen": "projects/18327152139803653833/screens/10d1fac929ae4a43a6899a58d45081d2",
+      "x": 832,
+      "y": 4560,
+      "width": 1280,
+      "height": 4571,
+      "hidden": true,
+      "isResized": true
+    },
+    {
+      "id": "126e504e961c433ba3c6e41e3531898f",
+      "sourceScreen": "projects/18327152139803653833/screens/126e504e961c433ba3c6e41e3531898f",
+      "y": 14103,
+      "width": 1280,
+      "height": 3412
+    },
+    {
+      "id": "1cbe7b6abc154654991c82b113c05a65",
+      "sourceScreen": "projects/18327152139803653833/screens/1cbe7b6abc154654991c82b113c05a65",
+      "x": 3520,
+      "y": 4560,
+      "width": 1280,
+      "height": 4699,
+      "hidden": true
+    },
+    {
+      "id": "23e44f6c80f3457db4ff8054e3cf86c1",
+      "sourceScreen": "projects/18327152139803653833/screens/23e44f6c80f3457db4ff8054e3cf86c1",
+      "width": 1280,
+      "height": 4304,
+      "hidden": true
+    },
+    {
+      "id": "34e46f06963d459d955bf5f2ca3dd334",
+      "sourceScreen": "projects/18327152139803653833/screens/34e46f06963d459d955bf5f2ca3dd334",
+      "x": 6208,
+      "y": 4560,
+      "width": 1280,
+      "height": 4571,
+      "hidden": true
+    },
+    {
+      "id": "3e2e603ed73f4173a5a470197679aa0a",
+      "sourceScreen": "projects/18327152139803653833/screens/3e2e603ed73f4173a5a470197679aa0a",
+      "x": 11008,
+      "y": 4560,
+      "width": 512,
+      "height": 382
+    },
+    {
+      "id": "3eeb7150893a418bb21bb2957c513dc8",
+      "sourceScreen": "projects/18327152139803653833/screens/3eeb7150893a418bb21bb2957c513dc8",
+      "x": 8704,
+      "y": 4560,
+      "width": 512,
+      "height": 382
+    },
+    {
+      "id": "5813a43d7b8543b4885e70205589a554",
+      "sourceScreen": "projects/18327152139803653833/screens/5813a43d7b8543b4885e70205589a554",
+      "x": 7552,
+      "y": 4560,
+      "width": 512,
+      "height": 382
+    },
+    {
+      "id": "5b62fe26098146168bbdf27078c06dc5",
+      "sourceScreen": "projects/18327152139803653833/screens/5b62fe26098146168bbdf27078c06dc5",
+      "y": 10303,
+      "width": 1280,
+      "height": 3411,
+      "hidden": true
+    },
+    {
+      "id": "608304915b624234a721b77b2785aa2a",
+      "sourceScreen": "projects/18327152139803653833/screens/608304915b624234a721b77b2785aa2a",
+      "x": 12160,
+      "y": 4560,
+      "width": 1280,
+      "height": 4871
+    },
+    {
+      "id": "6779d4b46eaf4f37a7b41800182d5c64",
+      "sourceScreen": "projects/18327152139803653833/screens/6779d4b46eaf4f37a7b41800182d5c64",
+      "x": 11584,
+      "y": 4560,
+      "width": 512,
+      "height": 382
+    },
+    {
+      "id": "6ff4c400dea446f6be155c8dd2ae4492",
+      "sourceScreen": "projects/18327152139803653833/screens/6ff4c400dea446f6be155c8dd2ae4492",
+      "x": 9280,
+      "y": 4560,
+      "width": 512,
+      "height": 382
+    },
+    {
+      "id": "8b66aaf3f6ef4d1b95f66654fc7fd636",
+      "sourceScreen": "projects/18327152139803653833/screens/8b66aaf3f6ef4d1b95f66654fc7fd636",
+      "x": 13504,
+      "y": 4560,
+      "width": 1280,
+      "height": 1024
+    },
+    {
+      "id": "8da475afb8cb4a5cad37cf5dcca5f665",
+      "sourceScreen": "projects/18327152139803653833/screens/8da475afb8cb4a5cad37cf5dcca5f665",
+      "x": 14848,
+      "y": 4560,
+      "width": 1280,
+      "height": 1024
+    },
+    {
+      "id": "a5588d333ac94cebbb4c437239ced81f",
+      "sourceScreen": "projects/18327152139803653833/screens/a5588d333ac94cebbb4c437239ced81f",
+      "x": 8128,
+      "y": 4560,
+      "width": 512,
+      "height": 382
+    },
+    {
+      "id": "aaf23052b35b4c4bb84ad0e62749ed98",
+      "sourceScreen": "projects/18327152139803653833/screens/aaf23052b35b4c4bb84ad0e62749ed98",
+      "y": 17771,
+      "width": 512,
+      "height": 286
+    },
+    {
+      "id": "acda50c80a1847b7a4f9be9dc0c7a256",
+      "sourceScreen": "projects/18327152139803653833/screens/acda50c80a1847b7a4f9be9dc0c7a256",
+      "x": 10432,
+      "y": 4560,
+      "width": 512,
+      "height": 382
+    },
+    {
+      "id": "d6b7bc750cca4d96b8b875a65b66a889",
+      "sourceScreen": "projects/18327152139803653833/screens/d6b7bc750cca4d96b8b875a65b66a889",
+      "x": 4864,
+      "y": 4560,
+      "width": 1280,
+      "height": 4571,
+      "hidden": true,
+      "isResized": true
+    },
+    {
+      "id": "d8407d92ae3d473e9e9de005e0328dbc",
+      "sourceScreen": "projects/18327152139803653833/screens/d8407d92ae3d473e9e9de005e0328dbc",
+      "x": 2176,
+      "y": 4560,
+      "width": 1280,
+      "height": 4558,
+      "hidden": true
+    },
+    {
+      "id": "db7c3b745c0d4f8b9143bd2fc98ed190",
+      "sourceScreen": "projects/18327152139803653833/screens/db7c3b745c0d4f8b9143bd2fc98ed190",
+      "x": 1344,
+      "y": 10303,
+      "width": 1280,
+      "height": 3543,
+      "hidden": true
+    },
+    {
+      "id": "e5d6925bf9bf4a72919ca815c7b9be83",
+      "sourceScreen": "projects/18327152139803653833/screens/e5d6925bf9bf4a72919ca815c7b9be83",
+      "x": 576,
+      "y": 17771,
+      "width": 1280,
+      "height": 3055
+    },
+    {
+      "id": "e7bc39d85e664674b03fc4af303dae48",
+      "sourceScreen": "projects/18327152139803653833/screens/e7bc39d85e664674b03fc4af303dae48",
+      "y": 4560,
+      "width": 768,
+      "height": 5487,
+      "hidden": true,
+      "isResized": true
+    }
+  ],
+  "metadata": {
+    "userRole": "OWNER"
+  }
+}
