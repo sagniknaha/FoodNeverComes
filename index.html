@@ -815,28 +815,46 @@
           </div>
         </div>
 
-        <!-- TAB 2: Razorpay Gateway (Cards, Netbanking, Wallets) -->
+        <!-- TAB 2: Razorpay Gateway (Cards, Netbanking, UPI Platform) -->
         <div id="gw-tab-content-razorpay" class="hidden space-y-4 text-left">
-          <div class="p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-rzp-blue text-white space-y-3">
+          
+          <!-- Key Status Pill -->
+          <div id="rzp-status-pill" class="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs">
+            <div class="flex items-center gap-1.5 text-amber-800">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              <span class="font-mono font-bold text-[11px]">Beneficiary UPI: 9874958471@superyes</span>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-mono text-[10px] font-bold">INSTANT UPI</span>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-[#0C2340] text-white space-y-3">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-mono font-bold text-blue-300">RAZORPAY CHECKOUT STANDARD</span>
-              <span class="text-xs bg-blue-500/30 px-2 py-0.5 rounded text-blue-200 font-mono">v1 SDK</span>
+              <span class="text-xs font-mono font-bold text-blue-300">RAZORPAY PLATFORM • THE SMILEYS FOUNDATION</span>
+              <span class="text-xs bg-blue-500/30 px-2 py-0.5 rounded text-blue-200 font-mono">80G Tax Exempt</span>
             </div>
             <p class="text-xs text-slate-300 leading-relaxed">
-              Pay securely using all major Indian and international Credit / Debit Cards, 50+ Netbanking banks, Cred, and mobile wallets.
+              Donations are securely routed to <strong>The Smileys Foundation</strong> (<code class="text-blue-300 font-mono">9874958471@superyes</code>) to fund student meals and education books.
             </p>
-            <div class="flex items-center gap-2 text-base text-slate-300">
-              <span title="Visa">💳 Visa</span>
-              <span title="Mastercard">Mastercard</span>
-              <span title="RuPay">RuPay</span>
-              <span title="Netbanking">🏛️ Netbanking</span>
+            <div class="flex items-center gap-2.5 text-xs text-slate-300 pt-1">
+              <span class="flex items-center gap-1">⚡ <strong>UPI Instant</strong></span>
+              <span>•</span>
+              <span class="flex items-center gap-1">💳 <strong>All Cards</strong></span>
+              <span>•</span>
+              <span class="flex items-center gap-1">🏛️ <strong>Netbanking</strong></span>
             </div>
           </div>
 
-          <!-- Trigger Button -->
-          <button type="button" onclick="triggerRealRazorpayCheckout()" class="w-full py-3.5 rounded-2xl bg-[#0C2340] hover:bg-[#0A1D34] text-white font-display font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg transition-all active:scale-98 border border-blue-400/40">
-            <span class="text-blue-400 font-mono font-bold text-base">₹</span>
-            <span>Launch Razorpay Payment Window</span>
+          <!-- Fast UPI Button (Direct to 9874958471@superyes) -->
+          <button type="button" onclick="triggerRazorpayUpiIntent()" class="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-700 to-teal-700 hover:from-emerald-800 hover:to-teal-800 text-white font-display font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all active:scale-98 border border-emerald-500/30">
+            <span class="text-base">⚡</span>
+            <span>Fast Pay via UPI (9874958471@superyes)</span>
+            <span class="text-[10px] font-mono bg-emerald-900/60 px-2 py-0.5 rounded text-emerald-200">PhonePe • GPay • Paytm</span>
+          </button>
+
+          <!-- Launch Razorpay Standard Checkout Button -->
+          <button type="button" onclick="triggerRealRazorpayCheckout()" class="w-full py-3.5 rounded-2xl bg-[#0C2340] hover:bg-[#0A1D34] text-white font-display font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition-all active:scale-98 border border-blue-400/40">
+            <span class="text-blue-400 font-mono font-bold text-base">💳</span>
+            <span>Launch Razorpay Standard (Cards & Netbanking)</span>
             <span>➔</span>
           </button>
 
@@ -844,12 +862,21 @@
           <div class="pt-2 border-t border-stone-200">
             <details class="text-xs text-stone-500 group">
               <summary class="cursor-pointer font-mono font-bold text-[11px] text-blue-900 hover:text-blue-700 flex items-center gap-1">
-                <span>⚙️ Developer / Custom Razorpay Key ID (Optional)</span>
+                <span>⚙️ Razorpay Key ID Settings & Environment Config</span>
               </summary>
-              <div class="mt-2 space-y-1.5 p-3 rounded-xl bg-stone-50 border border-stone-200">
-                <label class="text-[10px] font-mono text-stone-600 block">Enter your Razorpay Key ID (e.g. rzp_test_... or rzp_live_...):</label>
-                <input type="text" id="rzp-custom-key-input" placeholder="rzp_test_YourKeyHere" class="w-full px-3 py-1.5 rounded-lg border border-stone-300 text-xs font-mono text-stone-800 focus:outline-none focus:border-blue-600" onchange="saveRazorpayKey(this.value)"/>
-                <p class="text-[10px] text-stone-400">Stored safely in local browser storage only.</p>
+              <div class="mt-2 space-y-2 p-3 rounded-xl bg-stone-50 border border-stone-200">
+                <label class="text-[10px] font-mono text-stone-600 block">
+                  Enter Razorpay Key ID (<code class="text-stone-800">rzp_test_...</code> or <code class="text-stone-800">rzp_live_...</code>):
+                </label>
+                <div class="flex gap-2">
+                  <input type="text" id="rzp-custom-key-input" placeholder="rzp_test_YourKeyHere" class="flex-grow px-3 py-1.5 rounded-lg border border-stone-300 text-xs font-mono text-stone-800 focus:outline-none focus:border-blue-600"/>
+                  <button type="button" onclick="saveRazorpayKey(document.getElementById('rzp-custom-key-input').value)" class="px-3 py-1.5 rounded-lg bg-blue-900 hover:bg-black text-white font-mono text-xs font-bold transition-all active:scale-95">
+                    Save Key
+                  </button>
+                </div>
+                <p class="text-[10px] text-stone-500 leading-normal">
+                  💡 <strong>Tip for Render Deployment:</strong> Set <code class="bg-stone-200 px-1 py-0.5 rounded text-stone-800">RAZORPAY_KEY_ID</code> and <code class="bg-stone-200 px-1 py-0.5 rounded text-stone-800">RAZORPAY_KEY_SECRET</code> in your Render environment variables to activate server-side order generation automatically.
+                </p>
               </div>
             </details>
           </div>

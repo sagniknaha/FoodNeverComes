@@ -2,6 +2,7 @@
 
 const RECEIVER_UPI_ID = "9874958471@superyes";
 const RECEIVER_NAME = "The Smileys Foundation";
+let serverRazorpayConfig = { keyId: null, receiverUpi: "9874958471@superyes", hasServerKey: false };
 
 // App State
 let currentCategory = 'all';
@@ -848,8 +849,66 @@ function copyText(text, label = "Item") {
 
 function saveRazorpayKey(key) {
   if (!key) return;
-  localStorage.setItem('fnc_rzp_key', key.trim());
-  showToast(`Razorpay Key saved: ${key.trim().substring(0, 12)}... 🔑`, "mint");
+  const trimmed = key.trim();
+  localStorage.setItem('fnc_rzp_key', trimmed);
+  updateRazorpayKeyUI();
+  showToast(`Razorpay Key saved: ${trimmed.substring(0, 14)}... 🔑`, "mint");
+}
+
+function updateRazorpayKeyUI() {
+  const statusPill = document.getElementById('rzp-status-pill');
+  const keyInput = document.getElementById('rzp-custom-key-input');
+  const savedKey = localStorage.getItem('fnc_rzp_key');
+
+  if (keyInput && savedKey && !keyInput.value) {
+    keyInput.value = savedKey;
+  }
+
+  if (statusPill) {
+    if (serverRazorpayConfig.hasServerKey && serverRazorpayConfig.keyId) {
+      statusPill.innerHTML = `
+        <div class="flex items-center gap-1.5 text-emerald-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span class="font-mono font-bold text-[11px]">Server Key Active (${serverRazorpayConfig.keyId.substring(0, 12)}...)</span>
+        </div>
+        <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">READY</span>
+      `;
+      statusPill.className = "flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs";
+    } else if (savedKey && (savedKey.startsWith('rzp_test_') || savedKey.startsWith('rzp_live_'))) {
+      statusPill.innerHTML = `
+        <div class="flex items-center gap-1.5 text-blue-800">
+          <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+          <span class="font-mono font-bold text-[11px]">Custom Key Active (${savedKey.substring(0, 12)}...)</span>
+        </div>
+        <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-mono text-[10px] font-bold">SAVED</span>
+      `;
+      statusPill.className = "flex items-center justify-between p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-xs";
+    } else {
+      statusPill.innerHTML = `
+        <div class="flex items-center gap-1.5 text-amber-800">
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+          <span class="font-mono font-bold text-[11px]">Beneficiary UPI: ${RECEIVER_UPI_ID}</span>
+        </div>
+        <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-mono text-[10px] font-bold">INSTANT UPI</span>
+      `;
+      statusPill.className = "flex items-center justify-between p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs";
+    }
+  }
+}
+
+async function initRazorpayConfig() {
+  try {
+    const res = await fetch('/api/razorpay/config');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        serverRazorpayConfig = data;
+        updateRazorpayKeyUI();
+      }
+    }
+  } catch (e) {
+    // Standalone / offline fallback
+  }
 }
 
 function openDonationGateway(amount = 100) {
@@ -858,7 +917,6 @@ function openDonationGateway(amount = 100) {
   const mealsLabel = document.getElementById('gw-meals-display');
   const upiIdDisplay = document.getElementById('gw-upi-id-display');
   const qrImg = document.getElementById('gw-qr-image');
-  const keyInput = document.getElementById('rzp-custom-key-input');
   const utrInput = document.getElementById('gw-utr-input');
 
   activeDonationTier = amount;
@@ -868,8 +926,7 @@ function openDonationGateway(amount = 100) {
   if (upiIdDisplay) upiIdDisplay.textContent = RECEIVER_UPI_ID;
   if (utrInput) utrInput.value = '';
 
-  const savedKey = localStorage.getItem('fnc_rzp_key');
-  if (keyInput && savedKey) keyInput.value = savedKey;
+  updateRazorpayKeyUI();
 
   const upiUrl = getUpiString(amount);
 
@@ -907,11 +964,58 @@ function openDirectUpiApp(appName) {
   window.location.href = upiUrl;
 }
 
-function triggerRealRazorpayCheckout() {
+function triggerRazorpayUpiIntent() {
   const { totalToPay } = calculateCartTotals();
   const amount = totalToPay > 0 ? totalToPay : activeDonationTier;
+  const upiUrl = getUpiString(amount);
+
+  soundChaChing();
+  showToast(`Opening UPI payment of ₹${amount} to ${RECEIVER_UPI_ID}... ⚡`, "mint");
+  window.location.href = upiUrl;
+}
+
+function showRazorpayKeyPrompt(amount) {
+  soundBlip();
+  switchPaymentGatewayTab('razorpay');
+  const keyInput = document.getElementById('rzp-custom-key-input');
+  if (keyInput) {
+    const details = keyInput.closest('details');
+    if (details) details.open = true;
+    keyInput.focus();
+    keyInput.select();
+  }
+  showToast(`Razorpay Standard requires an active Key ID (rzp_test_... or rzp_live_...). You can also tap 'Fast Pay via UPI (${RECEIVER_UPI_ID})' directly! 💡`, "info");
+}
+
+async function triggerRealRazorpayCheckout() {
+  const { totalToPay } = calculateCartTotals();
+  const amount = totalToPay > 0 ? totalToPay : activeDonationTier;
+  const serverKey = serverRazorpayConfig?.keyId;
   const savedKey = localStorage.getItem('fnc_rzp_key') || (document.getElementById('rzp-custom-key-input')?.value.trim());
-  const rzpKey = savedKey && savedKey.length > 5 ? savedKey : "rzp_test_FNCDefaultKey";
+  const rzpKey = (serverKey && serverKey.length > 5) ? serverKey : (savedKey && savedKey.length > 5 ? savedKey : null);
+
+  // If no valid key is provided, guide user smoothly to instant UPI or key input
+  if (!rzpKey || (!rzpKey.startsWith('rzp_test_') && !rzpKey.startsWith('rzp_live_'))) {
+    showRazorpayKeyPrompt(amount);
+    return;
+  }
+
+  let orderId = null;
+  try {
+    const orderRes = await fetch('/api/razorpay/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount })
+    });
+    if (orderRes.ok) {
+      const orderData = await orderRes.json();
+      if (orderData.order && orderData.order.id) {
+        orderId = orderData.order.id;
+      }
+    }
+  } catch (e) {
+    console.warn('Razorpay order creation fallback:', e);
+  }
 
   if (typeof Razorpay !== 'undefined') {
     const options = {
@@ -919,20 +1023,23 @@ function triggerRealRazorpayCheckout() {
       amount: amount * 100, // Amount in paise
       currency: "INR",
       name: "The Smileys Foundation",
-      description: "Donation for Rural Children Education & Nutrition (80G)",
+      description: "80G Tax-Exempt Donation for Rural Children Education",
       image: "https://lh3.googleusercontent.com/aida-public/AB6AXuApyiuBZePWzqR-Q7C6uT6pGe_qOzX_ili0E_JJBb_ekDr8rR7Y6H6wXbLMVQ7vQhVlOQmztUJhbl6IubULJYRjiabUbK9d9a7ijomNjlNNdYBI3FkW-X8jovjSa58Wzc2HX1gPIZgWrV3g-Pzh2z9bCxAMfLJVClwV0xKvm6kjv11R4YfN5mYMOLKlRP5D3lCO2DPiap8k-oR9GEpMA8b1LgaUz0UJfVRlarg0xC6iPy0y3zBCgCSCHQ",
+      ...(orderId ? { order_id: orderId } : {}),
       handler: function (response) {
         const txnId = response.razorpay_payment_id || `RZP_${Date.now()}`;
         handleDonationSuccess(txnId);
       },
       prefill: {
-        name: lifetimeStats.userName,
+        name: lifetimeStats.userName || "Ghost Gourmet",
         contact: "+919874958471",
-        email: "donor@smileysfoundation.org"
+        email: "donor@smileysfoundation.org",
+        vpa: RECEIVER_UPI_ID
       },
       notes: {
         receiver_upi: RECEIVER_UPI_ID,
-        purpose: "80G Tax Exemption Children Education"
+        beneficiary: "The Smileys Foundation Trust",
+        tax_exemption: "Section 80G Registered"
       },
       theme: {
         color: "#0C2340"
@@ -948,18 +1055,20 @@ function triggerRealRazorpayCheckout() {
       const rzp = new Razorpay(options);
       rzp.on('payment.failed', function (response){
         console.warn("Razorpay Payment Failure:", response.error);
-        showToast(`Razorpay Note: ${response.error.description || 'Test Mode Notice'}. You can also pay directly via UPI to ${RECEIVER_UPI_ID}`, "info");
+        showToast(`Razorpay: ${response.error.description || 'Payment cancelled'}. You can pay directly via UPI to ${RECEIVER_UPI_ID}`, "info");
       });
       rzp.open();
       return;
     } catch (e) {
-      console.warn("Razorpay popup restricted or test key, falling back:", e);
-      showToast("Razorpay initialized. Opening fallback UPI verification...", "info");
+      console.warn("Razorpay popup restricted or error:", e);
+      showToast("Razorpay popup error. Switching to direct UPI...", "info");
+      switchPaymentGatewayTab('upi');
+      return;
     }
+  } else {
+    showToast("Razorpay SDK not loaded. Switching to direct UPI to " + RECEIVER_UPI_ID, "info");
+    switchPaymentGatewayTab('upi');
   }
-
-  // Fallback to direct simulated UPI confirmation
-  executeDonationPayment();
 }
 
 function handleDonationSuccess(paymentId) {
@@ -1737,6 +1846,7 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('DOMContentLoaded', () => {
   initGeolocation();
   initStorage();
+  initRazorpayConfig();
   syncGlobalStatsFromDb();
   renderRestaurantsCarousel();
   renderCategories();

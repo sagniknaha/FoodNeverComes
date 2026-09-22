@@ -159,6 +159,98 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 200, subResult);
       }
 
+      // 10. GET /api/razorpay/config (Fetch Razorpay Key ID & Beneficiary UPI ID)
+      if (method === 'GET' && pathname === '/api/razorpay/config') {
+        const keyId = process.env.RAZORPAY_KEY_ID || null;
+        return sendJson(res, 200, {
+          success: true,
+          keyId: keyId,
+          receiverUpi: '9874958471@superyes',
+          merchantName: 'The Smileys Foundation',
+          hasServerKey: Boolean(keyId)
+        });
+      }
+
+      // 11. POST /api/razorpay/create-order (Create Razorpay Order for Donation)
+      if (method === 'POST' && pathname === '/api/razorpay/create-order') {
+        const body = await parseJsonBody(req);
+        const amount = Number(body.amount) || 100;
+        const keyId = process.env.RAZORPAY_KEY_ID;
+        const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+        if (keyId && keySecret) {
+          try {
+            const https = require('https');
+            const auth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
+            const postData = JSON.stringify({
+              amount: Math.round(amount * 100),
+              currency: 'INR',
+              receipt: `rcpt_${Date.now()}`,
+              notes: {
+                receiver_upi: '9874958471@superyes',
+                beneficiary: 'The Smileys Foundation'
+              }
+            });
+
+            const rzpReq = https.request({
+              hostname: 'api.razorpay.com',
+              path: '/v1/orders',
+              method: 'POST',
+              headers: {
+                'Authorization': `Basic ${auth}`,
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(postData)
+              }
+            }, (rzpRes) => {
+              let rzpBody = '';
+              rzpRes.on('data', chunk => rzpBody += chunk);
+              rzpRes.on('end', () => {
+                try {
+                  const parsed = JSON.parse(rzpBody);
+                  return sendJson(res, rzpRes.statusCode || 200, {
+                    success: true,
+                    order: parsed,
+                    keyId: keyId,
+                    receiverUpi: '9874958471@superyes'
+                  });
+                } catch (e) {
+                  return sendJson(res, 200, {
+                    success: true,
+                    orderId: `order_sim_${Date.now()}`,
+                    keyId: keyId,
+                    receiverUpi: '9874958471@superyes'
+                  });
+                }
+              });
+            });
+
+            rzpReq.on('error', (err) => {
+              console.warn('Razorpay API error, returning simulated order:', err.message);
+              return sendJson(res, 200, {
+                success: true,
+                orderId: `order_sim_${Date.now()}`,
+                keyId: keyId,
+                receiverUpi: '9874958471@superyes'
+              });
+            });
+
+            rzpReq.write(postData);
+            rzpReq.end();
+            return;
+          } catch (e) {
+            console.error('Razorpay order creation error:', e);
+          }
+        }
+
+        return sendJson(res, 200, {
+          success: true,
+          orderId: `order_sim_${Date.now()}`,
+          keyId: keyId || null,
+          receiverUpi: '9874958471@superyes',
+          notes: 'No server-side RAZORPAY_KEY_ID configured; client-key or direct UPI active'
+        });
+      }
+
       // Unknown API endpoint
       return sendJson(res, 404, { success: false, error: `API endpoint ${pathname} not found` });
 
