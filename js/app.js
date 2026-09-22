@@ -26,7 +26,6 @@ let customizingDish = null;
 let currentCustomAddons = [];
 let telemetryTimer = null;
 let notificationTimer = null;
-let radarAnimationId = null;
 let lastCompletedOrder = null;
 let chaiCupsConsumed = 4;
 
@@ -1325,29 +1324,42 @@ function finalizeOrderAndOpenTracking() {
 
 let currentRadarMapMode = 'roadmap';
 
-function updateRadarGoogleMap() {
-  const iframe = document.getElementById('radar-google-map-iframe');
+function updateDeliveryRouteMap() {
+  const iframe = document.getElementById('route-google-map-iframe') || document.getElementById('radar-google-map-iframe');
   const userLocBadge = document.getElementById('map-user-loc-badge');
   const latLngBadge = document.getElementById('map-lat-lng-badge');
+  const mainTitle = document.getElementById('track-main-title');
 
+  const destinationName = userLocation.name || 'Your House';
   if (userLocBadge) {
-    userLocBadge.textContent = `🏠 You: ${userLocation.name}`;
+    userLocBadge.textContent = `🏠 Destination: ${destinationName}`;
+  }
+  if (mainTitle) {
+    mainTitle.textContent = `Rider is just 2.3 kms away from your house`;
   }
   if (latLngBadge && userLocation.lat && userLocation.lng) {
     latLngBadge.textContent = `${userLocation.lat.toFixed(4)}° N, ${userLocation.lng.toFixed(4)}° E`;
   }
 
+  // Calculate rider location at tea stall exactly 2.3 km away
+  // 1 deg lat ≈ 111.32 km -> offset of ~0.015 lat and ~0.014 lng is sqrt(0.015^2 + 0.014^2) * 111.32 ≈ 2.28 - 2.3 km
+  const userLat = userLocation.lat || 22.7600;
+  const userLng = userLocation.lng || 88.3700;
+  const riderLat = (Number(userLat) + 0.015).toFixed(4);
+  const riderLng = (Number(userLng) + 0.014).toFixed(4);
+
   if (iframe) {
     const modeParam = currentRadarMapMode === 'satellite' ? '&t=k' : '';
-    const query = userLocation.lat && userLocation.lng 
-      ? `${userLocation.lat},${userLocation.lng}` 
-      : encodeURIComponent(userLocation.name || 'Barakpur, Kolkata');
-    const newSrc = `https://maps.google.com/maps?q=${query}${modeParam}&z=15&ie=UTF8&output=embed`;
-    if (iframe.src !== newSrc) {
-      iframe.src = newSrc;
+    // Turn-by-turn route directions from Rider's tea stall to User's house
+    const routeUrl = `https://maps.google.com/maps?saddr=${riderLat},${riderLng}&daddr=${userLat},${userLng}&output=embed${modeParam}`;
+    if (iframe.src !== routeUrl) {
+      iframe.src = routeUrl;
     }
   }
 }
+
+// Alias for backwards-compatibility
+const updateRadarGoogleMap = updateDeliveryRouteMap;
 
 function setRadarMapView(mode) {
   currentRadarMapMode = mode;
@@ -1355,150 +1367,36 @@ function setRadarMapView(mode) {
   const btnSat = document.getElementById('map-btn-satellite');
 
   if (mode === 'satellite') {
-    if (btnSat) btnSat.className = "px-2.5 py-1 rounded-lg bg-stone-900/90 backdrop-blur-md text-white text-[10px] font-mono font-bold border border-blue-400 shadow-sm transition-all";
-    if (btnRoad) btnRoad.className = "px-2.5 py-1 rounded-lg bg-stone-900/80 backdrop-blur-md text-stone-400 text-[10px] font-mono font-bold border border-stone-700 shadow-sm transition-all";
+    if (btnSat) btnSat.className = "px-3 py-1.5 rounded-xl bg-stone-900 text-white text-xs font-mono font-bold shadow-md transition-all hover:bg-black";
+    if (btnRoad) btnRoad.className = "px-3 py-1.5 rounded-xl bg-white/90 text-stone-700 text-xs font-mono font-bold border border-stone-200 shadow-md transition-all hover:bg-white";
   } else {
-    if (btnRoad) btnRoad.className = "px-2.5 py-1 rounded-lg bg-stone-900/90 backdrop-blur-md text-white text-[10px] font-mono font-bold border border-blue-400 shadow-sm transition-all";
-    if (btnSat) btnSat.className = "px-2.5 py-1 rounded-lg bg-stone-900/80 backdrop-blur-md text-stone-400 text-[10px] font-mono font-bold border border-stone-700 shadow-sm transition-all";
+    if (btnRoad) btnRoad.className = "px-3 py-1.5 rounded-xl bg-stone-900 text-white text-xs font-mono font-bold shadow-md transition-all hover:bg-black";
+    if (btnSat) btnSat.className = "px-3 py-1.5 rounded-xl bg-white/90 text-stone-700 text-xs font-mono font-bold border border-stone-200 shadow-md transition-all hover:bg-white";
   }
   soundTabClick();
-  updateRadarGoogleMap();
+  updateDeliveryRouteMap();
 }
 
 function recenterRadarOnUserGps() {
   soundBlip();
-  showToast("Re-locking GPS satellite telemetry...", "info");
+  showToast("Re-locking GPS coordinates to user location...", "info");
   initGeolocation().then(() => {
-    updateRadarGoogleMap();
+    updateDeliveryRouteMap();
   });
 }
 
 function startRadarMap() {
-  updateRadarGoogleMap();
+  updateDeliveryRouteMap();
+}
 
-  const canvas = document.getElementById('radar-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let angle = 0;
+function callRiderSharmaJi() {
+  soundBlip();
+  showToast("📞 Calling Sharma Ji... 'Haan bhai, cutting chai pe raha hoon, bilkul deliver nahi hoga!'", "orange");
+}
 
-  function drawRadar() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const radius = Math.min(centerX, centerY) - 20;
-
-    // Tactical Radar HUD Overlay over live Google Map
-    ctx.save();
-
-    // Outer Target Reticle Ring
-    ctx.strokeStyle = 'rgba(252, 128, 25, 0.75)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // Concentric Range Rings with distance labels
-    ctx.strokeStyle = 'rgba(252, 128, 25, 0.3)';
-    ctx.lineWidth = 1;
-    [0.35, 0.65, 0.95].forEach((factor) => {
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius * factor, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.fillStyle = 'rgba(252, 128, 25, 0.75)';
-      ctx.font = '9px monospace';
-      ctx.fillText(`${(factor * 1.5).toFixed(1)} km`, centerX + 4, centerY - radius * factor + 11);
-    });
-
-    // Crosshairs
-    ctx.strokeStyle = 'rgba(252, 128, 25, 0.35)';
-    ctx.beginPath();
-    ctx.moveTo(centerX - radius, centerY);
-    ctx.lineTo(centerX + radius, centerY);
-    ctx.moveTo(centerX, centerY - radius);
-    ctx.lineTo(centerX, centerY + radius);
-    ctx.stroke();
-
-    // Rotating Radar Sweep Line with conical glow
-    ctx.save();
-    ctx.translate(centerX, centerY);
-    ctx.rotate(angle);
-
-    const gradient = ctx.createLinearGradient(0, 0, radius, 0);
-    gradient.addColorStop(0, 'rgba(252, 128, 25, 0.45)');
-    gradient.addColorStop(1, 'rgba(252, 128, 25, 0)');
-    ctx.fillStyle = gradient;
-
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.arc(0, 0, radius, 0, -Math.PI / 4, true);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.strokeStyle = '#FC8019';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(radius, 0);
-    ctx.stroke();
-    ctx.restore();
-
-    // Blip 1: Sharma Ji (Stationary at Roadside Tea Stall)
-    const riderX = centerX + 60;
-    const riderY = centerY - 45;
-
-    const pulseRadius = 7 + Math.sin(Date.now() / 250) * 3;
-    ctx.fillStyle = 'rgba(252, 128, 25, 0.35)';
-    ctx.beginPath();
-    ctx.arc(riderX, riderY, pulseRadius + 4, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#FC8019';
-    ctx.beginPath();
-    ctx.arc(riderX, riderY, 6, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 10px monospace';
-    ctx.fillText('🛵 SHARMA JI (CHAI #4)', riderX + 10, riderY + 4);
-
-    // Blip 2: User Location (Home / GPS)
-    const userX = centerX - 45;
-    const userY = centerY + 40;
-
-    const userPulseRadius = 7 + Math.cos(Date.now() / 250) * 3;
-    ctx.fillStyle = 'rgba(10, 133, 234, 0.35)';
-    ctx.beginPath();
-    ctx.arc(userX, userY, userPulseRadius + 4, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#0A85EA';
-    ctx.beginPath();
-    ctx.arc(userX, userY, 6, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 10px monospace';
-    ctx.fillText('🏠 YOUR LOCATION', userX + 10, userY + 4);
-
-    // Connecting dashed detour route
-    ctx.setLineDash([4, 4]);
-    ctx.strokeStyle = 'rgba(252, 128, 25, 0.6)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(userX, userY);
-    ctx.lineTo(riderX, riderY);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    ctx.restore();
-
-    angle += 0.035;
-    radarAnimationId = requestAnimationFrame(drawRadar);
-  }
-
-  if (radarAnimationId) cancelAnimationFrame(radarAnimationId);
-  drawRadar();
+function messageRiderSharmaJi() {
+  soundBlip();
+  showToast("💬 Message sent: 'Sharma Ji, take your time! 0 calories safely intercepted.'", "mint");
 }
 
 function startTelemetrySimulation() {
@@ -1515,21 +1413,19 @@ function startTelemetrySimulation() {
       headlineEl.textContent = `"${TELEMETRY_TICKERS[tickerIdx]}"`;
     }
     if (distanceEl) {
-      distanceEl.textContent = `Distance: 1.2 km • Speed: 0.00 km/h`;
+      distanceEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 anim-pulse"></span> Distance: 2.3 km away • Speed: 0.00 km/h`;
     }
     if (Math.random() > 0.6) {
       chaiCupsConsumed++;
       if (cupsEl) cupsEl.textContent = `${chaiCupsConsumed} cups consumed`;
       soundChaiClink();
     }
-    soundRadarPing();
   }, 4500);
 }
 
 function exitTrackingView() {
   soundBlip();
   if (telemetryTimer) clearInterval(telemetryTimer);
-  if (radarAnimationId) cancelAnimationFrame(radarAnimationId);
   document.getElementById('tracking-view').classList.add('hidden');
   document.getElementById('tracking-view').classList.remove('flex');
   scrollToSection('impact-dashboard');
@@ -1914,12 +1810,11 @@ function scrollToSection(id) {
 
 function openLiveTrackingModal() {
   soundBlip();
-  soundRadarPing();
   const trackingView = document.getElementById('tracking-view');
   if (trackingView) {
     trackingView.classList.remove('hidden');
     trackingView.classList.add('flex');
-    startRadarMap();
+    updateDeliveryRouteMap();
     startTelemetrySimulation();
   }
 }
