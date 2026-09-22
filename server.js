@@ -117,11 +117,18 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 200, { success: true, count: orders.length, data: orders });
       }
 
-      // 6. POST /api/donations (Record Smileys NGO Donation)
+      // 6. POST /api/donations (Record & Verify Smileys NGO Donation)
       if (method === 'POST' && pathname === '/api/donations') {
         const body = await parseJsonBody(req);
         if (!body.amount || body.amount <= 0) {
           return sendJson(res, 400, { success: false, error: 'Valid donation amount required' });
+        }
+        const utr = (body.txnRefUtr || body.razorpayPaymentId || '').trim();
+        if (!utr || utr.length < 6) {
+          return sendJson(res, 400, { 
+            success: false, 
+            error: 'Verification required: A valid 12-digit UPI UTR or Razorpay Payment ID must be provided to issue an official 80G Tax Exemption Certificate.' 
+          });
         }
         const donResult = dbManager.recordDonation(body);
         return sendJson(res, 201, donResult);

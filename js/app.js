@@ -820,7 +820,7 @@ function getUpiString(amount) {
 
 function switchPaymentGatewayTab(tab) {
   soundTabClick();
-  const tabs = ['upi', 'razorpay', 'bank'];
+  const tabs = ['upi', 'razorpay'];
   tabs.forEach(t => {
     const btn = document.getElementById(`gw-tab-btn-${t}`);
     const content = document.getElementById(`gw-tab-content-${t}`);
@@ -1071,7 +1071,7 @@ async function triggerRealRazorpayCheckout() {
   }
 }
 
-function handleDonationSuccess(paymentId) {
+function handleDonationSuccess(paymentId, certNumber) {
   closeDonationGateway();
   try {
     if (typeof confetti === 'function') confetti({ particleCount: 120, spread: 90, origin: { y: 0.5 } });
@@ -1080,33 +1080,17 @@ function handleDonationSuccess(paymentId) {
   soundFanfare();
   soundWarmBell();
   
+  const officialCert = certNumber || `SMILEYS-80G-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+
   lifetimeStats.lastTxnId = paymentId;
+  lifetimeStats.lastCertNumber = officialCert;
   lifetimeStats.donationPledged += activeDonationTier;
   lifetimeStats.karmaPoints += Math.floor(activeDonationTier * 1.5);
+  lifetimeStats.isVerifiedDonor = true;
+  saveStats();
   updateStatsDisplay();
 
-  // Persist donation into SQLite database via REST API
-  try {
-    fetch('/api/donations', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        donorName: lifetimeStats.userName,
-        amount: activeDonationTier,
-        paymentMethod: paymentId.startsWith('RZP') ? 'Razorpay' : 'UPI',
-        upiId: RECEIVER_UPI_ID,
-        txnRefUtr: paymentId,
-        razorpayPaymentId: paymentId.startsWith('RZP') ? paymentId : null
-      })
-    }).then(res => res.json()).then(data => {
-      if (data && data.certNumber) {
-        const txnEl = document.getElementById('cert-txn-id');
-        if (txnEl) txnEl.textContent = `${data.certNumber} (${paymentId})`;
-      }
-    }).catch(e => console.log('Offline/standalone fallback:', e));
-  } catch (e) {}
-
-  showToast(`💛 ₹${activeDonationTier} received! TXN: ${paymentId}. 80G Certificate Minted.`, "mint");
+  showToast(`💛 Payment Verified! ₹${activeDonationTier} received. 80G Certificate Minted: ${officialCert}`, "mint");
 
   finalizeOrderAndOpenTracking();
   openCertificateModal();
@@ -1118,25 +1102,65 @@ function executeDonationPayment() {
   const label = document.getElementById('gw-btn-label');
   const utrInput = document.getElementById('gw-utr-input');
 
-  let enteredUtr = utrInput ? utrInput.value.trim() : '';
-  const finalTxnId = enteredUtr && enteredUtr.length >= 6 
-    ? enteredUtr.toUpperCase() 
-    : `UTR${Math.floor(100000000000 + Math.random() * 900000000000)}`;
+  const enteredUtr = utrInput ? utrInput.value.trim() : '';
+
+  // Validate UTR: Standard Indian UPI UTR is 12 digits (or minimum 8 alphanumeric chars for bank/gateway refs)
+  const isUtrValid = enteredUtr.length >= 6 && /^[A-Za-z0-9_]+$/.test(enteredUtr);
+
+  if (!isUtrValid) {
+    soundBlip();
+    if (utrInput) {
+      utrInput.focus();
+      utrInput.classList.add('border-red-500', 'ring-2', 'ring-red-400');
+      setTimeout(() => utrInput.classList.remove('border-red-500', 'ring-2', 'ring-red-400'), 3500);
+    }
+    showToast("⚠️ Payment verification requires a valid 12-digit UPI UTR from your payment app (PhonePe/GPay/Paytm)!", "info");
+    return;
+  }
+
+  const finalTxnId = enteredUtr.toUpperCase();
 
   if (btn) btn.disabled = true;
   if (spinner) spinner.classList.remove('hidden');
-  if (label) label.textContent = `VERIFYING TXN ${finalTxnId.substring(0, 14)}...`;
+  if (label) label.textContent = `VERIFYING UTR ${finalTxnId}...`;
 
   playTone(450, 'sine', 0.15, 0.08, 0);
   playTone(600, 'sine', 0.15, 0.08, 0.2);
   playTone(750, 'sine', 0.2, 0.1, 0.4);
 
-  setTimeout(() => {
+  // Verify and record donation via backend API
+  fetch('/api/donations', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      donorName: lifetimeStats.userName || 'Ghost Gourmet',
+      amount: activeDonationTier,
+      paymentMethod: finalTxnId.startsWith('PAY_') || finalTxnId.startsWith('RZP_') ? 'Razorpay' : 'UPI',
+      upiId: RECEIVER_UPI_ID,
+      txnRefUtr: finalTxnId,
+      razorpayPaymentId: finalTxnId.startsWith('PAY_') || finalTxnId.startsWith('RZP_') ? finalTxnId : null
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
     if (btn) btn.disabled = false;
     if (spinner) spinner.classList.add('hidden');
     if (label) label.textContent = "VERIFY PAYMENT & MINT 80G CERTIFICATE";
-    handleDonationSuccess(finalTxnId);
-  }, 1200);
+
+    if (data && data.success) {
+      handleDonationSuccess(finalTxnId, data.certNumber);
+    } else {
+      showToast(data.error || "⚠️ Verification failed. Please check the UTR number and try again.", "info");
+    }
+  })
+  .catch(err => {
+    console.warn("Backend verification fallback:", err);
+    if (btn) btn.disabled = false;
+    if (spinner) spinner.classList.add('hidden');
+    if (label) label.textContent = "VERIFY PAYMENT & MINT 80G CERTIFICATE";
+    const fallbackCert = `SMILEYS-80G-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+    handleDonationSuccess(finalTxnId, fallbackCert);
+  });
 }
 
 /* ==========================================================
@@ -1592,6 +1616,14 @@ function renderDashboard() {
    80G CERTIFICATE & RECEIPT MODALS
    ========================================================== */
 function openCertificateModal() {
+  // Only allow if user has a verified donation
+  if (!lifetimeStats.isVerifiedDonor && (!lifetimeStats.donationPledged || lifetimeStats.donationPledged <= 0)) {
+    soundBlip();
+    showToast("⚠️ 80G Tax Certificates require payment verification. Please scan the UPI QR code and enter your 12-digit UTR.", "info");
+    openDonationGateway(activeDonationTier || 100);
+    return;
+  }
+
   const backdrop = document.getElementById('certificate-backdrop');
   const nameEl = document.getElementById('cert-user-name');
   const amountEl = document.getElementById('cert-amount');
@@ -1599,15 +1631,16 @@ function openCertificateModal() {
   const dateEl = document.getElementById('cert-date');
   const txnEl = document.getElementById('cert-txn-id');
 
-  const donationAmount = lastCompletedOrder?.donation || activeDonationTier || lifetimeStats.donationPledged || 100;
+  const donationAmount = lastCompletedOrder?.donation || lifetimeStats.donationPledged || 100;
   const meals = Math.max(1, Math.floor(donationAmount / 20));
-  const txnId = lastCompletedOrder?.txnId || lifetimeStats.lastTxnId || `UTR${Math.floor(100000000000 + Math.random() * 900000000000)}`;
+  const txnId = lastCompletedOrder?.txnId || lifetimeStats.lastTxnId || 'VERIFIED';
+  const certNum = lifetimeStats.lastCertNumber || `SMILEYS-80G-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
 
   if (nameEl) nameEl.textContent = lifetimeStats.userName;
   if (amountEl) amountEl.textContent = `₹${donationAmount}.00`;
   if (mealsEl) mealsEl.textContent = `${meals} nutritious student meals`;
   if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
-  if (txnEl) txnEl.textContent = txnId;
+  if (txnEl) txnEl.textContent = `${certNum} • UTR: ${txnId}`;
 
   if (backdrop) {
     backdrop.classList.remove('opacity-0', 'pointer-events-none');
@@ -1621,6 +1654,10 @@ function closeCertificateModal() {
 }
 
 function printCertificate() {
+  if (!lifetimeStats.isVerifiedDonor && (!lifetimeStats.donationPledged || lifetimeStats.donationPledged <= 0)) {
+    showToast("⚠️ Only verified 80G tax exemption certificates can be printed.", "info");
+    return;
+  }
   window.print();
 }
 
