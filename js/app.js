@@ -442,6 +442,10 @@ function setSortBy(sortVal) {
 
 function handleSearch(val) {
   searchQuery = val.trim().toLowerCase();
+  const desktopSearch = document.getElementById('search-input');
+  const mobileSearch = document.getElementById('mobile-search-input');
+  if (desktopSearch && desktopSearch.value !== val) desktopSearch.value = val;
+  if (mobileSearch && mobileSearch.value !== val) mobileSearch.value = val;
   currentDishPage = 1;
   renderDishes();
 }
@@ -500,52 +504,52 @@ function renderDishes() {
     const karma = Math.round(dish.calories / 10);
 
     return `
-      <div class="group p-4 sm:p-5 rounded-2xl bg-white border border-swiggy-border shadow-card hover:shadow-hover hover:-translate-y-1 transition-all flex items-start justify-between gap-4">
-        <div class="flex-1 pr-1">
-          <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+      <div class="group p-3 sm:p-5 rounded-2xl bg-white border border-swiggy-border shadow-card hover:shadow-hover hover:-translate-y-1 transition-all flex items-start justify-between gap-3 sm:gap-4">
+        <div class="flex-1 pr-1 min-w-0">
+          <div class="flex items-center gap-1.5 sm:gap-2 mb-1.5 flex-wrap">
             <span class="${dish.isVeg ? 'type-veg' : 'type-nonveg'}"></span>
-            <span class="text-[10px] font-mono font-bold text-swiggy-muted">${dish.restaurant}</span>
-            ${dish.bestseller ? `<span class="text-[9px] font-display font-extrabold uppercase px-1.5 py-0.2 rounded bg-swiggy-orangeLight text-swiggy-orange">★ BESTSELLER</span>` : ''}
-            <span class="text-[9px] font-mono font-bold text-amber-800 bg-amber-100 px-1.5 py-0.2 rounded border border-amber-300">✨ +${karma} Karma</span>
+            <span class="text-[10px] font-mono font-bold text-swiggy-muted truncate max-w-[130px] sm:max-w-none">${dish.restaurant}</span>
+            ${dish.bestseller ? `<span class="text-[8px] sm:text-[9px] font-display font-extrabold uppercase px-1.5 py-0.2 rounded bg-swiggy-orangeLight text-swiggy-orange">★ BESTSELLER</span>` : ''}
+            <span class="text-[8px] sm:text-[9px] font-mono font-bold text-amber-800 bg-amber-100 px-1.5 py-0.2 rounded border border-amber-300">✨ +${karma}</span>
           </div>
-          <h3 class="font-display font-bold text-base text-swiggy-dark group-hover:text-swiggy-orange transition-colors">
+          <h3 class="font-display font-bold text-sm sm:text-base text-swiggy-dark group-hover:text-swiggy-orange transition-colors line-clamp-2">
             ${dish.name}
           </h3>
           <div class="font-display font-extrabold text-sm sm:text-base text-swiggy-dark mt-1">
             ₹${dish.price}
           </div>
-          <div class="flex items-center gap-2 mt-2 flex-wrap">
+          <div class="flex items-center gap-1.5 sm:gap-2 mt-1.5 sm:mt-2 flex-wrap">
             <div class="flex items-center gap-1 bg-swiggy-green text-white text-[10px] font-display font-bold px-1.5 py-0.5 rounded">
               <span>★</span><span>${dish.rating}</span>
             </div>
-            <span class="text-[11px] text-swiggy-muted font-sans font-medium">(${dish.ratingCount})</span>
-            <span class="text-[10px] font-mono font-bold text-swiggy-greenDark bg-swiggy-greenLight px-2 py-0.5 rounded border border-green-200">
-              🔥 -${dish.calories} kcal saved
+            <span class="text-[10px] sm:text-[11px] text-swiggy-muted font-sans font-medium">(${dish.ratingCount})</span>
+            <span class="text-[9px] sm:text-[10px] font-mono font-bold text-swiggy-greenDark bg-swiggy-greenLight px-1.5 sm:px-2 py-0.5 rounded border border-green-200 truncate max-w-[140px] sm:max-w-none">
+              🔥 -${dish.calories} kcal
             </span>
           </div>
-          <p class="text-xs text-swiggy-muted mt-2.5 line-clamp-2 leading-relaxed">
+          <p class="text-[11px] sm:text-xs text-swiggy-muted mt-2 line-clamp-2 leading-relaxed">
             ${dish.desc}
           </p>
           ${dish.customizable ? `
-            <button onclick="soundBlip(); openCustomizerModal('${dish.id}')" class="mt-2 text-[11px] font-display font-bold text-swiggy-orange hover:underline flex items-center gap-1">
-              <span>⚙️ Customizable Guilt Add-ons</span>
+            <button onclick="soundBlip(); openCustomizerModal('${dish.id}')" class="mt-1.5 sm:mt-2 text-[10px] sm:text-[11px] font-display font-bold text-swiggy-orange hover:underline flex items-center gap-1">
+              <span>⚙️ Customizable</span>
             </button>
           ` : ''}
         </div>
 
         <!-- Image & FNC ADD Button -->
-        <div class="relative w-32 sm:w-36 h-28 sm:h-32 shrink-0">
+        <div class="relative w-28 sm:w-36 h-26 sm:h-32 shrink-0">
           <img src="${dish.image}" alt="${dish.name}" class="w-full h-full object-cover rounded-xl shadow-xs" loading="lazy"/>
-          <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 z-10 w-28">
+          <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 z-10 w-24 sm:w-28">
             ${qty === 0 ? `
-              <button onclick="soundPop(); handleAddDish('${dish.id}')" class="w-full py-1.5 rounded-lg bg-white border border-swiggy-border hover:border-swiggy-orange shadow-md text-swiggy-orange font-display font-extrabold text-xs tracking-wider transition-all active:scale-95 flex items-center justify-center gap-1">
+              <button onclick="soundPop(); handleAddDish('${dish.id}')" class="w-full py-1 sm:py-1.5 rounded-lg bg-white border border-swiggy-border hover:border-swiggy-orange shadow-md text-swiggy-orange font-display font-extrabold text-[11px] sm:text-xs tracking-wider transition-all active:scale-95 flex items-center justify-center gap-1">
                 <span>ADD</span><span class="text-xs">+</span>
               </button>
             ` : `
-              <div class="w-full py-1 rounded-lg bg-white border border-swiggy-orange shadow-md text-swiggy-orange font-display font-extrabold text-xs flex items-center justify-between px-2">
-                <button onclick="soundPop(); updateCartQty('${dish.id}', -1)" class="w-6 h-6 flex items-center justify-center hover:bg-orange-50 rounded font-bold">−</button>
-                <span class="font-mono">${qty}</span>
-                <button onclick="soundPop(); updateCartQty('${dish.id}', 1)" class="w-6 h-6 flex items-center justify-center hover:bg-orange-50 rounded font-bold">+</button>
+              <div class="w-full py-0.5 sm:py-1 rounded-lg bg-white border border-swiggy-orange shadow-md text-swiggy-orange font-display font-extrabold text-[11px] sm:text-xs flex items-center justify-between px-1.5 sm:px-2">
+                <button onclick="soundPop(); updateCartQty('${dish.id}', -1)" class="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center hover:bg-orange-50 rounded font-bold">−</button>
+                <span class="font-mono text-xs">${qty}</span>
+                <button onclick="soundPop(); updateCartQty('${dish.id}', 1)" class="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center hover:bg-orange-50 rounded font-bold">+</button>
               </div>
             `}
           </div>

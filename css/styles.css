@@ -144,3 +144,28 @@
     width: 100%;
   }
 }
+
+/* Mobile Browser Optimizations */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Safe area insets for notched phones (iPhone, etc.) */
+.safe-bottom {
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Smooth touch scrolling */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Media element boundary defense */
+img, svg, video, canvas, audio, iframe, embed, object {
+  max-width: 100%;
+}
+
